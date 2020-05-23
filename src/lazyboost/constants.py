@@ -15,7 +15,18 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-__init__ module simply exports essentials.
+constants module contains constant variables as static references across the project.
 """
 
-from .constants import __version__
+# version of the application
+__version__ = "0.0.1"
+
+# cli top-level constants
+CLI_NAME = "lazyboost"
+CLI_COMMAND_BACKUP = "backup"
+CLI_COMMAND_RESTORE = "restore"
+
+# log constants
+LOG_DIR = f'.local/share/{CLI_NAME}'
+LOG_DEFAULT_NAME = f'{CLI_NAME}.log'
+LOG_ERROR_NAME = f'{CLI_NAME}-error.log'
