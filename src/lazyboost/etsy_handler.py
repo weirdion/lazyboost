@@ -17,13 +17,39 @@
 """
 EtsyHandler contains the handlers to interact with Etsy API.
 """
+import logging
+from urllib.parse import urljoin
 
-from lazyboost.models import LazyConfig
+import requests
+
+from lazyboost import log
+from lazyboost.models import LazyEtsyConfig
+
+SERVER_ADDRESS = "https://openapi.etsy.com/v2/"
+
+_cli_logger = log.console_logger()
+_logger = log.create_logger(__name__)
 
 
-def get_active_listings(config: LazyConfig):
+def get_active_listings(config: LazyEtsyConfig) -> []:
     """
-
     :param config: LazyConfig, contains the config options to interact with
     """
+    sub_url = f"shops/{config.etsy_shop_id}/listings/active"
+    params = dict()
+    params['api_key'] = config.etsy_token
 
+    response = requests.get(urljoin(SERVER_ADDRESS, sub_url), params=params)
+
+    if response.status_code == 200:
+        return _parse_active_listings(response.json())
+    else:
+        log.combined_log(_logger, _cli_logger, logging.ERROR,
+                         f"Failed to get Etsy active listings, error: {response.status_code}")
+
+
+def _parse_active_listings(received_data: dict) -> []:
+    """
+    :param received_data:
+    """
+    return []

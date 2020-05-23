@@ -19,12 +19,15 @@ Models module contains the data structures and enums.
 """
 
 from dataclasses import dataclass
+from enum import auto
+
+from lazyboost.utility_base import BaseEnum
 
 
 @dataclass
 class LazyEtsyConfig:
     etsy_token: str
-    etsy_shop_id: int
+    etsy_shop_id: str
 
 
 @dataclass
@@ -36,3 +39,33 @@ class LazyFacebookConfig:
 class LazyConfig:
     etsy_config: LazyEtsyConfig
     facebook_config: LazyFacebookConfig
+
+
+class EtsyListingState(BaseEnum):
+    ACTIVE = auto()
+    REMOVED = auto()
+    SOLD_OUT = auto()
+    EXPIRED = auto()
+    DRAFT = auto()
+    PRIVATE = auto()
+    UNAVAILABLE = auto()
+
+
+@dataclass
+class EtsyListing:
+    listing_id: int
+    state: EtsyListingState
+    user_id: int
+    title: str
+    description: str
+    price: float
+    currency_code: str
+    quantity: int
+    sku: []
+    tags: []
+    materials: []
+    occasion: str
+    taxonomy_path: []
+    primary_image: str
+    secondary_images: []
+    is_private: bool = False

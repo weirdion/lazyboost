@@ -19,7 +19,8 @@ command handler module handles operations after the cli receives a command
 """
 import logging
 
-from lazyboost import log
+from lazyboost import etsy_handler, log
+from lazyboost.models import LazyEtsyConfig
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -31,3 +32,5 @@ def parse_received_command(received_args):
     :params received_args: Namespace object received from ArgumentParser use.
     """
     log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
+    etsy_handler.get_active_listings(LazyEtsyConfig(etsy_token=received_args.etsy_token,
+                                                    etsy_shop_id=received_args.etsy_shop_id))
