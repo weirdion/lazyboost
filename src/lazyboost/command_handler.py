@@ -32,5 +32,9 @@ def parse_received_command(received_args):
     :params received_args: Namespace object received from ArgumentParser use.
     """
     log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
-    etsy_handler.get_active_listings(LazyEtsyConfig(etsy_token=received_args.etsy_token,
-                                                    etsy_shop_id=received_args.etsy_shop_id))
+
+    etsy_listings = etsy_handler.get_active_listings(LazyEtsyConfig(
+        etsy_token=received_args.etsy_token,
+        etsy_shop_id=received_args.etsy_shop_id))
+
+    _cli_logger.info(f"Completed etsy listings:\n\n{etsy_listings}")

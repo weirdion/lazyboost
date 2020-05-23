@@ -61,11 +61,11 @@ class EtsyListing:
     price: float
     currency_code: str
     quantity: int
-    sku: []
-    tags: []
-    materials: []
+    sku: str
+    tags: list
+    materials: list
     occasion: str
-    taxonomy_path: []
-    primary_image: str
-    secondary_images: []
+    taxonomy_path: list
+    primary_image: str = None
+    secondary_images: list = None
     is_private: bool = False
