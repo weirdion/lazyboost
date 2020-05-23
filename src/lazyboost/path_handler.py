@@ -22,7 +22,7 @@ from enum import auto
 import os
 import sys
 
-from lazyboost.constants import CONFIG_DIR, CONFIG_PATH, LOG_DEFAULT_NAME, LOG_DIR, \
+from lazyboost.constants import LOG_DEFAULT_NAME, LOG_DIR, \
     LOG_ERROR_NAME
 from lazyboost.utility_base import BaseEnum
 

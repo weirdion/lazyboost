@@ -76,7 +76,7 @@ def console_logger():
 
         log_handler = logging.StreamHandler(stream=sys.stdout)
         log_handler.setFormatter(logging.Formatter(LOG_CLI_FORMAT, datefmt=LOG_DATE_SHORT_FORMAT))
-        log_handler.setLevel(logging.INFO)
+        log_handler.setLevel(logging.DEBUG)
 
         logger.addHandler(log_handler)
         logger.setLevel(logging.INFO)

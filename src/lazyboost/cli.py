@@ -21,7 +21,7 @@ cli module handles the creation and use of the cli arguments
 from argparse import ArgumentParser, _HelpAction, _SubParsersAction
 import sys
 
-from lazyboost import constants
+from lazyboost import command_handler, constants
 
 
 class _HelpActionLongFormat(_HelpAction):  # pylint: disable=too-few-public-methods
@@ -71,6 +71,24 @@ def create_parser() -> ArgumentParser:
         version=f"{constants.CLI_NAME} {constants.__version__}"
     )
 
+    parser.add_argument(
+        '-et',
+        '--etsy-token',
+        help='Etsy access token'
+    )
+
+    parser.add_argument(
+        '-es',
+        '--etsy-shop-id',
+        help='Etsy shop id'
+    )
+
+    parser.add_argument(
+        '-ft',
+        '--facebook-token',
+        help='Facebook access token'
+    )
+
     return parser
 
 
@@ -84,4 +102,4 @@ def main():
             f"Run `{constants.CLI_NAME} --help` to see available options.")
 
     args = create_parser().parse_args()
-    print(f"parsed arguments: {args}")
+    command_handler.parse_received_command(args)
