@@ -23,7 +23,7 @@ from urllib.parse import urljoin
 import requests
 
 from lazyboost import log
-from lazyboost.models import EtsyListingState, LazyEtsyConfig, EtsyListing
+from lazyboost.models import EtsyListing, EtsyListingState, LazyEtsyConfig
 
 SERVER_ADDRESS = "https://openapi.etsy.com/v2/"
 
@@ -38,13 +38,14 @@ def get_active_listings(config: LazyEtsyConfig) -> list:
     sub_url = f"shops/{config.etsy_shop_id}/listings/active"
     params = dict()
     params['api_key'] = config.etsy_token
+    params['limit'] = 50
 
     _cli_logger.info("Attempting to request information from Etsy...")
     response = requests.get(urljoin(SERVER_ADDRESS, sub_url), params=params)
 
     if response.status_code == 200:
         listings = _parse_active_listings(response.json())
-        return _retrieve_listing_images(listings, params)
+        return _retrieve_listing_images(listings, config.etsy_token)
     else:
         log.combined_log(_logger, _cli_logger, logging.ERROR,
                          f"Failed to get Etsy active listings, error: {response.status_code}")
@@ -70,11 +71,14 @@ def _parse_active_listings(received_data: dict) -> list:
     return listings
 
 
-def _retrieve_listing_images(listings: list, params: dict):
+def _retrieve_listing_images(listings: list, api_key: str):
     """
     :param listings:
     :return:
     """
+    params = dict()
+    params['api_key'] = api_key
+
     for index, item in enumerate(listings):
         _cli_logger.info(f"Retrieving images for listing {index} out of {len(listings)}")
         sub_url = f"listings/{item.listing_id}/images"
