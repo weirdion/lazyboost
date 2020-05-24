@@ -69,3 +69,29 @@ class EtsyListing:
     primary_image: str = None
     secondary_images: list = None
     is_private: bool = False
+
+
+class FacebookListingAvailability(BaseEnum):
+    IN_STOCK = "in stock"
+    OUT_OF_STOCK = "out of stock"
+    AVAILABLE_FOR_ORDER = "available for order"
+    PRE_ORDER = "preorder"
+    DISCONTINUED = "discontinued"
+
+
+@dataclass
+class FacebookListing:
+    id: int
+    title: str
+    description: str
+    availability: FacebookListingAvailability
+    price: str
+    image_link: str
+    additional_image_link: str
+    inventory: int
+    condition: str = "new"
+    brand: str = "AmourFrontDoor"
+    age_group: str = "adult"
+    google_product_category: str = "6267"
+    commerce_tax_category: str = "FB_HMGN_DCOR"
+    shipping: str = "US::Air:0.0 USD"
