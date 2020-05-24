@@ -15,12 +15,12 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-command handler module handles operations after the cli receives a command
+Command Handler module handles operations after the cli receives a command
 """
 import logging
 
-from lazyboost import etsy_handler, log
-from lazyboost.models import LazyEtsyConfig
+from lazyboost import etsy_handler, facebook_handler, log
+from lazyboost.models import LazyConfig, LazyEtsyConfig, LazyFacebookConfig
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -32,9 +32,17 @@ def parse_received_command(received_args):
     :params received_args: Namespace object received from ArgumentParser use.
     """
     log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
+    lazy_config = LazyConfig(
+        etsy_config=LazyEtsyConfig(etsy_token=received_args.etsy_token,
+                                   etsy_shop_id=received_args.etsy_shop_id),
+        facebook_config=LazyFacebookConfig(facebook_token=received_args.facebook_token)
+    )
+    convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config)
 
-    etsy_listings = etsy_handler.get_active_listings(LazyEtsyConfig(
-        etsy_token=received_args.etsy_token,
-        etsy_shop_id=received_args.etsy_shop_id))
 
-    _cli_logger.info(f"Completed etsy listings:\n\n{etsy_listings}")
+def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig):
+    """
+    :param lazy_config:
+    """
+    etsy_listings = etsy_handler.get_active_listings(config=lazy_config.etsy_config)
+    facebook_handler.generate_facebook_import_csv(etsy_listings=etsy_listings)

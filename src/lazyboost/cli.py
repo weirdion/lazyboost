@@ -86,6 +86,7 @@ def create_parser() -> ArgumentParser:
     parser.add_argument(
         '-ft',
         '--facebook-token',
+        default='',
         help='Facebook access token'
     )
 
