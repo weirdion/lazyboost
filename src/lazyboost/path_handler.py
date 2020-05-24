@@ -22,8 +22,9 @@ from enum import auto
 import os
 import sys
 
-from lazyboost.constants import LOG_DEFAULT_NAME, LOG_DIR, \
-    LOG_ERROR_NAME, CONFIG_DIR, CONFIG_PATH, USER_DATA
+from lazyboost.constants import CONFIG_DIR, CONFIG_PATH, LOG_DEFAULT_NAME, LOG_DIR, \
+    LOG_ERROR_NAME, \
+    USER_DATA
 from lazyboost.utility_base import BaseEnum
 
 
@@ -35,6 +36,7 @@ class RuntimeFileType(BaseEnum):
     """
     CONFIG = auto()
     LOG = auto()
+    USER_DATA = auto()
 
 
 class ContainmentType(BaseEnum):

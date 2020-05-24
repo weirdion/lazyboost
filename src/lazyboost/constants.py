@@ -38,4 +38,5 @@ CONFIG_BACKUP_SUFFIX = '.backup'
 
 # User data constants
 USER_DATA = f'Downloads/{CLI_NAME}'
-EXPORT_FILE_PREFIX = f'{CLI_NAME}-'
+FILE_PREFIX = f'{CLI_NAME}-'
+IMPORT_FACEBOOK_FILE_NAME = f'{CLI_NAME}-facebook-import-%s.csv'

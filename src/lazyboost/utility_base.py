@@ -20,7 +20,7 @@ utility base module contains essential helper functions.
 NOTE: Things that require utility_base to initialize (like logging) should be avoided in this
 class to avoid circular dependencies.
 """
-
+from datetime import datetime
 import enum
 import json
 import os
@@ -152,3 +152,13 @@ def convert_to_json_str(obj, indent=None) -> str:
         return object_var.__dict__
 
     return json.dumps(obj, default=_convert_obj_to_json, indent=indent)
+
+
+def get_timestamp() -> str:
+    """
+    Function that gets the current time and returns formatted version of it.
+    :return: str, current date/time stamp
+    """
+    # current date and time
+    now = datetime.now()
+    return now.strftime("%Y%m%d%H%M%S")
