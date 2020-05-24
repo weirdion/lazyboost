@@ -35,3 +35,7 @@ LOG_ERROR_NAME = f'{CLI_NAME}-error.log'
 CONFIG_DIR = f'.config/{CLI_NAME}'
 CONFIG_PATH = f'{CLI_NAME}.json'
 CONFIG_BACKUP_SUFFIX = '.backup'
+
+# User data constants
+USER_DATA = f'Downloads/{CLI_NAME}'
+EXPORT_FILE_PREFIX = f'{CLI_NAME}-'

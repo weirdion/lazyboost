@@ -23,7 +23,7 @@ import os
 import sys
 
 from lazyboost.constants import LOG_DEFAULT_NAME, LOG_DIR, \
-    LOG_ERROR_NAME
+    LOG_ERROR_NAME, CONFIG_DIR, CONFIG_PATH, USER_DATA
 from lazyboost.utility_base import BaseEnum
 
 
@@ -126,3 +126,24 @@ def get_config_file_path():
     :return: str, absolute path for config file.
     """
     return os.path.join(get_config_dir(), CONFIG_PATH)
+
+
+def get_user_data_dir():
+    """
+    Function that generates and returns user data directory path based on current ContainmentType.
+    :return: str, directory path to the user data folder.
+    """
+    containment_type = _get_containment_type()
+    if containment_type == ContainmentType.SNAP:
+        user_data_path = os.path.join(os.getenv('SNAP_USER_DATA'), 'exports')
+    else:
+        if containment_type == ContainmentType.PIPENV:
+            os_prefix = sys.prefix
+        else:
+            os_prefix = os.path.expanduser('~')
+
+        user_data_path = os.path.join(os_prefix, USER_DATA)
+
+    if not os.path.isdir(user_data_path):
+        os.makedirs(user_data_path, mode=0o775)
+    return user_data_path
