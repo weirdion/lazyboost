@@ -1,6 +1,6 @@
 # LazyBoost
 
-A simple way to manage your shop listings between Etsy SHop Manager and Facebook Page Shop
+A simple way to manage your shop listings between Etsy Shop Manager and Facebook Page Shop
 
 ## Features
 
@@ -72,5 +72,5 @@ License
 [jq]: <https://stedolan.github.io/jq/>
 [requests]: <https://github.com/psf/requests>
 [urllib3]: <https://github.com/urllib3/urllib3>
-[pipeline_image]: <https://gitlab.com/asadana/personal-setup/badges/develop/pipeline.svg>
-[coverage_image]: <https://gitlab.com/asadana/personal-setup/badges/develop/coverage.svg>
+[pipeline_image]: <https://gitlab.com/asadana/lazyboost/badges/develop/pipeline.svg>
+[coverage_image]: <https://gitlab.com/asadana/lazyboost/badges/develop/coverage.svg>
