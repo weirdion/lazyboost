@@ -2,6 +2,53 @@
 
 A simple way to manage your shop listings between Etsy SHop Manager and Facebook Page Shop
 
+## Features
+
+    [x] Fetch all active listings from Etsy
+    [x] Fetch all images for each active listing
+    [] Allow creating listing on Etsy
+    [] Allow updating listing on Etsy
+
+    [] Convert Etsy listing to Facebook CSV import file
+    [] Etsy --> Facebook listing delta update
+    [] Facebook --> Etsy listing delta update
+    [] Etsy <--> Facebook listing sync
+
+    [] Fetch all active listings from Facebook
+    [] Allow creating list on Facebook
+    [] Allow updating list on Facebook
+
+## Dependencies
+
+ 1. [jq] - Needed for parsing Pipfile.lock and updating requirements.txt (development only).
+ 2. [requests] - Python package, needed for making requests with different API.
+ 3. [urllib3] - Python package, needed for manipulating urls.
+
+## Preparing for Development
+
+1. Ensure ``pip`` and ``pipenv`` are installed
+2. Clone repository
+3. ``cd`` into repository
+4. Fetch development dependencies ``make``
+5. Initiate a local install for virtual system directories ``make install-pipenv``
+6. Activate virtualenv: ``pipenv shell``
+
+## Usage
+
+To view the help page, and all available options,
+
+```sh
+    $ lazyboost --help
+```
+
+## Running Tests
+
+Run tests:
+
+```sh
+    $ make test
+```
+
 License
 ---
 
@@ -20,3 +67,10 @@ License
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+[jq]: <https://stedolan.github.io/jq/>
+[requests]: <https://github.com/psf/requests>
+[urllib3]: <https://github.com/urllib3/urllib3>
+[pipeline_image]: <https://gitlab.com/asadana/personal-setup/badges/develop/pipeline.svg>
+[coverage_image]: <https://gitlab.com/asadana/personal-setup/badges/develop/coverage.svg>
