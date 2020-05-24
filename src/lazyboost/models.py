@@ -81,7 +81,7 @@ class FacebookListingAvailability(BaseEnum):
 
 @dataclass
 class FacebookListing:
-    id: int
+    id: str
     title: str
     description: str
     availability: FacebookListingAvailability
