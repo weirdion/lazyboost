@@ -30,3 +30,8 @@ CLI_COMMAND_RESTORE = "restore"
 LOG_DIR = f'.local/share/{CLI_NAME}'
 LOG_DEFAULT_NAME = f'{CLI_NAME}.log'
 LOG_ERROR_NAME = f'{CLI_NAME}-error.log'
+
+# config constants
+CONFIG_DIR = f'.config/{CLI_NAME}'
+CONFIG_PATH = f'{CLI_NAME}.json'
+CONFIG_BACKUP_SUFFIX = '.backup'

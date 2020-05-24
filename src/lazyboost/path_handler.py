@@ -33,6 +33,7 @@ class RuntimeFileType(BaseEnum):
     This class provides enums to sort and organize the paths of files created/used by this
     application.
     """
+    CONFIG = auto()
     LOG = auto()
 
 
@@ -96,3 +97,32 @@ def get_log_file_paths():
     """
     log_dir = get_log_dir()
     return os.path.join(log_dir, LOG_DEFAULT_NAME), os.path.join(log_dir, LOG_ERROR_NAME)
+
+
+def get_config_dir():
+    """
+    Function that generates and returns config directory path based on current ContainmentType.
+    :return: str, directory path to config folder.
+    """
+    containment_type = _get_containment_type()
+    if containment_type == ContainmentType.SNAP:
+        config_path = os.path.join(os.getenv('SNAP_USER_COMMON'), 'configs')
+    else:
+        if containment_type == ContainmentType.PIPENV:
+            os_prefix = sys.prefix
+        else:
+            os_prefix = os.path.expanduser('~')
+
+        config_path = os.path.join(os_prefix, CONFIG_DIR)
+
+    if not os.path.isdir(config_path):
+        os.makedirs(config_path, mode=0o775)
+    return config_path
+
+
+def get_config_file_path():
+    """
+    Function that uses get_config_dir and appends the config file name.
+    :return: str, absolute path for config file.
+    """
+    return os.path.join(get_config_dir(), CONFIG_PATH)
