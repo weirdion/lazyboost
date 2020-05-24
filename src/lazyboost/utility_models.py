@@ -57,7 +57,7 @@ def convert_etsy_to_facebook_listing(etsy_listing: EtsyListing) -> FacebookListi
         availability=convert_etsy_state_to_facebook_availability(etsy_listing.state),
         price=f"{etsy_listing.price} {etsy_listing.currency_code}",
         image_link=etsy_listing.primary_image,
-        additional_image_link="\t".join(etsy_listing.secondary_images),
+        additional_image_link=etsy_listing.secondary_images,
         inventory=etsy_listing.quantity,
     )
     return facebook_listing

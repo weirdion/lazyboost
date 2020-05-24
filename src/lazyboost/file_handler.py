@@ -49,9 +49,11 @@ def write_facebook_import_csv_file(facebook_listings: list) -> bool:
         with open(file_path, 'w') as file:
             log.combined_log(_logger, _cli_logger, logging.INFO,
                              f'Beginning to write Facebook import CSV file...')
-            csv_writer = csv.DictWriter(file, fieldnames=field_names, delimiter="\t")
+            csv_writer = csv.DictWriter(file, fieldnames=field_names,
+                                        delimiter=",", quoting=csv.QUOTE_NONNUMERIC)
+            csv_writer.writeheader()
             for listing in facebook_listings:
-                csv_writer.writerow(listing.__dict__)
+                csv_writer.writerow(listing.dict())
             file_written = True
             log.combined_log(_logger, _cli_logger, logging.INFO,
                              f'Successfully generated Facebook import CSV file at {file_path}.')

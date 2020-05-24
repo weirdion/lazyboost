@@ -87,11 +87,21 @@ class FacebookListing:
     availability: FacebookListingAvailability
     price: str
     image_link: str
-    additional_image_link: str
+    additional_image_link: list
     inventory: int
     condition: str = "new"
+    link: str = "https://facebook.amourfrontdoor.com"
     brand: str = "AmourFrontDoor"
     age_group: str = "adult"
     google_product_category: str = "6267"
     commerce_tax_category: str = "FB_HMGN_DCOR"
     shipping: str = "US::Air:0.0 USD"
+
+    def dict(self) -> dict:
+        """
+        Method that converts the FacebookListing to a dictionary
+        """
+        facebook_listing_dict = self.__dict__
+        facebook_listing_dict['availability'] = self.availability.value
+        facebook_listing_dict['additional_image_link'] = ",".join(self.additional_image_link)
+        return facebook_listing_dict
