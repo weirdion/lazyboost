@@ -35,7 +35,7 @@ def write_facebook_import_csv_file(facebook_listings: list) -> bool:
     :param facebook_listings: list(FacebookListing)
     :return: bool, True if the file was successfully written, False otherwise.
     """
-    if not facebook_listings or not isinstance(facebook_listings[1], FacebookListing):
+    if not facebook_listings or not isinstance(facebook_listings[0], FacebookListing):
         log.combined_log(_logger, _cli_logger, logging.ERROR,
                          "Invalid facebook listings received, failed to generate import csv file.")
         return False
@@ -43,7 +43,7 @@ def write_facebook_import_csv_file(facebook_listings: list) -> bool:
     file_name = constants.IMPORT_FACEBOOK_FILE_NAME % utility_base.get_timestamp()
     file_path = os.path.join(path_handler.get_user_data_dir(), file_name)
     file_written = False
-    field_names = list(facebook_listings[1].__dict__.keys())
+    field_names = list(facebook_listings[0].__dict__.keys())
 
     try:
         with open(file_path, 'w') as file:
