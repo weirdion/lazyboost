@@ -24,24 +24,45 @@ from enum import auto
 from lazyboost.utility_base import BaseEnum
 
 
+class LazyBoostConfig:
+    """
+    LazyBoostConfig class handles the structure and contents of the lazy_boost.json config.
+    """
+
+
 @dataclass
 class LazyEtsyConfig:
+    """
+    LazyEtsyConfig is a data class that holds the Etsy elements needed to access and parse the
+    Etsy API.
+    """
     etsy_token: str
     etsy_shop_id: str
 
 
 @dataclass
 class LazyFacebookConfig:
+    """
+    LazyFacebookConfig is a data class that holds the Facebook elements needed to access and parse
+    the Facebook API.
+    """
     facebook_token: str
 
 
 @dataclass
 class LazyConfig:
+    """
+    LazyConfig is a data class that holds all platform based API objects.
+    """
     etsy_config: LazyEtsyConfig
     facebook_config: LazyFacebookConfig
 
 
 class EtsyListingState(BaseEnum):
+    """
+    EtsyListingState is an enum class that extends BaseEnum class to provide all supported
+    Listing states provided by Etsy API.
+    """
     ACTIVE = auto()
     REMOVED = auto()
     SOLD_OUT = auto()
@@ -53,6 +74,11 @@ class EtsyListingState(BaseEnum):
 
 @dataclass
 class EtsyListing:
+    """
+    EtsyListing is a data class that contains all relevant entries returned by Etsy API that we
+    need to parse.
+    NOTE: This is not exhaustive list, there are fields returned by the API that are discarded.
+    """
     listing_id: int
     state: EtsyListingState
     user_id: int
@@ -72,6 +98,10 @@ class EtsyListing:
 
 
 class FacebookListingAvailability(BaseEnum):
+    """
+    FacebookListingAvailability is an enum class that extends BaseEnum.
+    This class contains the listing states supported by Facebook Commerce Manager.
+    """
     IN_STOCK = "in stock"
     OUT_OF_STOCK = "out of stock"
     AVAILABLE_FOR_ORDER = "available for order"
@@ -81,6 +111,11 @@ class FacebookListingAvailability(BaseEnum):
 
 @dataclass
 class FacebookListing:
+    """
+    FacebookListing is a data class that contains all relevant entries that we use to generate
+    Facebook CSV import file.
+    NOTE: This is not exhaustive list, there are fields available that we don't use.
+    """
     id: str
     title: str
     description: str
