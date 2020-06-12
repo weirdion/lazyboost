@@ -1,4 +1,5 @@
 [MESSAGES CONTROL]
 disable=global-statement,
         invalid-name,
-        logging-format-interpolation
+        logging-format-interpolation,
+        logging-fstring-interpolation
