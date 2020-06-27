@@ -115,17 +115,19 @@ class FacebookListing:
     FacebookListing is a data class that contains all relevant entries that we use to generate
     Facebook CSV import file.
     NOTE: This is not exhaustive list, there are fields available that we don't use.
+    Full list: https://developers.facebook.com/docs/marketing-api/catalog/reference/#da-commerce
     """
     id: str
     title: str
     description: str
     availability: FacebookListingAvailability
     price: str
+    sale_price: str
     image_link: str
     additional_image_link: list
     inventory: int
     condition: str = "new"
-    link: str = "https://facebook.amourfrontdoor.com"
+    link: str = "https://facebook.com/amourfrontdoor/shop"
     brand: str = "AmourFrontDoor"
     age_group: str = "adult"
     google_product_category: str = "6267"
