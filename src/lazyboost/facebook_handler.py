@@ -32,4 +32,5 @@ def generate_facebook_import_csv(etsy_listings: list):
     """
     facebook_listings = [
         (lambda x: utility_models.convert_etsy_to_facebook_listing(x))(el) for el in etsy_listings]
+    facebook_listings = sorted(facebook_listings, key=lambda f: f.id)
     file_handler.write_facebook_import_csv_file(facebook_listings=facebook_listings)
