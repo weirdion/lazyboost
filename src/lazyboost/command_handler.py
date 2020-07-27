@@ -44,7 +44,8 @@ def parse_received_command(received_args):
 def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig,
                                                 number_of_items_to_sync: int):
     """
-    :param lazy_config:
+    :param lazy_config: LazyConfig, combined object that contains configs for both Etsy and Facebook
+    :param number_of_items_to_sync: int, number of items to be synced from Etsy to Facebook
     """
     etsy_listings = etsy_handler.get_active_listings(config=lazy_config.etsy_config,
                                                      number_of_items_to_sync=number_of_items_to_sync)

@@ -35,6 +35,7 @@ def get_active_listings(config: LazyEtsyConfig, number_of_items_to_sync: int) ->
     """
     Reference: https://www.etsy.com/developers/documentation/reference/listing
     :param config: LazyConfig, contains the config options to interact with
+    :param number_of_items_to_sync: int, number of items to be synced from Etsy
     """
     sub_url = f"shops/{config.etsy_shop_id}/listings/active"
     params = dict()
