@@ -31,14 +31,15 @@ _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
 
 
-def get_active_listings(config: LazyEtsyConfig) -> list:
+def get_active_listings(config: LazyEtsyConfig, number_of_items_to_sync: int) -> list:
     """
+    Reference: https://www.etsy.com/developers/documentation/reference/listing
     :param config: LazyConfig, contains the config options to interact with
     """
     sub_url = f"shops/{config.etsy_shop_id}/listings/active"
     params = dict()
     params['api_key'] = config.etsy_token
-    params['limit'] = 50
+    params['limit'] = number_of_items_to_sync
 
     _cli_logger.info("Attempting to request information from Etsy...")
     response = requests.get(urljoin(SERVER_ADDRESS, sub_url), params=params)

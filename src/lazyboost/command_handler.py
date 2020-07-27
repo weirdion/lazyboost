@@ -37,12 +37,15 @@ def parse_received_command(received_args):
                                    etsy_shop_id=received_args.etsy_shop_id),
         facebook_config=LazyFacebookConfig(facebook_token=received_args.facebook_token)
     )
-    convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config)
+    convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config,
+                                                number_of_items_to_sync=received_args.number_of_items)
 
 
-def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig):
+def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig,
+                                                number_of_items_to_sync: int):
     """
     :param lazy_config:
     """
-    etsy_listings = etsy_handler.get_active_listings(config=lazy_config.etsy_config)
+    etsy_listings = etsy_handler.get_active_listings(config=lazy_config.etsy_config,
+                                                     number_of_items_to_sync=number_of_items_to_sync)
     facebook_handler.generate_facebook_import_csv(etsy_listings=etsy_listings)

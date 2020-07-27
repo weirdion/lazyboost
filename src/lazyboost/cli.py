@@ -90,6 +90,13 @@ def create_parser() -> ArgumentParser:
         help='Facebook access token'
     )
 
+    parser.add_argument(
+        '-n',
+        '--number-of-items',
+        default='1',
+        help='Number of items to sync.'
+    )
+
     return parser
 
 
