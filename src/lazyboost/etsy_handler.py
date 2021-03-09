@@ -17,6 +17,7 @@
 """
 EtsyHandler contains the handlers to interact with Etsy API.
 """
+from html import unescape
 import logging
 from urllib.parse import urljoin
 
@@ -59,12 +60,13 @@ def _parse_active_listings(received_data: dict) -> list:
     """
     listings = []
     result_list = received_data['results']
-    for index, item in enumerate(reversed(result_list)):
+    for index, item in enumerate(result_list):
         _cli_logger.info(f"Parsing result {index} out of {received_data['count']}")
         listing = EtsyListing(
             listing_id=item['listing_id'], state=EtsyListingState(item['state']),
-            user_id=item['user_id'], title=item['title'], description=item['description'],
-            price=item['price'], currency_code=item['currency_code'], quantity=item['quantity'],
+            user_id=item['user_id'], title=unescape(item['title']),
+            description=unescape(item['description']), price=float(item['price']),
+            currency_code=item['currency_code'], quantity=item['quantity'],
             sku=item['sku'][0], tags=item['tags'], materials=item['materials'],
             occasion=item['occasion'], taxonomy_path=item['taxonomy_path'])
         listings.append(listing)
