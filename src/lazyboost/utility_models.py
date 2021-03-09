@@ -16,6 +16,7 @@
 
 """
 """
+import re
 
 from lazyboost.models import EtsyListing, EtsyListingState, FacebookListingAvailability, \
     FacebookListing
@@ -48,6 +49,7 @@ def convert_etsy_to_facebook_listing(etsy_listing: EtsyListing) -> FacebookListi
     :param etsy_listing:
     :return:
     """
+    is_sale_active: bool = False
     facebook_listing = FacebookListing(
         # id =/= listing_id, id in facebook needs to be unique identifier
         # use SKU to manage listings across both platforms
@@ -60,4 +62,9 @@ def convert_etsy_to_facebook_listing(etsy_listing: EtsyListing) -> FacebookListi
         additional_image_link=etsy_listing.secondary_images,
         inventory=etsy_listing.quantity,
     )
+    if is_sale_active and not re.findall("Petite", facebook_listing.title, re.IGNORECASE) and \
+            not re.findall("Pixie", facebook_listing.title, re.IGNORECASE):
+
+        facebook_listing.sale_price = f"{etsy_listing.price * 0.90} {etsy_listing.currency_code}"
+        facebook_listing.sale_price_effective_date = "2020-07-18T15:00-05:00/2020-07-20T23:59-05:00"
     return facebook_listing

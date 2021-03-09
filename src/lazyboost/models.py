@@ -122,10 +122,11 @@ class FacebookListing:
     description: str
     availability: FacebookListingAvailability
     price: str
-    sale_price: str
     image_link: str
     additional_image_link: list
     inventory: int
+    sale_price: str = "0.00"
+    sale_price_effective_date: str = ""
     condition: str = "new"
     link: str = "https://facebook.com/amourfrontdoor/shop"
     brand: str = "AmourFrontDoor"

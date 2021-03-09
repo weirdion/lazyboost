@@ -97,6 +97,17 @@ def create_parser() -> ArgumentParser:
         help='Number of items to sync.'
     )
 
+    options_subparser = parser.add_subparsers(
+        title="Options",
+        description="Sub-options allow you to control smaller aspects of the platform",
+        required=False
+    )
+
+    sale_option_parser = options_subparser.add_parser("sale", help="sale help")
+    sale_option_parser.add_argument(
+        "sale"
+    )
+
     return parser
 
 
