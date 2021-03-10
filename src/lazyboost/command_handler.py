@@ -19,7 +19,7 @@ Command Handler module handles operations after the cli receives a command
 """
 import logging
 
-from lazyboost import etsy_handler, facebook_handler, log
+from lazyboost import etsy_handler, facebook_handler, log, clipboard
 from lazyboost.models import LazyConfig, LazyEtsyConfig, LazyFacebookConfig
 
 _cli_logger = log.console_logger()
@@ -32,13 +32,16 @@ def parse_received_command(received_args):
     :params received_args: Namespace object received from ArgumentParser use.
     """
     log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
-    lazy_config = LazyConfig(
-        etsy_config=LazyEtsyConfig(etsy_token=received_args.etsy_token,
-                                   etsy_shop_id=received_args.etsy_shop_id),
-        facebook_config=LazyFacebookConfig(facebook_token=received_args.facebook_token)
-    )
-    convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config,
-                                                number_of_items_to_sync=received_args.number_of_items)
+    if received_args.opt == 'clipboard':
+        clipboard.update_clipboard_tags()
+    else:
+        lazy_config = LazyConfig(
+            etsy_config=LazyEtsyConfig(etsy_token=received_args.etsy_token,
+                                       etsy_shop_id=received_args.etsy_shop_id),
+            facebook_config=LazyFacebookConfig(facebook_token=received_args.facebook_token)
+        )
+        convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config,
+                                                    number_of_items_to_sync=received_args.number_of_items)
 
 
 def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig,

@@ -100,13 +100,17 @@ def create_parser() -> ArgumentParser:
     options_subparser = parser.add_subparsers(
         title="Options",
         description="Sub-options allow you to control smaller aspects of the platform",
-        required=False
+        required=False,
+        metavar='OPTION',
+        dest="opt"
     )
 
     sale_option_parser = options_subparser.add_parser("sale", help="sale help")
     sale_option_parser.add_argument(
         "sale"
     )
+
+    options_subparser.add_parser("clipboard", help="clipboard help")
 
     return parser
 

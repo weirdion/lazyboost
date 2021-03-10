@@ -11,4 +11,4 @@ pytest-cov = "*"
 [packages]
 requests = "*"
 urllib3 = "*"
-
+pyperclip = "*"
