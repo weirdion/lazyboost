@@ -33,11 +33,11 @@ def update_clipboard_tags():
     pyperclip.copy(_facebook_post_description_tags(current_clipboard))
 
 
-def _etsy_description_tags(tag_list: list[str]) -> str:
-    return " / ".join(tag_list)
+def _etsy_description_tags(tag_list: list) -> str:
+    return ", ".join(tag_list)
 
 
-def _facebook_post_description_tags(tag_list: list[str]) -> str:
+def _facebook_post_description_tags(tag_list: list) -> str:
     fb_tag_list = []
     for i in tag_list:
         fb_tag_list.append("#" + i.replace(" ", "").replace("'", ""))
