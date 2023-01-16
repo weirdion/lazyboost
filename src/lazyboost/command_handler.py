@@ -19,8 +19,8 @@ Command Handler module handles operations after the cli receives a command
 """
 import logging
 
-from lazyboost import etsy_handler, log, clipboard
-from lazyboost.models import LazyConfig, LazyEtsyConfig, LazyFacebookConfig
+from lazyboost import log, clipboard
+from lazyboost.models import LazyConfig, LazyEtsyConfig
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)

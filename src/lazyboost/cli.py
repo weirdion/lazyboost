@@ -71,43 +71,12 @@ def create_parser() -> ArgumentParser:
         version=f"{constants.CLI_NAME} {constants.__version__}"
     )
 
-    parser.add_argument(
-        '-et',
-        '--etsy-token',
-        help='Etsy access token'
-    )
-
-    parser.add_argument(
-        '-es',
-        '--etsy-shop-id',
-        help='Etsy shop id'
-    )
-
-    parser.add_argument(
-        '-ft',
-        '--facebook-token',
-        default='',
-        help='Facebook access token'
-    )
-
-    parser.add_argument(
-        '-n',
-        '--number-of-items',
-        default='1',
-        help='Number of items to sync.'
-    )
-
     options_subparser = parser.add_subparsers(
         title="Options",
         description="Sub-options allow you to control smaller aspects of the platform",
         required=False,
         metavar='OPTION',
         dest="opt"
-    )
-
-    sale_option_parser = options_subparser.add_parser("sale", help="sale help")
-    sale_option_parser.add_argument(
-        "sale"
     )
 
     options_subparser.add_parser("clipboard", help="clipboard help")
