@@ -5,7 +5,7 @@ variables:
 
 before_script:
   - python -V  # Print out python version for debugging
-  - pip install -U pip pipenv
+  - pip install -U pip poetry
   - make
 
 stages:
