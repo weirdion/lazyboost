@@ -18,4 +18,4 @@
 __init__ module simply exports essentials.
 """
 
-from .constants import __version__
+from lazyboost.utilities.constants import __version__

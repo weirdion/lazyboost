@@ -1,5 +1,19 @@
-#  LazyBoost
-#  Copyright (C) 2023  Ankit Sadana
+#   LazyBoost
+#   Copyright (C) 2023  Ankit Sadana
+#  #
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#  #
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#  #
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,8 +37,6 @@ __version__ = "0.2.0"
 
 # cli top-level constants
 CLI_NAME = "lazyboost"
-CLI_COMMAND_BACKUP = "backup"
-CLI_COMMAND_RESTORE = "restore"
 
 # log constants
 LOG_DIR = f'.local/share/{CLI_NAME}'
@@ -39,4 +51,10 @@ CONFIG_BACKUP_SUFFIX = '.backup'
 # User data constants
 USER_DATA = f'Downloads/{CLI_NAME}'
 FILE_PREFIX = f'{CLI_NAME}-'
-IMPORT_FACEBOOK_FILE_NAME = f'{CLI_NAME}-facebook-import-%s.csv'
+
+# ETSY constants
+ETSY_AUTH_URL = "https://www.etsy.com/oauth/connect",
+ETSY_TOKEN_URL = "https://openapi.etsy.com/v3/public/oauth/token"
+ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"
+
+# SHOPIFY constants

@@ -21,7 +21,7 @@ Models module contains the data structures and enums.
 from dataclasses import dataclass
 from enum import auto
 
-from lazyboost.utility_base import BaseEnum
+from lazyboost.models import BaseEnum
 
 
 class LazyBoostConfig:

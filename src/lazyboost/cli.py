@@ -21,7 +21,8 @@ cli module handles the creation and use of the cli arguments
 import sys
 from argparse import ArgumentParser, _HelpAction, _SubParsersAction
 
-from lazyboost import command_handler, constants
+from lazyboost import command_handler
+from lazyboost.utilities import constants
 
 
 class _HelpActionLongFormat(_HelpAction):  # pylint: disable=too-few-public-methods

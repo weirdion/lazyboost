@@ -17,14 +17,14 @@
 """
 EtsyHandler contains the handlers to interact with Etsy API.
 """
-from html import unescape
 import logging
+from html import unescape
 from urllib.parse import urljoin
 
 import requests
 
 from lazyboost import log
-from lazyboost.models import EtsyListing, EtsyListingState, LazyEtsyConfig
+from lazyboost.models.legacy_models import EtsyListing, EtsyListingState, LazyEtsyConfig
 
 SERVER_ADDRESS = "https://openapi.etsy.com/v2/"
 

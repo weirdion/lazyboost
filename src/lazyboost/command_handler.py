@@ -20,7 +20,7 @@ Command Handler module handles operations after the cli receives a command
 import logging
 
 from lazyboost import log, clipboard
-from lazyboost.models import LazyConfig, LazyEtsyConfig
+from lazyboost.handlers import OrderHandler, OrdersEnum
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -32,10 +32,12 @@ def parse_received_command(received_args):
     :params received_args: Namespace object received from ArgumentParser use.
     """
     log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
-    if received_args.opt == 'clipboard':
-        clipboard.update_clipboard_tags()
-    else:
-        lazy_config = LazyConfig(
-            etsy_config=LazyEtsyConfig(etsy_token=received_args.etsy_token,
-                                       etsy_shop_id=received_args.etsy_shop_id)
-        )
+    match received_args.opt:
+        case "clipboard":
+            clipboard.update_clipboard_tags()
+        case "orders":
+            OrderHandler(order_sync_type=OrdersEnum(received_args.order_option))
+        case "listings":
+            _cli_logger.info("Listings: Under construction")
+        case _:
+            _cli_logger.error("You seem to be lost.")
