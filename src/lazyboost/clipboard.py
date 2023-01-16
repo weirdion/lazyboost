@@ -39,8 +39,10 @@ def _etsy_description_tags(tag_list: list) -> str:
 
 def _facebook_post_description_tags(tag_list: list) -> str:
     fb_tag_list = []
-    for i in tag_list:
-        fb_tag_list.append("#" + i.replace(" ", "").replace("'", ""))
+    for t in tag_list:
+        no_space_tag = t.replace(" ", "").replace("'", "")
+        if no_space_tag not in fb_tag_list:
+            fb_tag_list.append(f"#{no_space_tag}")
 
     return " ".join(fb_tag_list)
 
