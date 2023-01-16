@@ -18,8 +18,8 @@
 cli module handles the creation and use of the cli arguments
 """
 
-from argparse import ArgumentParser, _HelpAction, _SubParsersAction
 import sys
+from argparse import ArgumentParser, _HelpAction, _SubParsersAction
 
 from lazyboost import command_handler, constants
 
@@ -79,7 +79,40 @@ def create_parser() -> ArgumentParser:
         dest="opt"
     )
 
-    options_subparser.add_parser("clipboard", help="clipboard help")
+    options_subparser.add_parser(
+        "clipboard",
+        help="Takes the clipboard contents and formats them for re-using them on Etsy and Facebook publishing")
+
+    orders_parser = options_subparser.add_parser("orders", help="orders help")
+    order_opt_group = orders_parser.add_mutually_exclusive_group()
+    order_opt_group.add_argument(
+        "-s",
+        "--sync",
+        help="Sync Orders from both Etsy and Shopify with each other (default)",
+        action="store_const",
+        dest="order_option",
+        const="sync",
+        default="sync"
+    )
+    order_opt_group.add_argument(
+        "-e2s",
+        "--etsy-to-shopify",
+        help="Sync Orders from Etsy to Shopify",
+        action="store_const",
+        dest="order_option",
+        const="e2s"
+    )
+    order_opt_group.add_argument(
+        "-s2e",
+        "--shopify-to-etsy",
+        help="Sync Orders from Etsy to Shopify",
+        action="store_const",
+        dest="order_option",
+        const="s2e"
+
+    )
+
+    # listings_parser = options_subparser.add_parser("listings", help="listings help")
 
     return parser
 
