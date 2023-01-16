@@ -1,5 +1,5 @@
 #  LazyBoost
-#  Copyright (C) 2020  Ankit Sadana
+#  Copyright (C) 2023  Ankit Sadana
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ constants module contains constant variables as static references across the pro
 """
 
 # version of the application
-__version__ = "0.0.1"
+__version__ = "0.2.0"
 
 # cli top-level constants
 CLI_NAME = "lazyboost"

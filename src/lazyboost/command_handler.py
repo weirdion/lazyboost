@@ -1,5 +1,5 @@
 #  LazyBoost
-#  Copyright (C) 2020  Ankit Sadana
+#  Copyright (C) 2023  Ankit Sadana
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ Command Handler module handles operations after the cli receives a command
 """
 import logging
 
-from lazyboost import etsy_handler, facebook_handler, log, clipboard
-from lazyboost.models import LazyConfig, LazyEtsyConfig, LazyFacebookConfig
+from lazyboost import log, clipboard
+from lazyboost.models import LazyConfig, LazyEtsyConfig
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -37,19 +37,5 @@ def parse_received_command(received_args):
     else:
         lazy_config = LazyConfig(
             etsy_config=LazyEtsyConfig(etsy_token=received_args.etsy_token,
-                                       etsy_shop_id=received_args.etsy_shop_id),
-            facebook_config=LazyFacebookConfig(facebook_token=received_args.facebook_token)
+                                       etsy_shop_id=received_args.etsy_shop_id)
         )
-        convert_etsy_listing_to_facebook_import_csv(lazy_config=lazy_config,
-                                                    number_of_items_to_sync=received_args.number_of_items)
-
-
-def convert_etsy_listing_to_facebook_import_csv(lazy_config: LazyConfig,
-                                                number_of_items_to_sync: int):
-    """
-    :param lazy_config: LazyConfig, combined object that contains configs for both Etsy and Facebook
-    :param number_of_items_to_sync: int, number of items to be synced from Etsy to Facebook
-    """
-    etsy_listings = etsy_handler.get_active_listings(config=lazy_config.etsy_config,
-                                                     number_of_items_to_sync=number_of_items_to_sync)
-    facebook_handler.generate_facebook_import_csv(etsy_listings=etsy_listings)
