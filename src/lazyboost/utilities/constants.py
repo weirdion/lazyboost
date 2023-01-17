@@ -55,6 +55,7 @@ FILE_PREFIX = f'{CLI_NAME}-'
 # ETSY constants
 ETSY_AUTH_URL = "https://www.etsy.com/oauth/connect",
 ETSY_TOKEN_URL = "https://openapi.etsy.com/v3/public/oauth/token"
+ETSY_AUTH_BASE_URL = "https://openapi.etsy.com/v3"
 ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"
 
 # SHOPIFY constants
