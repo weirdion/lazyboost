@@ -25,12 +25,11 @@ from urllib.parse import urljoin
 import requests
 
 from lazyboost import log, models
+from lazyboost.models.etsy_client import EtsyClient
 from lazyboost.utilities import constants, utility_base
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
-
-ETSY_GET_SHOP_RECEIPTS = "shops/{shop_id}/receipts"
 
 
 class OrdersEnum(models.BaseEnum):
@@ -46,23 +45,10 @@ class OrderHandler:
         _cli_logger.info(order_sync_type)
 
         dotenv_variables = utility_base.get_dotenv_variables()
-        self.etsy_shop_id = dotenv_variables["ETSY_SHOP_ID"]
-        self.etsy_key_string = dotenv_variables["ETSY_KEY_STRING"]
+        self.etsy_client = EtsyClient(dotenv_variables)
+
         self._get_etsy_orders()
 
     def _get_etsy_orders(self):
-        etsy_receipts_url_with_shop_id = ETSY_GET_SHOP_RECEIPTS.format(shop_id=self.etsy_shop_id)
-        etsy_receipts_url = urljoin(constants.ETSY_API_BASE_URL, etsy_receipts_url_with_shop_id)
-        _cli_logger.info(f"ETSY_URL: {etsy_receipts_url}")
-
-        api_headers = {
-            "x-api-key": self.etsy_key_string,
-            "ContentType": "application/json"
-        }
-        api_params = {
-            "min_created": int(round((datetime.now() - timedelta(days=1)).timestamp())),
-            "max_created": int(round(datetime.now().timestamp())),
-            "was_shipped": False
-        }
-        response = requests.get(etsy_receipts_url, headers=api_headers, params=api_params)
-        _cli_logger.info(response.json())
+        response = self.etsy_client.get_shop_receipts()
+        _cli_logger.info(f"Etsy orders: {response}")

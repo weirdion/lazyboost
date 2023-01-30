@@ -34,13 +34,12 @@ utility base module contains essential helper functions.
 NOTE: Things that require utility_base to initialize (like logging) should be avoided in this
 class to avoid circular dependencies.
 """
-import enum
 import json
 import os
 import sys
 from datetime import datetime
 
-from dotenv import dotenv_values
+from dotenv import dotenv_values, set_key
 
 from lazyboost.models import BaseEnum
 
@@ -147,3 +146,10 @@ def get_dotenv_variables() -> dict:
     :return dict, key-value pairs from .env file
     """
     return dotenv_values(".env")
+
+
+def set_dotenv_variable(key: str, value: str):
+    """
+    Function that uses python-dotenv to write to .env file.
+    """
+    return set_key(".env", key, value)
