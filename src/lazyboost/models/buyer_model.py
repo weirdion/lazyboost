@@ -15,6 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -26,3 +27,15 @@ class Buyer:
     address_city: str
     address_state: str
     address_zip: str
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'Buyer':
+        _name = str(obj.get("name"))
+        _email = str(obj.get("buyer_email"))
+        _address_first_line = str(obj.get("first_line"))
+        _address_second_line = str(obj.get("second_line"))
+        _address_city = str(obj.get("city"))
+        _address_state = str(obj.get("state"))
+        _address_zip = str(obj.get("zip"))
+        return Buyer(_name, _email, _address_first_line, _address_second_line,
+                     _address_city, _address_state, _address_zip)
