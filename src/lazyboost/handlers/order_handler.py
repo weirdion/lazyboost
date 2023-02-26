@@ -19,12 +19,15 @@
 OrderHandler module handles operations related to order sync
 """
 import json
+import sys
 from enum import auto
+from typing import List
 
 from lazyboost import log, models
 from lazyboost.models.buyer_model import Buyer
 from lazyboost.clients.etsy_client import EtsyClient
 from lazyboost.models.etsy_order import EtsyTransaction, EtsyOrder
+from lazyboost.clients.shopify_client import ShopifyClient
 from lazyboost.utilities import utility_base
 from lazyboost.utilities.utility_etsy import get_float_amount
 
@@ -46,11 +49,27 @@ class OrderHandler:
 
         dotenv_variables = utility_base.get_dotenv_variables()
         self.etsy_client = EtsyClient(dotenv_variables)
+        self.shopify_client = ShopifyClient(dotenv_variables)
 
-        etsy_orders = self._get_etsy_orders()
+        match order_sync_type:
+            case OrdersEnum.SYNC:
+                etsy_orders = self._get_etsy_orders()
+                if not etsy_orders:
+                    _cli_logger.info("No Etsy open orders detected.")
 
-    def _get_etsy_orders(self):
-        response = self.etsy_client.get_shop_receipts()
+                _sync_etsy_orders(etsy_orders)
+            case OrdersEnum.ETSY_TO_SHOPIFY:
+                pass
+            case OrdersEnum.SHOPIFY_TO_ETSY:
+                pass
+            case _:
+                _cli_logger.error("Unknown type of order detected, exiting...")
+                sys.exit(1)
+
+    def _get_etsy_orders(self) -> List[EtsyOrder]:
+        # response = self.etsy_client.get_shop_receipts()
+        with open("sample-reponse.json") as f:
+            response = json.load(f)
         etsy_orders = []
         for r in response["results"]:
             e = EtsyOrder.from_dict(r)
@@ -58,3 +77,8 @@ class OrderHandler:
             _cli_logger.info(f"Adding etsy order: {e}")
             etsy_orders.append(e)
         return etsy_orders
+
+    def _sync_etsy_orders(self, etsy_orders: List[EtsyOrder]):
+        for order in etsy_orders:
+            sc = self.shopify_client.is_existing_customer(order.buyer)
+            _cli_logger.info(f"shopify customer: {sc}")
