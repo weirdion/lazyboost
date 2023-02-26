@@ -145,7 +145,7 @@ def get_dotenv_variables() -> dict:
     Function that uses python-dotenv to read from .env file and return dict.
     :return dict, key-value pairs from .env file
     """
-    return dotenv_values(".env")
+    return dotenv_values("./../../.env")
 
 
 def set_dotenv_variable(key: str, value: str):

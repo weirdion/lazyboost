@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 from lazyboost.models.buyer_model import Buyer
@@ -43,4 +43,7 @@ class EtsyOrder:
     sale_shipping_cost: float
     sale_tax_cost: float
     sale_discount_cost: float
-    transactions: List[EtsyTransaction]
+    transactions: List[EtsyTransaction] = field(init=False)
+
+    def __post_init__(self):
+        self.transactions = []

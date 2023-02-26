@@ -18,15 +18,14 @@
 """
 OrderHandler module handles operations related to order sync
 """
-from datetime import datetime, timedelta
 from enum import auto
-from urllib.parse import urljoin
-
-import requests
 
 from lazyboost import log, models
+from lazyboost.models.buyer_model import Buyer
 from lazyboost.models.etsy_client import EtsyClient
-from lazyboost.utilities import constants, utility_base
+from lazyboost.models.etsy_order import EtsyTransaction, EtsyOrder
+from lazyboost.utilities import utility_base
+from lazyboost.utilities.utility_etsy import get_float_amount
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -51,4 +50,40 @@ class OrderHandler:
 
     def _get_etsy_orders(self):
         response = self.etsy_client.get_shop_receipts()
-        _cli_logger.info(f"Etsy orders: {response}")
+        etsy_orders = []
+        for r in response["results"]:
+            e = EtsyOrder(
+                receipt_id=r["receipt_id"],
+                buyer=Buyer(
+                    name=r["name"],
+                    email=r["buyer_email"],
+                    address_first_line=r["first_line"],
+                    address_second_line=r["second_line"],
+                    address_city=r["city"],
+                    address_state=r["state"],
+                    address_zip=r["zip"]
+                ),
+                message_from_buyer=r["message_from_buyer"],
+                is_shipped=r["is_shipped"],
+                create_timestamp=r["create_timestamp"],
+                update_timestamp=r["update_timestamp"],
+                is_gift=r["is_gift"],
+                gift_message=r["gift_message"],
+                sale_total_cost=get_float_amount(r["grandtotal"]),
+                sale_subtotal_cost=get_float_amount(r["subtotal"]),
+                sale_shipping_cost=get_float_amount(r["total_shipping_cost"]),
+                sale_tax_cost=get_float_amount(r["total_tax_cost"]),
+                sale_discount_cost=get_float_amount(r["discount_amt"])
+            )
+            for t in r["transactions"]:
+                e.transactions.append(
+                    EtsyTransaction(
+                        product_sku=t["sku"],
+                        product_quantity=t["quantity"],
+                        product_price=get_float_amount(t["price"]),
+                        product_shipping_cost=get_float_amount(t["shipping_cost"])
+                    )
+                )
+
+            _cli_logger.info(f"Adding etsy order: {e}")
+            etsy_orders.append(e)
