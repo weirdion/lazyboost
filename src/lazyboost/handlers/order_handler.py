@@ -18,11 +18,12 @@
 """
 OrderHandler module handles operations related to order sync
 """
+import json
 from enum import auto
 
 from lazyboost import log, models
 from lazyboost.models.buyer_model import Buyer
-from lazyboost.models.etsy_client import EtsyClient
+from lazyboost.clients.etsy_client import EtsyClient
 from lazyboost.models.etsy_order import EtsyTransaction, EtsyOrder
 from lazyboost.utilities import utility_base
 from lazyboost.utilities.utility_etsy import get_float_amount
@@ -87,3 +88,4 @@ class OrderHandler:
 
             _cli_logger.info(f"Adding etsy order: {e}")
             etsy_orders.append(e)
+        return etsy_orders
