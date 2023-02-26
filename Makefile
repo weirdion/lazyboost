@@ -28,7 +28,7 @@ lint-ci:
 
 # Create a job to check for vulnerable packages installed
 package-check:
-	pipenv check
+	poetry run safety check
 
 # Create a job for running tests on src folder and print coverage to cli
 test:

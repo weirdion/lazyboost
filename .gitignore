@@ -317,4 +317,7 @@ poetry.toml
 .history
 .ionide
 
+# Ignore .env file to avoid secrets getting committed
+.env
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,python,pycharm,visualstudiocode,poetry
