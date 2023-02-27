@@ -19,6 +19,8 @@ from dataclasses import dataclass
 from typing import Any
 from typing import List
 
+from lazyboost.models.etsy_buyer_model import EtsyBuyer
+
 
 @dataclass
 class Address:
@@ -39,6 +41,15 @@ class Address:
     country_code: str
     country_name: str
     default: bool
+
+    def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
+        if etsy_buyer.name != f"{self.first_name} {self.last_name}" or \
+                etsy_buyer.address_first_line != self.address1 or \
+                etsy_buyer.address_second_line != self.address2 or \
+                etsy_buyer.address_city != self.city or \
+                etsy_buyer.address_state != self.province_code:
+            return False
+        return True
 
     @staticmethod
     def from_dict(obj: Any) -> 'Address':
@@ -67,51 +78,6 @@ class Address:
 
 
 @dataclass
-class DefaultAddress:
-    id: int
-    customer_id: int
-    first_name: str
-    last_name: str
-    company: str
-    address1: str
-    address2: str
-    city: str
-    province: str
-    country: str
-    zip: str
-    phone: str
-    name: str
-    province_code: str
-    country_code: str
-    country_name: str
-    default: bool
-
-    @staticmethod
-    def from_dict(obj: Any) -> 'DefaultAddress':
-        _id = int(obj.get("id"))
-        _customer_id = int(obj.get("customer_id"))
-        _first_name = str(obj.get("first_name"))
-        _last_name = str(obj.get("last_name"))
-        _company = str(obj.get("company"))
-        _address1 = str(obj.get("address1"))
-        _address2 = str(obj.get("address2"))
-        _city = str(obj.get("city"))
-        _province = str(obj.get("province"))
-        _country = str(obj.get("country"))
-        _zip = str(obj.get("zip"))
-        _phone = str(obj.get("phone"))
-        _name = str(obj.get("name"))
-        _province_code = str(obj.get("province_code"))
-        _country_code = str(obj.get("country_code"))
-        _country_name = str(obj.get("country_name"))
-        _default = bool(obj.get("default"))
-        return DefaultAddress(_id, _customer_id, _first_name, _last_name,
-                              _company, _address1, _address2, _city,
-                              _province, _country, _zip, _phone, _name,
-                              _province_code, _country_code, _country_name, _default)
-
-
-@dataclass
 class ShopifyCustomer:
     id: int
     email: str
@@ -120,13 +86,13 @@ class ShopifyCustomer:
     orders_count: int
     state: str
     total_spent: str
-    last_order_id: int
+    last_order_id: str
     tags: str
     last_order_name: str
     currency: str
     phone: str
     addresses: List[Address]
-    default_address: DefaultAddress
+    default_address: Address
 
     @staticmethod
     def from_dict(obj: Any) -> 'ShopifyCustomer':
@@ -143,7 +109,7 @@ class ShopifyCustomer:
         _currency = str(obj.get("currency"))
         _phone = str(obj.get("phone"))
         _addresses = [Address.from_dict(y) for y in obj.get("addresses")]
-        _default_address = DefaultAddress.from_dict(obj.get("default_address").attributes)
+        _default_address = Address.from_dict(obj.get("default_address"))
         return ShopifyCustomer(_id, _email, _first_name, _last_name, _orders_count,
                                _state, _total_spent, _last_order_id, _tags, _last_order_name,
                                _currency, _phone, _addresses, _default_address)

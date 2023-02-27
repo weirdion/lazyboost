@@ -19,7 +19,7 @@ from typing import Any
 
 
 @dataclass
-class Buyer:
+class EtsyBuyer:
     name: str
     email: str
     address_first_line: str
@@ -29,7 +29,7 @@ class Buyer:
     address_zip: str
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Buyer':
+    def from_dict(obj: Any) -> 'EtsyBuyer':
         _name = str(obj.get("name"))
         _email = str(obj.get("buyer_email"))
         _address_first_line = str(obj.get("first_line"))
@@ -37,5 +37,5 @@ class Buyer:
         _address_city = str(obj.get("city"))
         _address_state = str(obj.get("state"))
         _address_zip = str(obj.get("zip"))
-        return Buyer(_name, _email, _address_first_line, _address_second_line,
-                     _address_city, _address_state, _address_zip)
+        return EtsyBuyer(_name, _email, _address_first_line, _address_second_line,
+                         _address_city, _address_state, _address_zip)

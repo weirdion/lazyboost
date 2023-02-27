@@ -17,7 +17,7 @@
 from dataclasses import dataclass, field
 from typing import List, Any
 
-from lazyboost.models.buyer_model import Buyer
+from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.utilities.utility_etsy import get_float_amount
 
 
@@ -41,7 +41,7 @@ class EtsyTransaction:
 @dataclass
 class EtsyOrder:
     receipt_id: int
-    buyer: Buyer
+    buyer: EtsyBuyer
     message_from_buyer: str
     is_shipped: bool
     create_timestamp: int
@@ -58,7 +58,7 @@ class EtsyOrder:
     @staticmethod
     def from_dict(obj: Any) -> 'EtsyOrder':
         _receipt_id = int(obj.get("receipt_id"))
-        _buyer = Buyer.from_dict(obj)
+        _buyer = EtsyBuyer.from_dict(obj)
         _message_from_buyer = str(obj.get("message_from_buyer"))
         _is_shipped = bool(obj.get("is_shipped"))
         _create_timestamp = int(obj.get("create_timestamp"))

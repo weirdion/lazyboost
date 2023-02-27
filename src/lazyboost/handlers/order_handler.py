@@ -24,12 +24,10 @@ from enum import auto
 from typing import List
 
 from lazyboost import log, models
-from lazyboost.models.buyer_model import Buyer
 from lazyboost.clients.etsy_client import EtsyClient
-from lazyboost.models.etsy_order import EtsyTransaction, EtsyOrder
 from lazyboost.clients.shopify_client import ShopifyClient
+from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.utilities import utility_base
-from lazyboost.utilities.utility_etsy import get_float_amount
 
 _cli_logger = log.console_logger()
 _logger = log.create_logger(__name__)
@@ -57,7 +55,7 @@ class OrderHandler:
                 if not etsy_orders:
                     _cli_logger.info("No Etsy open orders detected.")
 
-                _sync_etsy_orders(etsy_orders)
+                self._sync_etsy_orders(etsy_orders)
             case OrdersEnum.ETSY_TO_SHOPIFY:
                 pass
             case OrdersEnum.SHOPIFY_TO_ETSY:
@@ -80,5 +78,14 @@ class OrderHandler:
 
     def _sync_etsy_orders(self, etsy_orders: List[EtsyOrder]):
         for order in etsy_orders:
+
+            # TODO: Is order already synced?
+
             sc = self.shopify_client.is_existing_customer(order.buyer)
-            _cli_logger.info(f"shopify customer: {sc}")
+            if sc:
+                self.shopify_client.update_customer(order.buyer, sc)
+                customer_id = sc.id
+            else:
+                customer_id = self.shopify_client.create_customer(order.buyer)
+
+            self.shopify_client.create_order(order, customer_id)
