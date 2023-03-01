@@ -15,9 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from dataclasses import dataclass
-from typing import List
+from typing import List, Any
 
-from lazyboost.models.buyer_model import Buyer
+from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from lazyboost.utilities.utility_etsy import get_float_amount
 
 
 @dataclass
@@ -27,11 +28,20 @@ class EtsyTransaction:
     product_price: float
     product_shipping_cost: float
 
+    @staticmethod
+    def from_dict(obj: Any) -> 'EtsyTransaction':
+        _product_sku = str(obj.get("sku"))
+        _product_quantity = int(obj.get("quantity"))
+        _product_price = float(get_float_amount(obj.get("price")))
+        _product_shipping_cost = float(get_float_amount(obj.get("shipping_cost")))
+        return EtsyTransaction(_product_sku, _product_quantity, _product_price,
+                               _product_shipping_cost)
+
 
 @dataclass
 class EtsyOrder:
     receipt_id: int
-    buyer: Buyer
+    buyer: EtsyBuyer
     message_from_buyer: str
     is_shipped: bool
     create_timestamp: int
@@ -44,3 +54,23 @@ class EtsyOrder:
     sale_tax_cost: float
     sale_discount_cost: float
     transactions: List[EtsyTransaction]
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'EtsyOrder':
+        _receipt_id = int(obj.get("receipt_id"))
+        _buyer = EtsyBuyer.from_dict(obj)
+        _message_from_buyer = str(obj.get("message_from_buyer"))
+        _is_shipped = bool(obj.get("is_shipped"))
+        _create_timestamp = int(obj.get("create_timestamp"))
+        _update_timestamp = int(obj.get("update_timestamp"))
+        _is_gift = bool(obj.get("is_gift"))
+        _gift_message = str(obj.get("gift_message"))
+        _sale_total_cost = float(get_float_amount(obj.get("grandtotal")))
+        _sale_subtotal_cost = float(get_float_amount(obj.get("subtotal")))
+        _sale_shipping_cost = float(get_float_amount(obj.get("total_shipping_cost")))
+        _sale_tax_cost = float(get_float_amount(obj.get("total_tax_cost")))
+        _sale_discount_cost = float(get_float_amount(obj.get("discount_amt")))
+        _transactions = [EtsyTransaction.from_dict(y) for y in obj.get("transactions")]
+        return EtsyOrder(_receipt_id, _buyer, _message_from_buyer, _is_shipped, _create_timestamp, _update_timestamp,
+                         _is_gift, _gift_message, _sale_total_cost, _sale_subtotal_cost, _sale_shipping_cost,
+                         _sale_tax_cost, _sale_discount_cost, _transactions)

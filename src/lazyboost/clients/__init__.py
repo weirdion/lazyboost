@@ -14,15 +14,3 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from dataclasses import dataclass
-
-
-@dataclass
-class Buyer:
-    name: str
-    email: str
-    address_first_line: str
-    address_second_line: str
-    address_city: str
-    address_state: str
-    address_zip: str

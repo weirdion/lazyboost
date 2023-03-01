@@ -129,3 +129,7 @@ def main():
 
     args = create_parser().parse_args()
     command_handler.parse_received_command(args)
+
+
+if __name__ == "__main__":
+    main()
