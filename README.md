@@ -1,9 +1,6 @@
 # LazyBoost
 
-Python application to pull and sync Orders and Listings between Shopify and Etsy. 
-
-## Features
-
+Python application to pull and sync Orders and Listings between Shopify and Etsy.
 
 ## Dependencies
 
