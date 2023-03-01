@@ -123,7 +123,7 @@ class EtsyClient:
         log.info("Retrieving shop transactions...")
         path = f"shops/{self.shop_id}/receipts"
         response = self._http_oauth_request("GET", path, params={
-            "min_created": int(round((datetime.now() - timedelta(days=4)).timestamp())),
+            "min_created": int(round((datetime.now() - timedelta(days=1)).timestamp())),
             "max_created": int(round(datetime.now().timestamp())),
             "sort_order": "ascending",
             "was_shipped": False

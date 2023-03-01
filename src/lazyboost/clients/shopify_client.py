@@ -28,11 +28,20 @@ log = console_logger()
 
 class ShopifyClient:
     def __init__(self, dotenv_variables: dict):
-        self.shop_url = dotenv_variables["SHOPIFY_TEST_SHOP_URL"]
         self.api_version = dotenv_variables["SHOPIFY_API_VERSION"]
-        self.api_key = dotenv_variables["SHOPIFY_TEST_API_KEY"]
-        self.client_secret = dotenv_variables["SHOPIFY_TEST_CLIENT_SECRET"]
-        self.access_token = dotenv_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
+        self.is_test_mode = True if dotenv_variables["SHOPIFY_TEST_MODE"].lower() == "true" else False
+
+        if self.is_test_mode:
+            self.shop_url = dotenv_variables["SHOPIFY_TEST_SHOP_URL"]
+            self.api_key = dotenv_variables["SHOPIFY_TEST_API_KEY"]
+            self.client_secret = dotenv_variables["SHOPIFY_TEST_CLIENT_SECRET"]
+            self.access_token = dotenv_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
+        else:
+            self.shop_url = dotenv_variables["SHOPIFY_SHOP_URL"]
+            self.api_key = dotenv_variables["SHOPIFY_CUSTOM_API_KEY"]
+            self.client_secret = dotenv_variables["SHOPIFY_CUSTOM_SECRET_KEY"]
+            self.access_token = dotenv_variables["SHOPIFY_CUSTOM_ACCESS_TOKEN"]
+
         log.info("Initiating Shopify session")
         self.session = shopify.Session(self.shop_url, self.api_version, self.access_token)
         shopify.ShopifyResource.activate_session(self.session)
