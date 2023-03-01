@@ -27,6 +27,7 @@ class EtsyBuyer:
     address_city: str
     address_state: str
     address_zip: str
+    address_country_code: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'EtsyBuyer':
@@ -37,5 +38,20 @@ class EtsyBuyer:
         _address_city = str(obj.get("city"))
         _address_state = str(obj.get("state"))
         _address_zip = str(obj.get("zip"))
+        _address_country_code = str(obj.get("country_iso"))
         return EtsyBuyer(_name, _email, _address_first_line, _address_second_line,
-                         _address_city, _address_state, _address_zip)
+                         _address_city, _address_state, _address_zip, _address_country_code)
+
+    def to_shopify_address(self) -> dict:
+        (buyer_name1, buyer_name2) = self.name.rsplit(" ", 1)
+        return {
+            "address1": self.address_first_line,
+            "address2": self.address_second_line,
+            "city": self.address_city,
+            "first_name": buyer_name1,
+            "last_name": buyer_name2,
+            "zip": self.address_zip,
+            "name": self.name,
+            "province_code": self.address_state,
+            "country_code": self.address_country_code,
+        }

@@ -15,7 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Any
 from typing import List
 
@@ -75,6 +75,11 @@ class Address:
                        _company, _address1, _address2, _city, _province,
                        _country, _zip, _phone, _name, _province_code, _country_code,
                        _country_name, _default)
+
+    def to_order_dict(self) -> dict:
+        return {
+            k: str(v) for k, v in asdict(self).items() if k and k not in ["id", "customer_id", "default"]
+        }
 
 
 @dataclass

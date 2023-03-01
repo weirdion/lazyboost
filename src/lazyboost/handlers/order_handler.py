@@ -45,9 +45,9 @@ class OrderHandler:
         super().__init__()
         _cli_logger.info(order_sync_type)
 
-        dotenv_variables = utility_base.get_dotenv_variables()
-        self.etsy_client = EtsyClient(dotenv_variables)
-        self.shopify_client = ShopifyClient(dotenv_variables)
+        self.dotenv_variables = utility_base.get_dotenv_variables()
+        self.etsy_client = EtsyClient(self.dotenv_variables)
+        self.shopify_client = ShopifyClient(self.dotenv_variables)
 
         match order_sync_type:
             case OrdersEnum.SYNC:
@@ -65,9 +65,13 @@ class OrderHandler:
                 sys.exit(1)
 
     def _get_etsy_orders(self) -> List[EtsyOrder]:
-        # response = self.etsy_client.get_shop_receipts()
-        with open("sample-reponse.json") as f:
-            response = json.load(f)
+        # TODO: Uncomment this before deploying
+        response = self.etsy_client.get_shop_receipts()
+
+        # TODO: Remove this before deploying
+        # with open("sample-reponse.json") as f:
+        #     response = json.load(f)
+
         etsy_orders = []
         for r in response["results"]:
             e = EtsyOrder.from_dict(r)
@@ -79,10 +83,15 @@ class OrderHandler:
     def _sync_etsy_orders(self, etsy_orders: List[EtsyOrder]):
         for order in etsy_orders:
 
-            # TODO: Is order already synced?
+            order_id = self.shopify_client.does_order_exist(order.receipt_id)
+
+            if order_id:
+                _cli_logger.info(f"Order Id: {order_id} already exists, skipping")
+                continue
 
             sc = self.shopify_client.is_existing_customer(order.buyer)
             if sc:
+                _cli_logger.info(f"Existing customer: {sc.id} placed an order.")
                 self.shopify_client.update_customer(order.buyer, sc)
                 customer_id = sc.id
             else:

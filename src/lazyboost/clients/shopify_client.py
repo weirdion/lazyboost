@@ -21,6 +21,7 @@ import shopify
 
 from lazyboost.log import console_logger
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
 
 log = console_logger()
@@ -82,21 +83,9 @@ class ShopifyClient:
     def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
         log.info(f"Adding new address for {shopify_customer_id}")
 
-        (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
         response = shopify.Customer.post(f"{shopify_customer_id}/addresses",
                                          body=json.dumps({
-                                             "address": {
-                                                 "address1": etsy_buyer.address_first_line,
-                                                 "address2": etsy_buyer.address_second_line,
-                                                 "city": etsy_buyer.address_city,
-                                                 "first_name": buyer_name1,
-                                                 "last_name": buyer_name2,
-                                                 "zip": etsy_buyer.address_zip,
-                                                 "name": etsy_buyer.name,
-                                                 "province_code": etsy_buyer.address_state,
-                                                 "country_code": "US",
-                                                 "default": True
-                                             }
+                                             "address": etsy_buyer.to_shopify_address()
                                          }).encode("utf-8"))
         log.info(f"update customer response: {response}")
 
@@ -115,12 +104,93 @@ class ShopifyClient:
         self.add_customer_address(etsy_buyer, new_customer.id)
         return new_customer.id
 
-    def create_order(self, order, customer_id):
-        pass
+    def get_product_id(self, product_sku: str):
+        res = shopify.GraphQL().execute(
+            query="""
+            query($filter: String!) {
+              productVariants(first: 1, query: $filter) {
+                edges {
+                  node {
+                    id
+                    sku
+                    title
+                  }
+                }
+              }
+            }
+            """,
+            variables={"filter": f"sku:{product_sku}"}
+        )
+        return json.loads(res)["data"]["productVariants"]["edges"][0]["node"]["id"].rsplit("/", 1)[-1]
 
-    # use customer id or new customer info to create an order
-    # mark it paid
-    # add a tag to signify the lazyboost import
-    # ensure gift message and gift pref is carried
-    # ensure discounts are carried
-    # ensure shipping, tax and totals are carried
+    def does_order_exist(self, receipt_id: int) -> str:
+        res = shopify.GraphQL().execute(
+            query="""
+            query($filter: String!) {
+              orders(first: 1, query: $filter) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+            """,
+            variables={"filter": f"tag:ETSY_{receipt_id}"}
+        )
+        orders_found = json.loads(res)["data"]["orders"]["edges"]
+        return orders_found[0]["node"]["id"].rsplit("/", 1)[-1] if orders_found else ""
+
+    def create_order(self, etsy_order: EtsyOrder, customer_id):
+        log.info(f"Creating a new shopify order for customer: {customer_id}")
+        # self.get_product(etsy_order.transactions[0].product_sku)
+        new_order = shopify.Order.create({
+            "email": etsy_order.buyer.email,
+            "billing_address": etsy_order.buyer.to_shopify_address(),
+            "customer": {"id": customer_id},
+            "inventory_behaviour": "decrement_obeying_policy",
+            "financial_status": "paid",
+            "fulfillment_status": None,
+            "line_items": [
+                {
+                    "variant_id": self.get_product_id(t.product_sku),
+                    "sku": t.product_sku,
+                    "quantity": t.product_quantity,
+                    "requires_shipping": True,
+                    "price": t.product_price,
+                    "properties": {
+                        "message": etsy_order.message_from_buyer
+                    } if etsy_order.message_from_buyer else []
+                } for t in etsy_order.transactions
+            ],
+            "note": f"Gift Message: {etsy_order.gift_message}" if etsy_order.is_gift else "",
+            "send_receipt": True,
+            "shipping_address": etsy_order.buyer.to_shopify_address(),
+            "shipping_lines": [{
+                "title": "Standard Shipping",
+                "price": etsy_order.sale_shipping_cost
+            }],
+            "source_name": "Etsy",
+            "source_identifier": etsy_order.receipt_id,
+            "subtotal_price": etsy_order.sale_subtotal_cost,
+            "tags": f"LazyBoost, ETSY_{etsy_order.receipt_id}",
+            "tax_lines": [{
+                "title": "Etsy Sales Tax",
+                "price": etsy_order.sale_tax_cost,
+                "rate": round(etsy_order.sale_tax_cost / etsy_order.sale_subtotal_cost, 2),
+                "channel_liable": None
+            }],
+            "total_discounts": etsy_order.sale_discount_cost,
+            "total_price": etsy_order.sale_total_cost,
+            "total_tax": etsy_order.sale_tax_cost,
+            "transactions": [{
+                "amount": etsy_order.sale_total_cost,
+                "currency": "USD",
+                "kind": "capture",
+                "status": "success",
+                "gateway": "Etsy Checkout"
+            }]
+        })
+        log.info(f"Shopify order: {new_order}")
+        if new_order.errors:
+            log.error(f"Error occurred during order creation: {new_order.errors.errors}")

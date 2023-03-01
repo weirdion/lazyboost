@@ -14,7 +14,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Any
 
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
