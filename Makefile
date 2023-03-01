@@ -5,7 +5,7 @@ default: dependency-develop
 
 # Create a job that deploys this application to the system
 install:
-	echo "Not yet available"
+	poetry run pip instll -e .
 
 # Create a job to install dependencies needed for production
 dependency-prod:

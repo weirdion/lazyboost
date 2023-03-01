@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "lazyboost"
 version = "0.2.0"
-description = "Python app to quickly sync between etsy and shopify platforms"
+description = "Python application to pull and sync Orders and Listings between Shopify and Etsy."
 authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -11,7 +11,6 @@ keywords = ["python", "e-commerce", "etsy", "shopify"]
 python = "^3.10"
 requests = "^2.28.2"
 pyperclip = "^1.8.2"
-boto3 = "^1.26.50"
 python-dotenv = "^0.21.0"
 shopifyapi = "^12.2.0"
 
