@@ -286,7 +286,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -453,5 +452,8 @@ poetry.toml
 # Ignore all local history of files
 .history
 .ionide
+
+# CDK
+cdk.out
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,python,pycharm,visualstudiocode,node
