@@ -20,7 +20,7 @@ from urllib.parse import urljoin
 import requests
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.log import console_logger
+from lazyboost.utilities.log import console_logger
 from lazyboost.utilities import constants
 
 log = console_logger()

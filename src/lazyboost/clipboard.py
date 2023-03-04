@@ -16,7 +16,7 @@
 
 import pyperclip
 
-from lazyboost import log
+from lazyboost.utilities import log
 
 _cli_logger = log.console_logger()
 

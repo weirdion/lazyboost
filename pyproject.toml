@@ -6,12 +6,15 @@ authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 keywords = ["python", "e-commerce", "etsy", "shopify"]
+packages = [
+    { include = "src" }
+]
 exclude = [
     { path = "infra" }
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">3.9"
 requests = "^2.28.2"
 pyperclip = "^1.8.2"
 shopifyapi = "^12.2.0"

@@ -18,8 +18,9 @@
 Command Handler module handles operations after the cli receives a command
 """
 
-from lazyboost import log, clipboard
+from lazyboost import clipboard
 from lazyboost.handlers import OrderHandler, OrdersEnum
+from lazyboost.utilities import log
 
 _cli_logger = log.console_logger()
 
