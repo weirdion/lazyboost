@@ -121,7 +121,9 @@ class ShopifyClient:
             """,
             variables={"filter": f"sku:{product_sku}"}
         )
-        return json.loads(res)["data"]["productVariants"]["edges"][0]["node"]["id"].rsplit("/", 1)[-1]
+        products = json.loads(res)["data"]["productVariants"]["edges"]
+        log.info(f"Product found: {products}")
+        return products[0]["node"]["id"].rsplit("/", 1)[-1]
 
     def does_order_exist(self, receipt_id: int) -> str:
         res = shopify.GraphQL().execute(
@@ -143,7 +145,6 @@ class ShopifyClient:
 
     def create_order(self, etsy_order: EtsyOrder, customer_id):
         log.info(f"Creating a new shopify order for customer: {customer_id}")
-        # self.get_product(etsy_order.transactions[0].product_sku)
         new_order = shopify.Order.create({
             "email": etsy_order.buyer.email,
             "billing_address": etsy_order.buyer.to_shopify_address(),

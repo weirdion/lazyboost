@@ -89,6 +89,7 @@ class OrderHandler:
                 _cli_logger.info(f"Order Id: {order_id} already exists, skipping")
                 continue
 
+            _cli_logger.info(f"New order detected: {order_id}")
             sc = self.shopify_client.is_existing_customer(order.buyer)
             if sc:
                 _cli_logger.info(f"Existing customer: {sc.id} placed an order.")
