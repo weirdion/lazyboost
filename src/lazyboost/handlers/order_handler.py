@@ -18,19 +18,18 @@
 """
 OrderHandler module handles operations related to order sync
 """
-import json
 import sys
 from enum import auto
 from typing import List
 
 from lazyboost import log, models
 from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.clients.shopify_client import ShopifyClient
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.utilities import utility_base
 
 _cli_logger = log.console_logger()
-_logger = log.create_logger(__name__)
 
 
 class OrdersEnum(models.BaseEnum):
@@ -43,11 +42,11 @@ class OrderHandler:
 
     def __init__(self, order_sync_type: OrdersEnum) -> None:
         super().__init__()
-        _cli_logger.info(order_sync_type)
+        _cli_logger.info(f"Initializing OrderHandler for: {order_sync_type}")
 
-        self.dotenv_variables = utility_base.get_dotenv_variables()
-        self.etsy_client = EtsyClient(self.dotenv_variables)
-        self.shopify_client = ShopifyClient(self.dotenv_variables)
+        self.secret_manager_client = SecretManagerClient()
+        self.etsy_client = EtsyClient(self.secret_manager_client)
+        self.shopify_client = ShopifyClient(self.secret_manager_client)
 
         match order_sync_type:
             case OrdersEnum.SYNC:
@@ -65,12 +64,7 @@ class OrderHandler:
                 sys.exit(1)
 
     def _get_etsy_orders(self) -> List[EtsyOrder]:
-        # TODO: Uncomment this before deploying
         response = self.etsy_client.get_shop_receipts()
-
-        # TODO: Remove this before deploying
-        # with open("sample-reponse.json") as f:
-        #     response = json.load(f)
 
         etsy_orders = []
         for r in response["results"]:

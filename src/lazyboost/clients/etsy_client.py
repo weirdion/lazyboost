@@ -15,24 +15,24 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from datetime import datetime, timedelta
-import json
 from urllib.parse import urljoin
 
 import requests
 
+from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.log import console_logger
 from lazyboost.utilities import constants
-from lazyboost.utilities.utility_base import set_dotenv_variable
 
 log = console_logger()
 
 
 class EtsyClient:
-    def __init__(self, dotenv_variables: dict):
-        self.api_key_string = dotenv_variables["ETSY_KEY_STRING"]
-        self.access_token = dotenv_variables["ETSY_ACCESS_TOKEN"]
-        self.refresh_token = dotenv_variables["ETSY_REFRESH_TOKEN"]
-        self.shop_id = dotenv_variables["ETSY_SHOP_ID"]
+    def __init__(self, secret_manager_client: SecretManagerClient):
+        self.sm_client = secret_manager_client
+        self.api_key_string = self.sm_client.secret_variables["ETSY_KEY_STRING"]
+        self.access_token = self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"]
+        self.refresh_token = self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"]
+        self.shop_id = self.sm_client.secret_variables["ETSY_SHOP_ID"]
         self.headers = {
             "x-api-key": self.api_key_string,
             "Authorization": f"Bearer {self.access_token}"
@@ -89,23 +89,18 @@ class EtsyClient:
         resp = requests.post(constants.ETSY_TOKEN_URL, headers=headers, data=data)
         if resp.status_code == 200:
             log.info("Successfully updated Access and Refresh tokens...")
-            self.set_access_token(resp.json().get("access_token"))
-            self.set_refresh_token(resp.json().get("refresh_token"))
+            self.update_tokens(resp.json())
             self.set_headers()
 
-    def set_access_token(self, access_token):
+    def update_tokens(self, response_dict: dict):
         """
         Update Access Token.
         """
-        self.access_token = access_token
-        set_dotenv_variable("ETSY_ACCESS_TOKEN", access_token)
-
-    def set_refresh_token(self, refresh_token):
-        """
-        Update Refresh Token.
-        """
-        self.refresh_token = refresh_token
-        set_dotenv_variable("ETSY_REFRESH_TOKEN", refresh_token)
+        self.access_token = response_dict.get("access_token")
+        self.refresh_token = response_dict.get("refresh_token")
+        self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"] = self.access_token
+        self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"] = self.refresh_token
+        self.sm_client.update_secret_manager()
 
     def set_headers(self):
         """

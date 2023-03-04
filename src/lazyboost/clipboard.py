@@ -46,4 +46,3 @@ def _facebook_post_description_tags(tag_list: list) -> str:
             fb_tag_list.append(no_space_tag)
 
     return " ".join(fb_tag_list)
-

@@ -16,9 +16,11 @@
 #
 #
 import json
+import os
 
 import shopify
 
+from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.log import console_logger
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
@@ -28,20 +30,21 @@ log = console_logger()
 
 
 class ShopifyClient:
-    def __init__(self, dotenv_variables: dict):
-        self.api_version = dotenv_variables["SHOPIFY_API_VERSION"]
-        self.is_test_mode = True if dotenv_variables["SHOPIFY_TEST_MODE"].lower() == "true" else False
+    def __init__(self, secret_manager_client: SecretManagerClient):
+        self.sm_client = secret_manager_client
+        self.api_version = "2023-01"
+        self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 
         if self.is_test_mode:
-            self.shop_url = dotenv_variables["SHOPIFY_TEST_SHOP_URL"]
-            self.api_key = dotenv_variables["SHOPIFY_TEST_API_KEY"]
-            self.client_secret = dotenv_variables["SHOPIFY_TEST_CLIENT_SECRET"]
-            self.access_token = dotenv_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
+            self.shop_url = self.sm_client.secret_variables["SHOPIFY_TEST_SHOP_URL"]
+            self.api_key = self.sm_client.secret_variables["SHOPIFY_TEST_API_KEY"]
+            self.client_secret = self.sm_client.secret_variables["SHOPIFY_TEST_SECRET_KEY"]
+            self.access_token = self.sm_client.secret_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
         else:
-            self.shop_url = dotenv_variables["SHOPIFY_SHOP_URL"]
-            self.api_key = dotenv_variables["SHOPIFY_CUSTOM_API_KEY"]
-            self.client_secret = dotenv_variables["SHOPIFY_CUSTOM_SECRET_KEY"]
-            self.access_token = dotenv_variables["SHOPIFY_CUSTOM_ACCESS_TOKEN"]
+            self.shop_url = self.sm_client.secret_variables["SHOPIFY_AFD_SHOP_URL"]
+            self.api_key = self.sm_client.secret_variables["SHOPIFY_AFD_API_KEY"]
+            self.client_secret = self.sm_client.secret_variables["SHOPIFY_AFD_SECRET_KEY"]
+            self.access_token = self.sm_client.secret_variables["SHOPIFY_AFD_ACCESS_TOKEN"]
 
         log.info("Initiating Shopify session")
         self.session = shopify.Session(self.shop_url, self.api_version, self.access_token)
@@ -87,7 +90,7 @@ class ShopifyClient:
                                          body=json.dumps({
                                              "address": etsy_buyer.to_shopify_address()
                                          }).encode("utf-8"))
-        log.info(f"update customer response: {response}")
+        log.debug(f"update customer response: {response}")
 
     def create_customer(self, etsy_buyer: EtsyBuyer) -> int:
         log.info(f"Creating a new customer for {etsy_buyer}")
@@ -192,6 +195,7 @@ class ShopifyClient:
                 "gateway": "Etsy Checkout"
             }]
         })
-        log.info(f"Shopify order: {new_order}")
         if new_order.errors:
             log.error(f"Error occurred during order creation: {new_order.errors.errors}")
+        else:
+            log.info(f"Shopify order created successfully: {new_order}")
