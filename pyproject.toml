@@ -6,9 +6,6 @@ authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 keywords = ["python", "e-commerce", "etsy", "shopify"]
-packages = [
-    { include = "src" }
-]
 exclude = [
     { path = "infra" }
 ]
@@ -27,7 +24,7 @@ pylint = "^2.15.10"
 safety = "^2.3.5"
 
 [tool.poetry.scripts]
-lazyboost = "lazyboost.cli:main"
+lb = "src.lazyboost.cli:main"
 
 [build-system]
 requires = ["poetry-core"]

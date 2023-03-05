@@ -22,12 +22,12 @@ import sys
 from enum import auto
 from typing import List
 
-from lazyboost import models
-from lazyboost.clients.etsy_client import EtsyClient
-from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.clients.shopify_client import ShopifyClient
-from lazyboost.models.etsy_order import EtsyOrder
-from lazyboost.utilities import log, utility_base
+from .. import models
+from ..clients.etsy_client import EtsyClient
+from ..clients.secret_manager_client import SecretManagerClient
+from ..clients.shopify_client import ShopifyClient
+from ..models.etsy_order import EtsyOrder
+from ..utilities import log
 
 _cli_logger = log.console_logger()
 

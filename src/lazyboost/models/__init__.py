@@ -15,6 +15,10 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from lazyboost.models.base_enum import BaseEnum
+from .base_enum import BaseEnum
+from .base_model import BaseModel
+from .etsy_buyer_model import EtsyBuyer
+from .etsy_order import EtsyOrder, EtsyTransaction
+from .shopify_customer_model import Address, ShopifyCustomer
 
-__all__ = [BaseEnum]
+__all__ = [BaseEnum, BaseModel, EtsyBuyer, EtsyOrder, EtsyTransaction, Address, ShopifyCustomer]

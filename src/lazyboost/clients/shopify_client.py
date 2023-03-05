@@ -20,11 +20,11 @@ import os
 
 import shopify
 
-from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.utilities.log import console_logger
-from lazyboost.models.etsy_buyer_model import EtsyBuyer
-from lazyboost.models.etsy_order import EtsyOrder
-from lazyboost.models.shopify_customer_model import ShopifyCustomer
+from ..clients.secret_manager_client import SecretManagerClient
+from ..utilities.log import console_logger
+from ..models.etsy_buyer_model import EtsyBuyer
+from ..models.etsy_order import EtsyOrder
+from ..models.shopify_customer_model import ShopifyCustomer
 
 log = console_logger()
 

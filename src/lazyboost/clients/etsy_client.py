@@ -19,9 +19,9 @@ from urllib.parse import urljoin
 
 import requests
 
-from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.utilities.log import console_logger
-from lazyboost.utilities import constants
+from ..clients.secret_manager_client import SecretManagerClient
+from ..utilities.log import console_logger
+from ..utilities import constants
 
 log = console_logger()
 

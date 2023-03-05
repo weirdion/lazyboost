@@ -20,7 +20,7 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-from lazyboost.utilities.log import console_logger
+from ..utilities.log import console_logger
 
 
 class SecretManagerClient:

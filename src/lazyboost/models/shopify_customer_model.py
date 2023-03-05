@@ -19,7 +19,7 @@ from dataclasses import dataclass, asdict
 from typing import Any
 from typing import List
 
-from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from ..models.etsy_buyer_model import EtsyBuyer
 
 
 @dataclass
