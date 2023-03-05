@@ -20,13 +20,14 @@ import os
 
 import shopify
 
-from ..clients.secret_manager_client import SecretManagerClient
-from ..utilities.log import console_logger
-from ..models.etsy_buyer_model import EtsyBuyer
-from ..models.etsy_order import EtsyOrder
-from ..models.shopify_customer_model import ShopifyCustomer
+from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from lazyboost.models.etsy_order import EtsyOrder
+from lazyboost.models.shopify_customer_model import ShopifyCustomer
 
-log = console_logger()
+from aws_lambda_powertools import Logger
+
+logger = Logger()
 
 
 class ShopifyClient:
@@ -46,12 +47,12 @@ class ShopifyClient:
             self.client_secret = self.sm_client.secret_variables["SHOPIFY_AFD_SECRET_KEY"]
             self.access_token = self.sm_client.secret_variables["SHOPIFY_AFD_ACCESS_TOKEN"]
 
-        log.info("Initiating Shopify session")
+        logger.info("Initiating Shopify session")
         self.session = shopify.Session(self.shop_url, self.api_version, self.access_token)
         shopify.ShopifyResource.activate_session(self.session)
 
     def __del__(self):
-        log.debug("Clearing shopify session")
+        logger.debug("Clearing shopify session")
         shopify.ShopifyResource.clear_session()
 
     def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer | None:
@@ -75,7 +76,7 @@ class ShopifyClient:
                                                    "address_id": address.id,
                                                    "customer_id": shopify_customer.id
                                                }).encode("utf-8"))
-                    log.info(f"updating customer: {shopify_customer.id} default address: {res.code}")
+                    logger.info(f"updating customer: {shopify_customer.id} default address: {res.code}")
                     is_existing_address = True
                     break
 
@@ -84,16 +85,16 @@ class ShopifyClient:
             self.add_customer_address(etsy_buyer, shopify_customer.id)
 
     def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
-        log.info(f"Adding new address for {shopify_customer_id}")
+        logger.info(f"Adding new address for {shopify_customer_id}")
 
         response = shopify.Customer.post(f"{shopify_customer_id}/addresses",
                                          body=json.dumps({
                                              "address": etsy_buyer.to_shopify_address()
                                          }).encode("utf-8"))
-        log.debug(f"update customer response: {response}")
+        logger.debug(f"update customer response: {response}")
 
     def create_customer(self, etsy_buyer: EtsyBuyer) -> int:
-        log.info(f"Creating a new customer for {etsy_buyer}")
+        logger.info(f"Creating a new customer for {etsy_buyer}")
         (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
         new_customer = shopify.Customer()
         new_customer.first_name = buyer_name1
@@ -103,7 +104,7 @@ class ShopifyClient:
         new_customer.send_email_welcome: False
         new_customer.save()
 
-        log.info(f"add new customer response: {new_customer.id}")
+        logger.info(f"add new customer response: {new_customer.id}")
         self.add_customer_address(etsy_buyer, new_customer.id)
         return new_customer.id
 
@@ -125,7 +126,7 @@ class ShopifyClient:
             variables={"filter": f"sku:{product_sku}"}
         )
         products = json.loads(res)["data"]["productVariants"]["edges"]
-        log.info(f"Product found: {products}")
+        logger.info(f"Product found: {products}")
         return products[0]["node"]["id"].rsplit("/", 1)[-1]
 
     def does_order_exist(self, receipt_id: int) -> str:
@@ -147,7 +148,7 @@ class ShopifyClient:
         return orders_found[0]["node"]["id"].rsplit("/", 1)[-1] if orders_found else ""
 
     def create_order(self, etsy_order: EtsyOrder, customer_id):
-        log.info(f"Creating a new shopify order for customer: {customer_id}")
+        logger.info(f"Creating a new shopify order for customer: {customer_id}")
         new_order = shopify.Order.create({
             "email": etsy_order.buyer.email,
             "billing_address": etsy_order.buyer.to_shopify_address(),
@@ -196,6 +197,6 @@ class ShopifyClient:
             }]
         })
         if new_order.errors:
-            log.error(f"Error occurred during order creation: {new_order.errors.errors}")
+            logger.error(f"Error occurred during order creation: {new_order.errors.errors}")
         else:
-            log.info(f"Shopify order created successfully: {new_order}")
+            logger.info(f"Shopify order created successfully: {new_order}")

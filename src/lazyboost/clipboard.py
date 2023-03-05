@@ -16,9 +16,9 @@
 
 import pyperclip
 
-from .utilities import log
+from aws_lambda_powertools import Logger
 
-_cli_logger = log.console_logger()
+logger = Logger()
 
 
 def update_clipboard_tags():
@@ -27,8 +27,8 @@ def update_clipboard_tags():
     current_clipboard = [i for i in current_clipboard if i]
     current_clipboard.sort()
 
-    _cli_logger.info(f"Cleaned up Etsy tags: {_etsy_description_tags(current_clipboard)}")
-    _cli_logger.info(f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}")
+    logger.info(f"Cleaned up Etsy tags: {_etsy_description_tags(current_clipboard)}")
+    logger.info(f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}")
     pyperclip.copy(_etsy_description_tags(current_clipboard))
     pyperclip.copy(_facebook_post_description_tags(current_clipboard))
 

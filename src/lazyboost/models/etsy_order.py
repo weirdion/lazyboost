@@ -17,8 +17,8 @@
 from dataclasses import dataclass
 from typing import List, Any
 
-from ..models.etsy_buyer_model import EtsyBuyer
-from ..utilities.utility_etsy import get_float_amount
+from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from lazyboost.utilities.utility_etsy import get_float_amount
 
 
 @dataclass

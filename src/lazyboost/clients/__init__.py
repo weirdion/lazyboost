@@ -15,8 +15,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .etsy_client import EtsyClient
-from .secret_manager_client import SecretManagerClient
-from .shopify_client import ShopifyClient
+from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.clients.shopify_client import ShopifyClient
 
 __all__ = [EtsyClient, SecretManagerClient, ShopifyClient]

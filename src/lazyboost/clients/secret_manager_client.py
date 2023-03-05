@@ -20,7 +20,8 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-from ..utilities.log import console_logger
+from aws_lambda_powertools import Logger
+
 
 
 class SecretManagerClient:
@@ -28,7 +29,7 @@ class SecretManagerClient:
     def __init__(self):
         self.client = boto3.client('secretsmanager')
         self.secret_name = os.getenv("SECRET_NAME", "LAZYBOOST_CREDS")
-        self.logger = console_logger()
+        self.logger = Logger()
         self.secret_variables = {}
         self._get_value()
 
