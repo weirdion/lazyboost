@@ -18,12 +18,13 @@ from datetime import datetime, timedelta
 from urllib.parse import urljoin
 
 import requests
+from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.utilities import constants
-from aws_lambda_powertools import Logger
 
 logger = Logger()
+
 
 class EtsyClient:
     def __init__(self, secret_manager_client: SecretManagerClient):
@@ -34,27 +35,34 @@ class EtsyClient:
         self.shop_id = self.sm_client.secret_variables["ETSY_SHOP_ID"]
         self.headers = {
             "x-api-key": self.api_key_string,
-            "Authorization": f"Bearer {self.access_token}"
+            "Authorization": f"Bearer {self.access_token}",
         }
 
-    def _http_oauth_request(self, method, suffix, params: dict = None, data: dict = None):
+    def _http_oauth_request(
+        self, method, suffix, params: dict = None, data: dict = None
+    ):
         """
         Execute HTTP API requests for Etsy REST API.
         """
         request_url = urljoin(constants.ETSY_API_BASE_URL, suffix)
-        logger.info(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
+        logger.info(
+            f"Sending {method} request to {request_url}, params: {params}, data: {data}"
+        )
 
         response = requests.request(
             method=method,
             url=request_url,
             headers=self.headers,
             params=params,
-            data=data
+            data=data,
         )
 
         logger.info(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
 
-        if response.status_code == 401 and response.json().get("error") == "invalid_token":
+        if (
+            response.status_code == 401
+            and response.json().get("error") == "invalid_token"
+        ):
             self._refresh_token()
             logger.info("Retrying API call after Token Refresh...")
             response = requests.request(
@@ -62,7 +70,7 @@ class EtsyClient:
                 url=request_url,
                 headers=self.headers,
                 params=params,
-                data=data
+                data=data,
             )
 
         if response.status_code == 200:
@@ -77,13 +85,11 @@ class EtsyClient:
         Update Etsy Oauth tokens after expiration.
         """
         logger.info("Attempting to update Access and Refresh tokens...")
-        headers = {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {
             "grant_type": "refresh_token",
             "client_id": self.api_key_string,
-            "refresh_token": self.refresh_token
+            "refresh_token": self.refresh_token,
         }
         resp = requests.post(constants.ETSY_TOKEN_URL, headers=headers, data=data)
         if resp.status_code == 200:
@@ -107,7 +113,7 @@ class EtsyClient:
         """
         self.headers = {
             "x-api-key": self.api_key_string,
-            "Authorization": f"Bearer {self.access_token}"
+            "Authorization": f"Bearer {self.access_token}",
         }
 
     def get_shop_receipts(self):
@@ -116,10 +122,16 @@ class EtsyClient:
         """
         logger.info("Retrieving shop transactions...")
         path = f"shops/{self.shop_id}/receipts"
-        response = self._http_oauth_request("GET", path, params={
-            "min_created": int(round((datetime.now() - timedelta(days=1)).timestamp())),
-            "max_created": int(round(datetime.now().timestamp())),
-            "sort_order": "ascending",
-            "was_shipped": False
-        })
+        response = self._http_oauth_request(
+            "GET",
+            path,
+            params={
+                "min_created": int(
+                    round((datetime.now() - timedelta(days=1)).timestamp())
+                ),
+                "max_created": int(round(datetime.now().timestamp())),
+                "sort_order": "ascending",
+                "was_shipped": False,
+            },
+        )
         return response

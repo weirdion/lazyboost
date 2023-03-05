@@ -18,16 +18,13 @@ import json
 import os
 
 import boto3
-from botocore.exceptions import ClientError
-
 from aws_lambda_powertools import Logger
-
+from botocore.exceptions import ClientError
 
 
 class SecretManagerClient:
-
     def __init__(self):
-        self.client = boto3.client('secretsmanager')
+        self.client = boto3.client("secretsmanager")
         self.secret_name = os.getenv("SECRET_NAME", "LAZYBOOST_CREDS")
         self.logger = Logger()
         self.secret_variables = {}
@@ -67,13 +64,17 @@ class SecretManagerClient:
         try:
             kwargs = {
                 "SecretId": self.secret_name,
-                "SecretString": json.dumps(self.secret_variables)
+                "SecretString": json.dumps(self.secret_variables),
             }
             response = self.client.update_secret(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                self.logger.info(f"Successfully updated value for secret {self.secret_name}.")
+                self.logger.info(
+                    f"Successfully updated value for secret {self.secret_name}."
+                )
             else:
-                self.logger.warning(f"Something went wrong while updating the secret: {response}")
+                self.logger.warning(
+                    f"Something went wrong while updating the secret: {response}"
+                )
         except ClientError:
             self.logger.exception(f"Couldn't get value for secret {self.secret_name}.")
             raise

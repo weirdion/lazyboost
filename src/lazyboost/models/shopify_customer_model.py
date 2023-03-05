@@ -15,9 +15,8 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from dataclasses import dataclass, asdict
-from typing import Any
-from typing import List
+from dataclasses import asdict, dataclass
+from typing import Any, List
 
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 
@@ -43,16 +42,18 @@ class Address:
     default: bool
 
     def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
-        if etsy_buyer.name != f"{self.first_name} {self.last_name}" or \
-                etsy_buyer.address_first_line != self.address1 or \
-                etsy_buyer.address_second_line != self.address2 or \
-                etsy_buyer.address_city != self.city or \
-                etsy_buyer.address_state != self.province_code:
+        if (
+            etsy_buyer.name != f"{self.first_name} {self.last_name}"
+            or etsy_buyer.address_first_line != self.address1
+            or etsy_buyer.address_second_line != self.address2
+            or etsy_buyer.address_city != self.city
+            or etsy_buyer.address_state != self.province_code
+        ):
             return False
         return True
 
     @staticmethod
-    def from_dict(obj: Any) -> 'Address':
+    def from_dict(obj: Any) -> "Address":
         _address_obj = obj.attributes
         _id = int(_address_obj.get("id"))
         _customer_id = int(_address_obj.get("customer_id"))
@@ -71,14 +72,31 @@ class Address:
         _country_code = str(_address_obj.get("country_code"))
         _country_name = str(_address_obj.get("country_name"))
         _default = bool(_address_obj.get("default"))
-        return Address(_id, _customer_id, _first_name, _last_name,
-                       _company, _address1, _address2, _city, _province,
-                       _country, _zip, _phone, _name, _province_code, _country_code,
-                       _country_name, _default)
+        return Address(
+            _id,
+            _customer_id,
+            _first_name,
+            _last_name,
+            _company,
+            _address1,
+            _address2,
+            _city,
+            _province,
+            _country,
+            _zip,
+            _phone,
+            _name,
+            _province_code,
+            _country_code,
+            _country_name,
+            _default,
+        )
 
     def to_order_dict(self) -> dict:
         return {
-            k: str(v) for k, v in asdict(self).items() if k and k not in ["id", "customer_id", "default"]
+            k: str(v)
+            for k, v in asdict(self).items()
+            if k and k not in ["id", "customer_id", "default"]
         }
 
 
@@ -100,7 +118,7 @@ class ShopifyCustomer:
     default_address: Address
 
     @staticmethod
-    def from_dict(obj: Any) -> 'ShopifyCustomer':
+    def from_dict(obj: Any) -> "ShopifyCustomer":
         _id = int(obj.get("id"))
         _email = str(obj.get("email"))
         _first_name = str(obj.get("first_name"))
@@ -115,6 +133,19 @@ class ShopifyCustomer:
         _phone = str(obj.get("phone"))
         _addresses = [Address.from_dict(y) for y in obj.get("addresses")]
         _default_address = Address.from_dict(obj.get("default_address"))
-        return ShopifyCustomer(_id, _email, _first_name, _last_name, _orders_count,
-                               _state, _total_spent, _last_order_id, _tags, _last_order_name,
-                               _currency, _phone, _addresses, _default_address)
+        return ShopifyCustomer(
+            _id,
+            _email,
+            _first_name,
+            _last_name,
+            _orders_count,
+            _state,
+            _total_spent,
+            _last_order_id,
+            _tags,
+            _last_order_name,
+            _currency,
+            _phone,
+            _addresses,
+            _default_address,
+        )

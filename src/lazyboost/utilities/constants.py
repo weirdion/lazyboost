@@ -39,7 +39,7 @@ __version__ = "0.2.0"
 CLI_NAME = "lazyboost"
 
 # ETSY constants
-ETSY_AUTH_URL = "https://www.etsy.com/oauth/connect",
+ETSY_AUTH_URL = ("https://www.etsy.com/oauth/connect",)
 ETSY_TOKEN_URL = "https://openapi.etsy.com/v3/public/oauth/token"
 ETSY_AUTH_BASE_URL = "https://openapi.etsy.com/v3"
 ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"

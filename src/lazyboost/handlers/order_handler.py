@@ -22,12 +22,13 @@ import sys
 from enum import auto
 from typing import List
 
+from aws_lambda_powertools import Logger
+
 from lazyboost import models
 from lazyboost.clients.etsy_client import EtsyClient
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.clients.shopify_client import ShopifyClient
 from lazyboost.models.etsy_order import EtsyOrder
-from aws_lambda_powertools import Logger
 
 logger = Logger()
 
@@ -39,7 +40,6 @@ class OrdersEnum(models.BaseEnum):
 
 
 class OrderHandler:
-
     def __init__(self, order_sync_type: OrdersEnum) -> None:
         super().__init__()
         logger.info(f"Initializing OrderHandler for: {order_sync_type}")
@@ -69,7 +69,7 @@ class OrderHandler:
         for r in response["results"]:
             e = EtsyOrder.from_dict(r)
 
-            logger.info(f"Adding etsy order: {e}")
+            logger.info(f"Detected open etsy order: {e}")
             etsy_orders.append(e)
         return etsy_orders
 

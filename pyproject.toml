@@ -6,6 +6,9 @@ authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 keywords = ["python", "e-commerce", "etsy", "shopify"]
+packages = [
+    { include = "lazyboost", from = "src"}
+]
 exclude = [
     { path = "infra" }
 ]
@@ -16,13 +19,12 @@ requests = "^2.28.2"
 pyperclip = "^1.8.2"
 shopifyapi = "^12.2.0"
 boto3 = "^1.26.84"
+aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.9.1"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 black = "^22.12.0"
-pylint = "^2.15.10"
 safety = "^2.3.5"
-aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.9.1"}
 isort = "^5.12.0"
 
 [tool.poetry.scripts]
@@ -31,3 +33,9 @@ lazyboost = "lazyboost.cli:main"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"

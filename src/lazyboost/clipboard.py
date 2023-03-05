@@ -15,7 +15,6 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pyperclip
-
 from aws_lambda_powertools import Logger
 
 logger = Logger()
@@ -28,7 +27,9 @@ def update_clipboard_tags():
     current_clipboard.sort()
 
     logger.info(f"Cleaned up Etsy tags: {_etsy_description_tags(current_clipboard)}")
-    logger.info(f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}")
+    logger.info(
+        f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}"
+    )
     pyperclip.copy(_etsy_description_tags(current_clipboard))
     pyperclip.copy(_facebook_post_description_tags(current_clipboard))
 

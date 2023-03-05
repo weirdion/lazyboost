@@ -15,8 +15,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from aws_lambda_powertools import Logger
-
-from handlers import OrderHandler, OrdersEnum
+from lazyboost.handlers import OrderHandler, OrdersEnum
 
 logger = Logger()
 

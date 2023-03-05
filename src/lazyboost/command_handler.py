@@ -18,9 +18,10 @@
 Command Handler module handles operations after the cli receives a command
 """
 
+from aws_lambda_powertools import Logger
+
 from lazyboost import clipboard
 from lazyboost.handlers import OrderHandler, OrdersEnum
-from aws_lambda_powertools import Logger
 
 logger = Logger()
 

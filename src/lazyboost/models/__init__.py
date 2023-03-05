@@ -21,4 +21,12 @@ from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder, EtsyTransaction
 from lazyboost.models.shopify_customer_model import Address, ShopifyCustomer
 
-__all__ = [BaseEnum, BaseModel, EtsyBuyer, EtsyOrder, EtsyTransaction, Address, ShopifyCustomer]
+__all__ = [
+    BaseEnum,
+    BaseModel,
+    EtsyBuyer,
+    EtsyOrder,
+    EtsyTransaction,
+    Address,
+    ShopifyCustomer,
+]

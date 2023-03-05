@@ -19,13 +19,12 @@ import json
 import os
 
 import shopify
+from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-
-from aws_lambda_powertools import Logger
 
 logger = Logger()
 
@@ -34,49 +33,68 @@ class ShopifyClient:
     def __init__(self, secret_manager_client: SecretManagerClient):
         self.sm_client = secret_manager_client
         self.api_version = "2023-01"
-        self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
+        self.is_test_mode = (
+            True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
+        )
 
         if self.is_test_mode:
             self.shop_url = self.sm_client.secret_variables["SHOPIFY_TEST_SHOP_URL"]
             self.api_key = self.sm_client.secret_variables["SHOPIFY_TEST_API_KEY"]
-            self.client_secret = self.sm_client.secret_variables["SHOPIFY_TEST_SECRET_KEY"]
-            self.access_token = self.sm_client.secret_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
+            self.client_secret = self.sm_client.secret_variables[
+                "SHOPIFY_TEST_SECRET_KEY"
+            ]
+            self.access_token = self.sm_client.secret_variables[
+                "SHOPIFY_TEST_ACCESS_TOKEN"
+            ]
         else:
             self.shop_url = self.sm_client.secret_variables["SHOPIFY_AFD_SHOP_URL"]
             self.api_key = self.sm_client.secret_variables["SHOPIFY_AFD_API_KEY"]
-            self.client_secret = self.sm_client.secret_variables["SHOPIFY_AFD_SECRET_KEY"]
-            self.access_token = self.sm_client.secret_variables["SHOPIFY_AFD_ACCESS_TOKEN"]
+            self.client_secret = self.sm_client.secret_variables[
+                "SHOPIFY_AFD_SECRET_KEY"
+            ]
+            self.access_token = self.sm_client.secret_variables[
+                "SHOPIFY_AFD_ACCESS_TOKEN"
+            ]
 
         logger.info("Initiating Shopify session")
-        self.session = shopify.Session(self.shop_url, self.api_version, self.access_token)
+        self.session = shopify.Session(
+            self.shop_url, self.api_version, self.access_token
+        )
         shopify.ShopifyResource.activate_session(self.session)
 
     def __del__(self):
         logger.debug("Clearing shopify session")
         shopify.ShopifyResource.clear_session()
 
-    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer | None:
+    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer:
         response = shopify.Customer.search(
-            session=self.session,
-            query=f"email:{etsy_buyer.email}"
+            session=self.session, query=f"email:{etsy_buyer.email}"
         )
         if not response:
             return None
         return ShopifyCustomer.from_dict(response[0].attributes)
 
-    def update_customer(self, etsy_buyer: EtsyBuyer, shopify_customer: ShopifyCustomer) -> None:
+    def update_customer(
+        self, etsy_buyer: EtsyBuyer, shopify_customer: ShopifyCustomer
+    ) -> None:
         default_address = shopify_customer.default_address
 
         is_existing_address = default_address.is_billing_address_same(etsy_buyer)
         if not is_existing_address:
             for address in shopify_customer.addresses:
                 if address.is_billing_address_same(etsy_buyer):
-                    res = shopify.Customer.put(f"{shopify_customer.id}/addresses/{address.id}/default",
-                                               body=json.dumps({
-                                                   "address_id": address.id,
-                                                   "customer_id": shopify_customer.id
-                                               }).encode("utf-8"))
-                    logger.info(f"updating customer: {shopify_customer.id} default address: {res.code}")
+                    res = shopify.Customer.put(
+                        f"{shopify_customer.id}/addresses/{address.id}/default",
+                        body=json.dumps(
+                            {
+                                "address_id": address.id,
+                                "customer_id": shopify_customer.id,
+                            }
+                        ).encode("utf-8"),
+                    )
+                    logger.info(
+                        f"updating customer: {shopify_customer.id} default address: {res.code}"
+                    )
                     is_existing_address = True
                     break
 
@@ -84,13 +102,17 @@ class ShopifyClient:
         if not is_existing_address:
             self.add_customer_address(etsy_buyer, shopify_customer.id)
 
-    def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
+    def add_customer_address(
+        self, etsy_buyer: EtsyBuyer, shopify_customer_id: int
+    ) -> None:
         logger.info(f"Adding new address for {shopify_customer_id}")
 
-        response = shopify.Customer.post(f"{shopify_customer_id}/addresses",
-                                         body=json.dumps({
-                                             "address": etsy_buyer.to_shopify_address()
-                                         }).encode("utf-8"))
+        response = shopify.Customer.post(
+            f"{shopify_customer_id}/addresses",
+            body=json.dumps({"address": etsy_buyer.to_shopify_address()}).encode(
+                "utf-8"
+            ),
+        )
         logger.debug(f"update customer response: {response}")
 
     def create_customer(self, etsy_buyer: EtsyBuyer) -> int:
@@ -123,7 +145,7 @@ class ShopifyClient:
               }
             }
             """,
-            variables={"filter": f"sku:{product_sku}"}
+            variables={"filter": f"sku:{product_sku}"},
         )
         products = json.loads(res)["data"]["productVariants"]["edges"]
         logger.info(f"Product found: {products}")
@@ -142,61 +164,76 @@ class ShopifyClient:
               }
             }
             """,
-            variables={"filter": f"tag:ETSY_{receipt_id}"}
+            variables={"filter": f"tag:ETSY_{receipt_id}"},
         )
         orders_found = json.loads(res)["data"]["orders"]["edges"]
         return orders_found[0]["node"]["id"].rsplit("/", 1)[-1] if orders_found else ""
 
     def create_order(self, etsy_order: EtsyOrder, customer_id):
         logger.info(f"Creating a new shopify order for customer: {customer_id}")
-        new_order = shopify.Order.create({
-            "email": etsy_order.buyer.email,
-            "billing_address": etsy_order.buyer.to_shopify_address(),
-            "customer": {"id": customer_id},
-            "inventory_behaviour": "decrement_obeying_policy",
-            "financial_status": "paid",
-            "fulfillment_status": None,
-            "line_items": [
-                {
-                    "variant_id": self.get_product_id(t.product_sku),
-                    "sku": t.product_sku,
-                    "quantity": t.product_quantity,
-                    "requires_shipping": True,
-                    "price": t.product_price,
-                    "properties": {
-                        "message": etsy_order.message_from_buyer
-                    } if etsy_order.message_from_buyer else []
-                } for t in etsy_order.transactions
-            ],
-            "note": f"Gift Message: {etsy_order.gift_message}" if etsy_order.is_gift else "",
-            "send_receipt": True,
-            "shipping_address": etsy_order.buyer.to_shopify_address(),
-            "shipping_lines": [{
-                "title": "Standard Shipping",
-                "price": etsy_order.sale_shipping_cost
-            }],
-            "source_name": "Etsy",
-            "source_identifier": etsy_order.receipt_id,
-            "subtotal_price": etsy_order.sale_subtotal_cost,
-            "tags": f"LazyBoost, ETSY_{etsy_order.receipt_id}",
-            "tax_lines": [{
-                "title": "Etsy Sales Tax",
-                "price": etsy_order.sale_tax_cost,
-                "rate": round(etsy_order.sale_tax_cost / etsy_order.sale_subtotal_cost, 2),
-                "channel_liable": None
-            }],
-            "total_discounts": etsy_order.sale_discount_cost,
-            "total_price": etsy_order.sale_total_cost,
-            "total_tax": etsy_order.sale_tax_cost,
-            "transactions": [{
-                "amount": etsy_order.sale_total_cost,
-                "currency": "USD",
-                "kind": "capture",
-                "status": "success",
-                "gateway": "Etsy Checkout"
-            }]
-        })
+        new_order = shopify.Order.create(
+            {
+                "email": etsy_order.buyer.email,
+                "billing_address": etsy_order.buyer.to_shopify_address(),
+                "customer": {"id": customer_id},
+                "inventory_behaviour": "decrement_obeying_policy",
+                "financial_status": "paid",
+                "fulfillment_status": None,
+                "line_items": [
+                    {
+                        "variant_id": self.get_product_id(t.product_sku),
+                        "sku": t.product_sku,
+                        "quantity": t.product_quantity,
+                        "requires_shipping": True,
+                        "price": t.product_price,
+                        "properties": {"message": etsy_order.message_from_buyer}
+                        if etsy_order.message_from_buyer
+                        else [],
+                    }
+                    for t in etsy_order.transactions
+                ],
+                "note": f"Gift Message: {etsy_order.gift_message}"
+                if etsy_order.is_gift
+                else "",
+                "send_receipt": True,
+                "shipping_address": etsy_order.buyer.to_shopify_address(),
+                "shipping_lines": [
+                    {
+                        "title": "Standard Shipping",
+                        "price": etsy_order.sale_shipping_cost,
+                    }
+                ],
+                "source_name": "Etsy",
+                "source_identifier": etsy_order.receipt_id,
+                "subtotal_price": etsy_order.sale_subtotal_cost,
+                "tags": f"LazyBoost, ETSY_{etsy_order.receipt_id}",
+                "tax_lines": [
+                    {
+                        "title": "Etsy Sales Tax",
+                        "price": etsy_order.sale_tax_cost,
+                        "rate": round(
+                            etsy_order.sale_tax_cost / etsy_order.sale_subtotal_cost, 2
+                        ),
+                        "channel_liable": None,
+                    }
+                ],
+                "total_discounts": etsy_order.sale_discount_cost,
+                "total_price": etsy_order.sale_total_cost,
+                "total_tax": etsy_order.sale_tax_cost,
+                "transactions": [
+                    {
+                        "amount": etsy_order.sale_total_cost,
+                        "currency": "USD",
+                        "kind": "capture",
+                        "status": "success",
+                        "gateway": "Etsy Checkout",
+                    }
+                ],
+            }
+        )
         if new_order.errors:
-            logger.error(f"Error occurred during order creation: {new_order.errors.errors}")
+            logger.error(
+                f"Error occurred during order creation: {new_order.errors.errors}"
+            )
         else:
             logger.info(f"Shopify order created successfully: {new_order}")
