@@ -18,19 +18,19 @@
 """
 OrderHandler module handles operations related to order sync
 """
-import json
 import sys
 from enum import auto
 from typing import List
 
-from lazyboost import log, models
+from aws_lambda_powertools import Logger
+
+from lazyboost import models
 from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.clients.shopify_client import ShopifyClient
 from lazyboost.models.etsy_order import EtsyOrder
-from lazyboost.utilities import utility_base
 
-_cli_logger = log.console_logger()
-_logger = log.create_logger(__name__)
+logger = Logger()
 
 
 class OrdersEnum(models.BaseEnum):
@@ -40,43 +40,36 @@ class OrdersEnum(models.BaseEnum):
 
 
 class OrderHandler:
-
     def __init__(self, order_sync_type: OrdersEnum) -> None:
         super().__init__()
-        _cli_logger.info(order_sync_type)
+        logger.info(f"Initializing OrderHandler for: {order_sync_type}")
 
-        self.dotenv_variables = utility_base.get_dotenv_variables()
-        self.etsy_client = EtsyClient(self.dotenv_variables)
-        self.shopify_client = ShopifyClient(self.dotenv_variables)
+        self.secret_manager_client = SecretManagerClient()
+        self.etsy_client = EtsyClient(self.secret_manager_client)
+        self.shopify_client = ShopifyClient(self.secret_manager_client)
 
-        match order_sync_type:
-            case OrdersEnum.SYNC:
-                etsy_orders = self._get_etsy_orders()
-                if not etsy_orders:
-                    _cli_logger.info("No Etsy open orders detected.")
-
+        if order_sync_type == OrdersEnum.SYNC:
+            etsy_orders = self._get_etsy_orders()
+            if not etsy_orders:
+                logger.info("No Etsy open orders detected.")
+            else:
                 self._sync_etsy_orders(etsy_orders)
-            case OrdersEnum.ETSY_TO_SHOPIFY:
-                pass
-            case OrdersEnum.SHOPIFY_TO_ETSY:
-                pass
-            case _:
-                _cli_logger.error("Unknown type of order detected, exiting...")
-                sys.exit(1)
+        elif order_sync_type == OrdersEnum.ETSY_TO_SHOPIFY:
+            pass
+        elif order_sync_type == OrdersEnum.SHOPIFY_TO_ETSY:
+            pass
+        else:
+            logger.error("Unknown type of order detected, exiting...")
+            sys.exit(1)
 
     def _get_etsy_orders(self) -> List[EtsyOrder]:
-        # TODO: Uncomment this before deploying
         response = self.etsy_client.get_shop_receipts()
-
-        # TODO: Remove this before deploying
-        # with open("sample-reponse.json") as f:
-        #     response = json.load(f)
 
         etsy_orders = []
         for r in response["results"]:
             e = EtsyOrder.from_dict(r)
 
-            _cli_logger.info(f"Adding etsy order: {e}")
+            logger.info(f"Detected open etsy order: {e}")
             etsy_orders.append(e)
         return etsy_orders
 
@@ -86,13 +79,13 @@ class OrderHandler:
             order_id = self.shopify_client.does_order_exist(order.receipt_id)
 
             if order_id:
-                _cli_logger.info(f"Order Id: {order_id} already exists, skipping")
+                logger.info(f"Order Id: {order_id} already exists, skipping")
                 continue
 
-            _cli_logger.info(f"New order detected: {order_id}")
+            logger.info(f"New order detected: {order_id}")
             sc = self.shopify_client.is_existing_customer(order.buyer)
             if sc:
-                _cli_logger.info(f"Existing customer: {sc.id} placed an order.")
+                logger.info(f"Existing customer: {sc.id} placed an order.")
                 self.shopify_client.update_customer(order.buyer, sc)
                 customer_id = sc.id
             else:

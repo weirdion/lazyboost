@@ -14,8 +14,15 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from aws_lambda_powertools import Logger
+from lazyboost.handlers import OrderHandler, OrdersEnum
 
-from lazyboost.utilities import constants
-from lazyboost.utilities.utility_etsy import get_float_amount
+logger = Logger()
 
-__all__ = [constants, get_float_amount]
+
+def order_sync_handler(event, context):
+    """
+    Function that acts as an entrypoint for Order Sync entrypoint
+    """
+    logger.debug(f"Starting lambda with event: {event}")
+    OrderHandler(order_sync_type=OrdersEnum.SYNC)

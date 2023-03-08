@@ -35,8 +35,10 @@ class _HelpActionLongFormat(_HelpAction):  # pylint: disable=too-few-public-meth
 
         # retrieve subparsers from parser
         subparsers_actions = [
-            action for action in parser._actions
-            if isinstance(action, _SubParsersAction)]
+            action
+            for action in parser._actions
+            if isinstance(action, _SubParsersAction)
+        ]
 
         for subparsers_action in subparsers_actions:
             # get all subparsers and print help
@@ -54,35 +56,32 @@ def create_parser() -> ArgumentParser:
     """
     parser = ArgumentParser(
         prog=constants.CLI_NAME,
-        description='A simple way to manage your shop listings between Etsy SHop Manager and '
-                    'Facebook Page Shop.',
-        add_help=False
+        description="A simple way to manage your shop listings between Etsy SHop Manager and "
+        "Facebook Page Shop.",
+        add_help=False,
     )
 
-    parser.add_argument(
-        '-h',
-        '--help',
-        action=_HelpActionLongFormat
-    )
+    parser.add_argument("-h", "--help", action=_HelpActionLongFormat)
 
     parser.add_argument(
-        '-v',
-        '--version',
-        action='version',
-        version=f"{constants.CLI_NAME} {constants.__version__}"
+        "-v",
+        "--version",
+        action="version",
+        version=f"{constants.CLI_NAME} {constants.__version__}",
     )
 
     options_subparser = parser.add_subparsers(
         title="Options",
         description="Sub-options allow you to control smaller aspects of the platform",
         required=False,
-        metavar='OPTION',
-        dest="opt"
+        metavar="OPTION",
+        dest="opt",
     )
 
     options_subparser.add_parser(
         "clipboard",
-        help="Takes the clipboard contents and formats them for re-using them on Etsy and Facebook publishing")
+        help="Takes the clipboard contents and formats them for re-using them on Etsy and Facebook publishing",
+    )
 
     orders_parser = options_subparser.add_parser("orders", help="orders help")
     order_opt_group = orders_parser.add_mutually_exclusive_group()
@@ -93,7 +92,7 @@ def create_parser() -> ArgumentParser:
         action="store_const",
         dest="order_option",
         const="sync",
-        default="sync"
+        default="sync",
     )
     order_opt_group.add_argument(
         "-e2s",
@@ -101,7 +100,7 @@ def create_parser() -> ArgumentParser:
         help="Sync Orders from Etsy to Shopify",
         action="store_const",
         dest="order_option",
-        const="e2s"
+        const="e2s",
     )
     order_opt_group.add_argument(
         "-s2e",
@@ -109,8 +108,7 @@ def create_parser() -> ArgumentParser:
         help="Sync Orders from Etsy to Shopify",
         action="store_const",
         dest="order_option",
-        const="s2e"
-
+        const="s2e",
     )
 
     # listings_parser = options_subparser.add_parser("listings", help="listings help")
@@ -125,7 +123,8 @@ def main():
     if len(sys.argv) <= 1:
         raise SystemExit(
             f"{constants.CLI_NAME}: No command received. "
-            f"Run `{constants.CLI_NAME} --help` to see available options.")
+            f"Run `{constants.CLI_NAME} --help` to see available options."
+        )
 
     args = create_parser().parse_args()
     command_handler.parse_received_command(args)

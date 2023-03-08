@@ -14,3 +14,9 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.clients.shopify_client import ShopifyClient
+
+__all__ = [EtsyClient, SecretManagerClient, ShopifyClient]

@@ -38,22 +38,8 @@ __version__ = "0.2.0"
 # cli top-level constants
 CLI_NAME = "lazyboost"
 
-# log constants
-LOG_DIR = f'.local/share/{CLI_NAME}'
-LOG_DEFAULT_NAME = f'{CLI_NAME}.log'
-LOG_ERROR_NAME = f'{CLI_NAME}-error.log'
-
-# config constants
-CONFIG_DIR = f'.config/{CLI_NAME}'
-CONFIG_PATH = f'{CLI_NAME}.json'
-CONFIG_BACKUP_SUFFIX = '.backup'
-
-# User data constants
-USER_DATA = f'Downloads/{CLI_NAME}'
-FILE_PREFIX = f'{CLI_NAME}-'
-
 # ETSY constants
-ETSY_AUTH_URL = "https://www.etsy.com/oauth/connect",
+ETSY_AUTH_URL = ("https://www.etsy.com/oauth/connect",)
 ETSY_TOKEN_URL = "https://openapi.etsy.com/v3/public/oauth/token"
 ETSY_AUTH_BASE_URL = "https://openapi.etsy.com/v3"
 ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"

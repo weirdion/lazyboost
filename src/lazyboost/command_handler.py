@@ -17,13 +17,13 @@
 """
 Command Handler module handles operations after the cli receives a command
 """
-import logging
 
-from lazyboost import log, clipboard
+from aws_lambda_powertools import Logger
+
+from lazyboost import clipboard
 from lazyboost.handlers import OrderHandler, OrdersEnum
 
-_cli_logger = log.console_logger()
-_logger = log.create_logger(__name__)
+logger = Logger()
 
 
 def parse_received_command(received_args):
@@ -31,13 +31,12 @@ def parse_received_command(received_args):
     Function that parses the received args into commands and executes the respective function.
     :params received_args: Namespace object received from ArgumentParser use.
     """
-    log.combined_log(_logger, _cli_logger, logging.INFO, f'Command received: {received_args}')
-    match received_args.opt:
-        case "clipboard":
-            clipboard.update_clipboard_tags()
-        case "orders":
-            OrderHandler(order_sync_type=OrdersEnum(received_args.order_option))
-        case "listings":
-            _cli_logger.info("Listings: Under construction")
-        case _:
-            _cli_logger.error("You seem to be lost.")
+    logger.info(f"Command received: {received_args}")
+    if received_args.opt == "clipboard":
+        clipboard.update_clipboard_tags()
+    elif received_args.opt == "orders":
+        OrderHandler(order_sync_type=OrdersEnum(received_args.order_option))
+    elif received_args.opt == "listings":
+        logger.info("Listings: Under construction")
+    else:
+        logger.error("You seem to be lost.")

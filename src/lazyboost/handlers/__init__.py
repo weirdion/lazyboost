@@ -15,6 +15,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from lazyboost.handlers.order_handler import OrdersEnum, OrderHandler
+from lazyboost.handlers.order_handler import OrderHandler, OrdersEnum
 
 __all__ = [OrdersEnum, OrderHandler]
