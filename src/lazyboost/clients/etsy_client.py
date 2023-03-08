@@ -127,7 +127,7 @@ class EtsyClient:
             path,
             params={
                 "min_created": int(
-                    round((datetime.now() - timedelta(days=1)).timestamp())
+                    round((datetime.now() - timedelta(minutes=20)).timestamp())
                 ),
                 "max_created": int(round(datetime.now().timestamp())),
                 "sort_order": "ascending",
