@@ -131,8 +131,12 @@ class ShopifyCustomer:
         _last_order_name = str(obj.get("last_order_name"))
         _currency = str(obj.get("currency"))
         _phone = str(obj.get("phone"))
-        _addresses = [Address.from_dict(y) for y in obj.get("addresses")]
-        _default_address = Address.from_dict(obj.get("default_address"))
+        _addresses = (
+            [Address.from_dict(y) for y in obj.get("addresses")] if obj.get("addresses") else []
+        )
+        _default_address = (
+            Address.from_dict(obj.get("default_address")) if obj.get("default_address") else None
+        )
         return ShopifyCustomer(
             _id,
             _email,
