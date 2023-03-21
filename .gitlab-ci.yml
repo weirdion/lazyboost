@@ -80,6 +80,8 @@ aws-cdk-diff:
 aws-cdk-deploy:
   image: registry.gitlab.com/$BUILD_IMAGE
   stage: aws-cdk-deploy
+  services:
+    - docker:dind
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   script:
