@@ -78,14 +78,16 @@ aws-cdk-diff:
     - npm run cdk diff
 
 aws-cdk-deploy:
-  image: registry.gitlab.com/$BUILD_IMAGE
-  stage: aws-cdk-deploy
+  image: docker:stable
   services:
     - docker:dind
+  stage: aws-cdk-deploy
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  before_script:
+    - apk add --no-cache aws-cli nodejs npm
+    - npm install
   script:
-    - !reference [.setup, script]
     - !reference [.assume, script]
     - npm run cdk bootstrap
     - npm run cdk-deploy
