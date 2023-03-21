@@ -49,7 +49,7 @@ cache:
       --role-arn ${AWS_ROLE_ARN}
       --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
       --web-identity-token $CI_JOB_JWT_V2
-      --duration-seconds 720
+      --duration-seconds 900
       --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
       --output text))
 
