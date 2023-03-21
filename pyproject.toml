@@ -26,6 +26,7 @@ pytest = "^7.2.1"
 black = "^22.12.0"
 safety = "^2.3.5"
 isort = "^5.12.0"
+pre-commit = "^3.2.0"
 
 [tool.poetry.scripts]
 lazyboost = "lazyboost.cli:main"
@@ -36,6 +37,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 target-version = ['py39']
+line-length = 100
 
 [tool.isort]
 profile = "black"

@@ -1,35 +1,93 @@
-image: python:3.10
-
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_REF_PROTECTED
-
 variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-
-before_script:
-  - python -V  # Print out python version for debugging
-  - pip install -U pip poetry
-  - make
+  BUILD_IMAGE: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/buildimage
 
 stages:
-  - package-check
-  - lint-check
-  - test
+  - prepare
+  - code-check
+  - aws-cdk-diff
+  - aws-cdk-deploy
 
-analyze-packages-job:
-  stage: package-check
+build-image:
+  image: docker:stable
+  services:
+    - docker:dind
+  stage: prepare
   script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd .meta
+    - docker build -t $CI_REGISTRY/$BUILD_IMAGE:latest .
+    - docker push $CI_REGISTRY/$BUILD_IMAGE:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+      - .meta/Dockerfile
+
+.setup:
+  script:  
+    - python3 -V  # Print out python version for debugging
+    - node --version  # Print out nodejs version for debugging
+    - poetry config virtualenvs.in-project true
+    - npm install
+    - make
+
+cache:
+  key:
+    files:
+      - poetry.lock
+      - package-lock.json
+  paths:
+    - .venv/
+    - node_modules/
+    - .npm/
+
+code-check:
+  image: registry.gitlab.com/$BUILD_IMAGE
+  stage: code-check
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+  script:
+    - !reference [.setup, script]
+    - make lint-ci
     - make package-check
 
-lint-job:
-  stage: lint-check
+aws-cdk-diff:
+  image: registry.gitlab.com/$BUILD_IMAGE
+  stage: aws-cdk-diff
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+      when: always
   script:
-    - make lint-ci
+    - !reference [.setup, script]
+    - >
+      export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
+      $(aws sts assume-role-with-web-identity
+      --role-arn ${AWS_ROLE_ARN}
+      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+      --web-identity-token $CI_JOB_JWT_V2
+      --duration-seconds 3600
+      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+      --output text))
+    - npm run cdk diff
 
-test-job:
-  stage: test
+aws-cdk-deploy:
+  image: registry.gitlab.com/$BUILD_IMAGE
+  stage: aws-cdk-deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
   script:
-    - make test
-  coverage: '/TOTAL.*\s+(\d+%)$/'
+    - !reference [.setup, script]
+    - >
+      export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s"
+      $(aws sts assume-role-with-web-identity
+      --role-arn ${AWS_ROLE_ARN}
+      --role-session-name "GitLabRunner-${CI_PROJECT_ID}-${CI_PIPELINE_ID}"
+      --web-identity-token $CI_JOB_JWT_V2
+      --duration-seconds 3600
+      --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+      --output text))
+    - npm run cdk bootstrap
+    - npm run cdk deploy --require-approval never

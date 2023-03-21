@@ -68,13 +68,9 @@ class SecretManagerClient:
             }
             response = self.client.update_secret(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
-                self.logger.info(
-                    f"Successfully updated value for secret {self.secret_name}."
-                )
+                self.logger.info(f"Successfully updated value for secret {self.secret_name}.")
             else:
-                self.logger.warning(
-                    f"Something went wrong while updating the secret: {response}"
-                )
+                self.logger.warning(f"Something went wrong while updating the secret: {response}")
         except ClientError:
             self.logger.exception(f"Couldn't get value for secret {self.secret_name}.")
             raise
