@@ -28,7 +28,7 @@ export class LazyboostStack extends cdk.Stack {
     new cdk.aws_events.Rule(this, 'order-sync-rule', {
       description: 'Rule to sync orders between Etsy and Shopify',
       targets: [new cdk.aws_events_targets.LambdaFunction(lazyboost_lambda)],
-      schedule: cdk.aws_events.Schedule.rate(Duration.minutes(15)),
+      schedule: cdk.aws_events.Schedule.rate(Duration.minutes(16)),
     }
     );
   }

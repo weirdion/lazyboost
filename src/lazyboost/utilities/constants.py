@@ -33,7 +33,7 @@ constants module contains constant variables as static references across the pro
 """
 
 # version of the application
-__version__ = "0.2.0"
+__version__ = "1.0.0"
 
 # cli top-level constants
 CLI_NAME = "lazyboost"

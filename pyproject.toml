@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lazyboost"
-version = "0.2.0"
+version = "1.0.0"
 description = "Python application to pull and sync Orders and Listings between Shopify and Etsy."
 authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
 license = "GPL-3.0-or-later"
