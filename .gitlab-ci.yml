@@ -19,8 +19,8 @@ build-image:
     - docker push $CI_REGISTRY/$BUILD_IMAGE:latest
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-      changes:
-      - .meta/Dockerfile
+      # changes:
+      # - .meta/Dockerfile
 
 .setup:
   script:  
