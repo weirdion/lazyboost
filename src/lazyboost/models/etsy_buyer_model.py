@@ -35,7 +35,9 @@ class EtsyBuyer:
         _email = str(obj.get("buyer_email"))
         _address_first_line = str(obj.get("first_line"))
         _address_second_temp = str(obj.get("second_line"))
-        _address_second_line = _address_second_temp if _address_second_temp and _address_second_temp != "None" else ""
+        _address_second_line = (
+            _address_second_temp if _address_second_temp and _address_second_temp != "None" else ""
+        )
         _address_city = str(obj.get("city"))
         _address_state = str(obj.get("state"))
         _address_zip = str(obj.get("zip"))

@@ -35,9 +35,7 @@ class _HelpActionLongFormat(_HelpAction):  # pylint: disable=too-few-public-meth
 
         # retrieve subparsers from parser
         subparsers_actions = [
-            action
-            for action in parser._actions
-            if isinstance(action, _SubParsersAction)
+            action for action in parser._actions if isinstance(action, _SubParsersAction)
         ]
 
         for subparsers_action in subparsers_actions:

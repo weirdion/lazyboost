@@ -33,33 +33,21 @@ class ShopifyClient:
     def __init__(self, secret_manager_client: SecretManagerClient):
         self.sm_client = secret_manager_client
         self.api_version = "2023-01"
-        self.is_test_mode = (
-            True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
-        )
+        self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 
         if self.is_test_mode:
             self.shop_url = self.sm_client.secret_variables["SHOPIFY_TEST_SHOP_URL"]
             self.api_key = self.sm_client.secret_variables["SHOPIFY_TEST_API_KEY"]
-            self.client_secret = self.sm_client.secret_variables[
-                "SHOPIFY_TEST_SECRET_KEY"
-            ]
-            self.access_token = self.sm_client.secret_variables[
-                "SHOPIFY_TEST_ACCESS_TOKEN"
-            ]
+            self.client_secret = self.sm_client.secret_variables["SHOPIFY_TEST_SECRET_KEY"]
+            self.access_token = self.sm_client.secret_variables["SHOPIFY_TEST_ACCESS_TOKEN"]
         else:
             self.shop_url = self.sm_client.secret_variables["SHOPIFY_AFD_SHOP_URL"]
             self.api_key = self.sm_client.secret_variables["SHOPIFY_AFD_API_KEY"]
-            self.client_secret = self.sm_client.secret_variables[
-                "SHOPIFY_AFD_SECRET_KEY"
-            ]
-            self.access_token = self.sm_client.secret_variables[
-                "SHOPIFY_AFD_ACCESS_TOKEN"
-            ]
+            self.client_secret = self.sm_client.secret_variables["SHOPIFY_AFD_SECRET_KEY"]
+            self.access_token = self.sm_client.secret_variables["SHOPIFY_AFD_ACCESS_TOKEN"]
 
         logger.info("Initiating Shopify session")
-        self.session = shopify.Session(
-            self.shop_url, self.api_version, self.access_token
-        )
+        self.session = shopify.Session(self.shop_url, self.api_version, self.access_token)
         shopify.ShopifyResource.activate_session(self.session)
 
     def __del__(self):
@@ -67,16 +55,12 @@ class ShopifyClient:
         shopify.ShopifyResource.clear_session()
 
     def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer:
-        response = shopify.Customer.search(
-            session=self.session, query=f"email:{etsy_buyer.email}"
-        )
+        response = shopify.Customer.search(session=self.session, query=f"email:{etsy_buyer.email}")
         if not response:
             return None
         return ShopifyCustomer.from_dict(response[0].attributes)
 
-    def update_customer(
-        self, etsy_buyer: EtsyBuyer, shopify_customer: ShopifyCustomer
-    ) -> None:
+    def update_customer(self, etsy_buyer: EtsyBuyer, shopify_customer: ShopifyCustomer) -> None:
         default_address = shopify_customer.default_address
 
         is_existing_address = default_address.is_billing_address_same(etsy_buyer)
@@ -102,16 +86,12 @@ class ShopifyClient:
         if not is_existing_address:
             self.add_customer_address(etsy_buyer, shopify_customer.id)
 
-    def add_customer_address(
-        self, etsy_buyer: EtsyBuyer, shopify_customer_id: int
-    ) -> None:
+    def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
         logger.info(f"Adding new address for {shopify_customer_id}")
 
         response = shopify.Customer.post(
             f"{shopify_customer_id}/addresses",
-            body=json.dumps({"address": etsy_buyer.to_shopify_address()}).encode(
-                "utf-8"
-            ),
+            body=json.dumps({"address": etsy_buyer.to_shopify_address()}).encode("utf-8"),
         )
         logger.debug(f"update customer response: {response}")
 
@@ -192,9 +172,7 @@ class ShopifyClient:
                     }
                     for t in etsy_order.transactions
                 ],
-                "note": f"Gift Message: {etsy_order.gift_message}"
-                if etsy_order.is_gift
-                else "",
+                "note": f"Gift Message: {etsy_order.gift_message}" if etsy_order.is_gift else "",
                 "send_receipt": True,
                 "shipping_address": etsy_order.buyer.to_shopify_address(),
                 "shipping_lines": [
@@ -211,9 +189,7 @@ class ShopifyClient:
                     {
                         "title": "Etsy Sales Tax",
                         "price": etsy_order.sale_tax_cost,
-                        "rate": round(
-                            etsy_order.sale_tax_cost / etsy_order.sale_subtotal_cost, 2
-                        ),
+                        "rate": round(etsy_order.sale_tax_cost / etsy_order.sale_subtotal_cost, 2),
                         "channel_liable": None,
                     }
                 ],
@@ -232,8 +208,6 @@ class ShopifyClient:
             }
         )
         if new_order.errors:
-            logger.error(
-                f"Error occurred during order creation: {new_order.errors.errors}"
-            )
+            logger.error(f"Error occurred during order creation: {new_order.errors.errors}")
         else:
             logger.info(f"Shopify order created successfully: {new_order}")

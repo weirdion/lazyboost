@@ -27,9 +27,7 @@ def update_clipboard_tags():
     current_clipboard.sort()
 
     logger.info(f"Cleaned up Etsy tags: {_etsy_description_tags(current_clipboard)}")
-    logger.info(
-        f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}"
-    )
+    logger.info(f"Cleaned up Facebook tags: {_facebook_post_description_tags(current_clipboard)}")
     pyperclip.copy(_etsy_description_tags(current_clipboard))
     pyperclip.copy(_facebook_post_description_tags(current_clipboard))
 

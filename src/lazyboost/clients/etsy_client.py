@@ -38,16 +38,12 @@ class EtsyClient:
             "Authorization": f"Bearer {self.access_token}",
         }
 
-    def _http_oauth_request(
-        self, method, suffix, params: dict = None, data: dict = None
-    ):
+    def _http_oauth_request(self, method, suffix, params: dict = None, data: dict = None):
         """
         Execute HTTP API requests for Etsy REST API.
         """
         request_url = urljoin(constants.ETSY_API_BASE_URL, suffix)
-        logger.info(
-            f"Sending {method} request to {request_url}, params: {params}, data: {data}"
-        )
+        logger.info(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
 
         response = requests.request(
             method=method,
@@ -59,10 +55,7 @@ class EtsyClient:
 
         logger.info(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
 
-        if (
-            response.status_code == 401
-            and response.json().get("error") == "invalid_token"
-        ):
+        if response.status_code == 401 and response.json().get("error") == "invalid_token":
             self._refresh_token()
             logger.info("Retrying API call after Token Refresh...")
             response = requests.request(
@@ -76,9 +69,7 @@ class EtsyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            raise ConnectionError(
-                f"Could Not Connect. Status Code: {response.status_code}"
-            )
+            raise ConnectionError(f"Could Not Connect. Status Code: {response.status_code}")
 
     def _refresh_token(self):
         """
@@ -126,9 +117,7 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(
-                    round((datetime.now() - timedelta(minutes=20)).timestamp())
-                ),
+                "min_created": int(round((datetime.now() - timedelta(minutes=20)).timestamp())),
                 "max_created": int(round(datetime.now().timestamp())),
                 "sort_order": "ascending",
                 "was_shipped": False,
