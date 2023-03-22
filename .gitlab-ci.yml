@@ -86,8 +86,10 @@ aws-cdk-deploy:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   before_script:
     - apk add --no-cache aws-cli nodejs npm
+    - node --version  # Print version for debugging
+    - npm install -g aws-cdk
     - npm install
   script:
     - !reference [.assume, script]
-    - npm run cdk bootstrap
-    - npm run cdk-deploy
+    - cdk bootstrap
+    - cdk deploy --require-approval never
