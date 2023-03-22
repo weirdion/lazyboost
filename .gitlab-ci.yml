@@ -8,7 +8,7 @@ stages:
   - aws-cdk-deploy
 
 build-image:
-  image: docker:stable
+  image: docker:dind
   services:
     - docker:dind
   stage: prepare
@@ -78,7 +78,7 @@ aws-cdk-diff:
     - npm run cdk diff
 
 aws-cdk-deploy:
-  image: docker:stable
+  image: docker:dind
   services:
     - docker:dind
   stage: aws-cdk-deploy
