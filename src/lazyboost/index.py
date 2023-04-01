@@ -21,9 +21,12 @@ from lazyboost.handlers import OrderHandler, OrdersEnum
 logger = Logger()
 
 
-def order_sync_handler(event, context):
+def handler(event, context):
     """
-    Function that acts as an entrypoint for Order Sync entrypoint
+    Handler function, entry point for the lambda triggers
     """
-    logger.debug(f"Starting lambda with event: {event}")
-    OrderHandler(order_sync_type=OrdersEnum.SYNC)
+    logger.info(f"Starting lambda with event", event=event)
+    if event["task"] == "order_sync":
+        OrderHandler(order_sync_type=OrdersEnum.SYNC)
+    elif event["task"] == "review_sync":
+        pass

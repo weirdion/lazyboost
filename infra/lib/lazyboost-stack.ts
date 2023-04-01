@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { RuleTargetInput } from 'aws-cdk-lib/aws-events';
 import { DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
@@ -27,7 +28,13 @@ export class LazyboostStack extends cdk.Stack {
 
     new cdk.aws_events.Rule(this, 'order-sync-rule', {
       description: 'Rule to sync orders between Etsy and Shopify',
-      targets: [new cdk.aws_events_targets.LambdaFunction(lazyboost_lambda)],
+      targets: [
+        new cdk.aws_events_targets.LambdaFunction(
+          lazyboost_lambda,
+          {
+            event: RuleTargetInput.fromObject({ "task": "order_sync"})
+          }
+        )],
       schedule: cdk.aws_events.Schedule.rate(Duration.minutes(16)),
     }
     );

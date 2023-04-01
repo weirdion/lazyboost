@@ -17,4 +17,4 @@ COPY src ${LAMBDA_TASK_ROOT}/src
 RUN poetry install --no-interaction --no-ansi
 
 # Lambda handler
-CMD [ "src.lazyboost.index.order_sync_handler" ]
+CMD [ "src.lazyboost.index.handler" ]
