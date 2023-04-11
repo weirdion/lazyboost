@@ -16,7 +16,7 @@
 #
 from aws_lambda_powertools import Logger
 
-from lazyboost.handlers import OrderHandler, OrdersEnum
+from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
 
 logger = Logger()
 
@@ -29,4 +29,4 @@ def handler(event, context):
     if event["task"] == "order_sync":
         OrderHandler(order_sync_type=OrdersEnum.SYNC)
     elif event["task"] == "review_sync":
-        pass
+        ReviewHandler()
