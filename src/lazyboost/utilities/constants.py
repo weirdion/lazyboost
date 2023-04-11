@@ -39,9 +39,18 @@ __version__ = "1.0.0"
 CLI_NAME = "lazyboost"
 
 # ETSY constants
-ETSY_AUTH_URL = ("https://www.etsy.com/oauth/connect",)
+ETSY_AUTH_URL = "https://www.etsy.com/oauth/connect"
 ETSY_TOKEN_URL = "https://openapi.etsy.com/v3/public/oauth/token"
 ETSY_AUTH_BASE_URL = "https://openapi.etsy.com/v3"
 ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"
+
+# Stamped.io constants
+STAMPED_IO_BASE_URL = "https://stamped.io/api"
+
+# Ref: https://www.shopuploader.com/tools/etsy-product-category-taxonomy
+# Home & Living > Home Decor > Ornaments & Accents - #1023
+# Home & Living > Home Decor > Wreaths & Door Hangers > Wreaths - #1930
+# Home & Living > Home Decor > Wreaths & Door Hangers > Door Hangers - #1931
+ETSY_TRANSACTION_ID_DICT = {"Bows": 1023, "Wreaths": 1930, "Door Hangers": 1931, "Swags": 1931}
 
 # SHOPIFY constants

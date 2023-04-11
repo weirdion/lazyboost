@@ -43,7 +43,7 @@ class EtsyClient:
         Execute HTTP API requests for Etsy REST API.
         """
         request_url = urljoin(constants.ETSY_API_BASE_URL, suffix)
-        logger.info(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
+        logger.debug(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
 
         response = requests.request(
             method=method,
@@ -53,7 +53,7 @@ class EtsyClient:
             data=data,
         )
 
-        logger.info(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
+        logger.debug(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
 
         if response.status_code == 401 and response.json().get("error") == "invalid_token":
             self._refresh_token()
@@ -75,7 +75,7 @@ class EtsyClient:
         """
         Update Etsy Oauth tokens after expiration.
         """
-        logger.info("Attempting to update Access and Refresh tokens...")
+        logger.debug("Attempting to update Access and Refresh tokens...")
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {
             "grant_type": "refresh_token",
@@ -84,7 +84,7 @@ class EtsyClient:
         }
         resp = requests.post(constants.ETSY_TOKEN_URL, headers=headers, data=data)
         if resp.status_code == 200:
-            logger.info("Successfully updated Access and Refresh tokens...")
+            logger.debug("Successfully updated Access and Refresh tokens...")
             self.update_tokens(resp.json())
             self.set_headers()
 
@@ -122,5 +122,49 @@ class EtsyClient:
                 "sort_order": "ascending",
                 "was_shipped": False,
             },
+        )
+        return response
+
+    def get_shop_reviews(self):
+        """
+        Retrieve Etsy shop reviews.
+        """
+        logger.info("Retrieving shop reviews...")
+        path = f"shops/{self.shop_id}/reviews"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+            params={
+                "min_created": int(round((datetime.now() - timedelta(days=5)).timestamp())),
+                "max_created": int(round(datetime.now().timestamp())),
+                "limit": 3
+            },
+        )
+        return response
+
+    def get_uer_info(self, user_id: int):
+        """
+        Retrieves Etsy user information with user_id.
+        :param user_id: int, user id of the user to query.
+        """
+        logger.debug("Retrieving Etsy user")
+        path = f"users/{user_id}"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+        )
+        return response
+
+    def get_shop_transaction(self, transaction_id: int):
+        """
+        Retrieves Etsy user information with user_id.
+        :param transaction_id: int, transaction id of the shop to query.
+        """
+        logger.debug("Retrieving Etsy transaction")
+        # https://openapi.etsy.com/v3/application/
+        path = f"shops/{self.shop_id}/transactions/{transaction_id}"
+        response = self._http_oauth_request(
+            "GET",
+            path,
         )
         return response
