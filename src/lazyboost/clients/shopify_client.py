@@ -25,6 +25,7 @@ from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
+from lazyboost.models.shopify_product_model import ShopifyProduct
 
 logger = Logger()
 
@@ -53,6 +54,10 @@ class ShopifyClient:
     def __del__(self):
         logger.debug("Clearing shopify session")
         shopify.ShopifyResource.clear_session()
+
+    @property
+    def shopify_domain(self) -> str:
+        return self.session.url
 
     def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer:
         response = shopify.Customer.search(session=self.session, query=f"email:{etsy_buyer.email}")
@@ -121,8 +126,6 @@ class ShopifyClient:
                 edges {
                   node {
                     id
-                    sku
-                    title
                   }
                 }
               }
@@ -130,9 +133,50 @@ class ShopifyClient:
             """,
             variables={"filter": f"sku:{product_sku}"},
         )
-        products = json.loads(res)["data"]["productVariants"]["edges"]
-        logger.info(f"Product found: {products}")
-        return products[0]["node"]["id"].rsplit("/", 1)[-1]
+
+        response_dict: dict = json.loads(res)
+        if "errors" in response_dict.keys() and response_dict["errors"]:
+            logger.error("Failed to get product variant.", error=response_dict)
+        else:
+            products = json.loads(res)["data"]["productVariants"]["edges"]
+            logger.info(f"Product found: {products}")
+            return products[0]["node"]["id"].rsplit("/", 1)[-1]
+
+    def get_product_info(self, product_sku: str):
+        res = shopify.GraphQL().execute(
+            query="""
+            query($filter: String!) {
+              productVariants(first: 1, query: $filter) {
+                edges {
+                  node {
+                    id
+                    product {
+                      id
+                      title
+                      onlineStoreUrl
+                      handle
+                      featuredImage {
+                        url
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            """,
+            variables={"filter": f"sku:{product_sku}"},
+        )
+
+        response_dict: dict = json.loads(res)
+        if "errors" in response_dict.keys() and response_dict["errors"]:
+            logger.error("Failed to get product.", error=response_dict)
+        else:
+            products = json.loads(res)["data"]["productVariants"]["edges"]
+            logger.info(f"Product found: {products}")
+            if products:
+                return ShopifyProduct.from_dict(products[0]["node"]["product"])
+            else:
+                return None
 
     def does_order_exist(self, receipt_id: int) -> str:
         res = shopify.GraphQL().execute(
