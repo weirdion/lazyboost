@@ -18,11 +18,15 @@
 """
 ReviewHandler module handles operations related to pulling reviews from Etsy.
 """
+import csv
+from datetime import datetime, timedelta
 from typing import List
 
 from aws_lambda_powertools import Logger
 
+from lazyboost.clients import ShopifyClient
 from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.judge_me_client import JudgeMeClient
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.models.etsy_review_model import EtsyReview
 
@@ -36,6 +40,8 @@ class ReviewHandler:
 
         self.secret_manager_client = SecretManagerClient()
         self.etsy_client = EtsyClient(self.secret_manager_client)
+        self.shopify_client = ShopifyClient(self.secret_manager_client)
+        self.judge_me_client = JudgeMeClient(self.secret_manager_client)
 
         etsy_reviews = self._get_etsy_reviews()
         if not etsy_reviews:
@@ -56,5 +62,35 @@ class ReviewHandler:
         return etsy_reviews
 
     def _sync_etsy_reviews(self, etsy_reviews: List[EtsyReview]):
-        # for review in etsy_reviews:
-        pass
+        for review in etsy_reviews:
+            if review.etsy_transaction.sku:
+                shopify_product = self.shopify_client.get_product_info(review.etsy_transaction.sku)
+            else:
+                logger.error(f"Etsy review did not contain sku: {review}")
+                continue
+
+            review_transformed = review.to_judge_me_review_dict(
+                self.shopify_client.shopify_domain, int(shopify_product.id.rsplit("/", 1)[-1])
+            )
+
+            logger.info("Creating a new review on JudgeMe...")
+            self.judge_me_client.create_review(review_transformed)
+
+    def export_etsy_reviews(self, etsy_reviews: List[EtsyReview]):
+        csv_rows = []
+        for review in etsy_reviews:
+            shopify_product = None
+            if review.etsy_transaction.sku:
+                shopify_product = self.shopify_client.get_product_info(review.etsy_transaction.sku)
+            else:
+                logger.warning(f"Parsing review without an SKU: {review}")
+
+            csv_rows.append(review.csv_row_judge_me(shopify_product))
+
+        date_now = datetime.now().strftime("%m%d%Y")
+        with open(
+            f"{self.shopify_client.shopify_domain}-etsy-reviews-{date_now}.csv", "w"
+        ) as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=",")
+            csv_writer.writerow(EtsyReview.csv_header_judge_me())
+            csv_writer.writerows(csv_rows)

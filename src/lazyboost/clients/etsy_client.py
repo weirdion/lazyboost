@@ -134,7 +134,7 @@ class EtsyClient:
         response = self._http_oauth_request("GET", path)
         return response
 
-    def get_shop_reviews(self, timestamp_min: int, timestamp_max: int):
+    def get_shop_reviews(self):
         """
         Retrieve Etsy shop reviews.
         """

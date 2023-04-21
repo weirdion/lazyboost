@@ -47,6 +47,12 @@ ETSY_API_BASE_URL = "https://openapi.etsy.com/v3/application/"
 # Stamped.io constants
 STAMPED_IO_BASE_URL = "https://stamped.io/api"
 
+# Judge.me constants
+JUDGE_ME_BASE_URL = "https://judge.me/api/v1"
+JUDGE_ME_REVIEW_PLATFORM = "shopify"
+JUDGE_ME_REVIEW_NAME_FORMAT = "last_initial"
+JUDGE_ME_TIME_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
+
 # Ref: https://www.shopuploader.com/tools/etsy-product-category-taxonomy
 # Home & Living > Home Decor > Ornaments & Accents - #1023
 # Home & Living > Home Decor > Wreaths & Door Hangers > Wreaths - #1930

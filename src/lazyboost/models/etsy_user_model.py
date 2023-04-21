@@ -26,7 +26,7 @@ class EtsyUser:
     last_name: str
 
     @staticmethod
-    def from_dict(obj: Any) -> 'EtsyUser':
+    def from_dict(obj: Any) -> "EtsyUser":
         _user_id = int(obj.get("user_id"))
         _primary_email = str(obj.get("primary_email"))
         _first_name = str(obj.get("first_name"))

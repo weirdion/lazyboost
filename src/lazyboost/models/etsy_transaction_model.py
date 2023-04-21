@@ -32,7 +32,7 @@ class EtsyTransaction:
     sku: str
 
     @staticmethod
-    def from_dict(obj: Any) -> 'EtsyTransaction':
+    def from_dict(obj: Any) -> "EtsyTransaction":
         _transaction_id = int(obj.get("transaction_id"))
         _title = str(obj.get("title"))
         _description = str(obj.get("description"))
@@ -43,6 +43,15 @@ class EtsyTransaction:
         _transaction_type = str(obj.get("transaction_type"))
         _product_id = int(obj.get("product_id"))
         _sku = str(obj.get("sku"))
-        return EtsyTransaction(_transaction_id, _title, _description,
-                               _seller_user_id, _buyer_user_id, _receipt_id,
-                               _listing_id, _transaction_type, _product_id, _sku)
+        return EtsyTransaction(
+            _transaction_id,
+            _title,
+            _description,
+            _seller_user_id,
+            _buyer_user_id,
+            _receipt_id,
+            _listing_id,
+            _transaction_type,
+            _product_id,
+            _sku,
+        )
