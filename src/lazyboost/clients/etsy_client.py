@@ -109,9 +109,9 @@ class EtsyClient:
 
     def get_shop_receipts(self):
         """
-        Retrieve Etsy shop transactions.
+        Retrieve Etsy shop receipts.
         """
-        logger.info("Retrieving shop transactions...")
+        logger.info("Retrieving shop receipts...")
         path = f"shops/{self.shop_id}/receipts"
         response = self._http_oauth_request(
             "GET",
@@ -125,7 +125,16 @@ class EtsyClient:
         )
         return response
 
-    def get_shop_reviews(self):
+    def get_shop_receipt(self, receipt_id: int):
+        """
+        Retrieve Etsy shop receipt by id.
+        """
+        logger.info("Retrieving shop transactions...")
+        path = f"shops/{self.shop_id}/receipts/{receipt_id}"
+        response = self._http_oauth_request("GET", path)
+        return response
+
+    def get_shop_reviews(self, timestamp_min: int, timestamp_max: int):
         """
         Retrieve Etsy shop reviews.
         """
@@ -135,9 +144,8 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round((datetime.now() - timedelta(days=5)).timestamp())),
+                "min_created": int(round((datetime.now() - timedelta(minutes=15)).timestamp())),
                 "max_created": int(round(datetime.now().timestamp())),
-                "limit": 3
             },
         )
         return response
