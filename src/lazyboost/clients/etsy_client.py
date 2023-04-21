@@ -21,14 +21,16 @@ import requests
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.models import singleton
 from lazyboost.utilities import constants
 
 logger = Logger()
 
 
+@singleton
 class EtsyClient:
-    def __init__(self, secret_manager_client: SecretManagerClient):
-        self.sm_client = secret_manager_client
+    def __init__(self):
+        self.sm_client = SecretManagerClient()
         self.api_key_string = self.sm_client.secret_variables["ETSY_KEY_STRING"]
         self.access_token = self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"]
         self.refresh_token = self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"]

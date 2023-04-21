@@ -22,6 +22,7 @@ import shopify
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.models import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
@@ -30,9 +31,10 @@ from lazyboost.models.shopify_product_model import ShopifyProduct
 logger = Logger()
 
 
+@singleton
 class ShopifyClient:
-    def __init__(self, secret_manager_client: SecretManagerClient):
-        self.sm_client = secret_manager_client
+    def __init__(self):
+        self.sm_client = SecretManagerClient()
         self.api_version = "2023-01"
         self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 

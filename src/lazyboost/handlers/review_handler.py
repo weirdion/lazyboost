@@ -39,9 +39,9 @@ class ReviewHandler:
         logger.info(f"Initializing ReviewHandler")
 
         self.secret_manager_client = SecretManagerClient()
-        self.etsy_client = EtsyClient(self.secret_manager_client)
-        self.shopify_client = ShopifyClient(self.secret_manager_client)
-        self.judge_me_client = JudgeMeClient(self.secret_manager_client)
+        self.etsy_client = EtsyClient()
+        self.shopify_client = ShopifyClient()
+        self.judge_me_client = JudgeMeClient()
 
         etsy_reviews = self._get_etsy_reviews()
         if not etsy_reviews:

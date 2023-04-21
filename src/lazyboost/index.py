@@ -30,3 +30,6 @@ def handler(event, context):
         OrderHandler(order_sync_type=OrdersEnum.SYNC)
     elif event["task"] == "review_sync":
         ReviewHandler()
+    elif event["task"] == "sync":
+        OrderHandler(order_sync_type=OrdersEnum.SYNC)
+        ReviewHandler()

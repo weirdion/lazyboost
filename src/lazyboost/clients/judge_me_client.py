@@ -26,8 +26,8 @@ logger = Logger()
 
 
 class JudgeMeClient:
-    def __init__(self, secret_manager_client: SecretManagerClient):
-        self.sm_client = secret_manager_client
+    def __init__(self):
+        self.sm_client = SecretManagerClient()
 
         # self.public_token = self.sm_client.secret_variables["JUDGE_ME_PUBLIC_KEY"]
         # self.private_token = self.sm_client.secret_variables["JUDGE_ME_PRIVATE_KEY"]
