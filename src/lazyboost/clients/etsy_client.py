@@ -146,7 +146,7 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round((datetime.now() - timedelta(minutes=15)).timestamp())),
+                "min_created": int(round((datetime.now() - timedelta(minutes=16)).timestamp())),
                 "max_created": int(round(datetime.now().timestamp())),
             },
         )

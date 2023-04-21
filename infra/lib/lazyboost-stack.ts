@@ -69,7 +69,7 @@ export class LazyboostStack extends cdk.Stack {
         new cdk.aws_events_targets.LambdaFunction(
           lazyboost_lambda,
           {
-            event: RuleTargetInput.fromObject({ "task": "order_sync"})
+            event: RuleTargetInput.fromObject({ "task": "sync"})
           }
         )],
       schedule: cdk.aws_events.Schedule.rate(Duration.minutes(16)),
