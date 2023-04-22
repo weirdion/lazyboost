@@ -57,7 +57,7 @@ class ReviewHandler:
             e = EtsyReview.from_dict(r)
             logger.info(f"Detected Etsy review: {e}")
             e.get_additional_info(self.etsy_client)
-            logger.info(f"Retrieved full etsy review information: {e}")
+            logger.debug(f"Retrieved full etsy review information: {e}")
             etsy_reviews.append(e)
         return etsy_reviews
 

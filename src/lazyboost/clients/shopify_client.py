@@ -174,7 +174,7 @@ class ShopifyClient:
             logger.error("Failed to get product.", error=response_dict)
         else:
             products = json.loads(res)["data"]["productVariants"]["edges"]
-            logger.info(f"Product found: {products}")
+            logger.debug(f"Product found: {products}")
             if products:
                 return ShopifyProduct.from_dict(products[0]["node"]["product"])
             else:

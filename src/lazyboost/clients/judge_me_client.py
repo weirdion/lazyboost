@@ -56,7 +56,7 @@ class JudgeMeClient:
 
         logger.debug(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
 
-        if response.status_code == 200:
+        if 200 <= response.status_code < 300:
             return response.json()
         else:
             raise ConnectionError(

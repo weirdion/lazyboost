@@ -131,7 +131,7 @@ class EtsyClient:
         """
         Retrieve Etsy shop receipt by id.
         """
-        logger.info("Retrieving shop transactions...")
+        logger.debug("Retrieving shop transactions...")
         path = f"shops/{self.shop_id}/receipts/{receipt_id}"
         response = self._http_oauth_request("GET", path)
         return response
@@ -140,7 +140,7 @@ class EtsyClient:
         """
         Retrieve Etsy shop reviews.
         """
-        logger.info("Retrieving shop reviews...")
+        logger.debug("Retrieving shop reviews...")
         path = f"shops/{self.shop_id}/reviews"
         response = self._http_oauth_request(
             "GET",
