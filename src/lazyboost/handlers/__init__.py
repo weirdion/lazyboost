@@ -16,5 +16,6 @@
 #
 
 from lazyboost.handlers.order_handler import OrderHandler, OrdersEnum
+from lazyboost.handlers.review_handler import ReviewHandler
 
-__all__ = [OrdersEnum, OrderHandler]
+__all__ = [OrdersEnum, OrderHandler, ReviewHandler]

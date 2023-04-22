@@ -21,14 +21,16 @@ import requests
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
+from lazyboost.models import singleton
 from lazyboost.utilities import constants
 
 logger = Logger()
 
 
+@singleton
 class EtsyClient:
-    def __init__(self, secret_manager_client: SecretManagerClient):
-        self.sm_client = secret_manager_client
+    def __init__(self):
+        self.sm_client = SecretManagerClient()
         self.api_key_string = self.sm_client.secret_variables["ETSY_KEY_STRING"]
         self.access_token = self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"]
         self.refresh_token = self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"]
@@ -43,7 +45,7 @@ class EtsyClient:
         Execute HTTP API requests for Etsy REST API.
         """
         request_url = urljoin(constants.ETSY_API_BASE_URL, suffix)
-        logger.info(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
+        logger.debug(f"Sending {method} request to {request_url}, params: {params}, data: {data}")
 
         response = requests.request(
             method=method,
@@ -53,7 +55,7 @@ class EtsyClient:
             data=data,
         )
 
-        logger.info(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
+        logger.debug(f"STATUS_CODE: {response.status_code} | URL: {request_url}")
 
         if response.status_code == 401 and response.json().get("error") == "invalid_token":
             self._refresh_token()
@@ -75,7 +77,7 @@ class EtsyClient:
         """
         Update Etsy Oauth tokens after expiration.
         """
-        logger.info("Attempting to update Access and Refresh tokens...")
+        logger.debug("Attempting to update Access and Refresh tokens...")
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         data = {
             "grant_type": "refresh_token",
@@ -84,7 +86,7 @@ class EtsyClient:
         }
         resp = requests.post(constants.ETSY_TOKEN_URL, headers=headers, data=data)
         if resp.status_code == 200:
-            logger.info("Successfully updated Access and Refresh tokens...")
+            logger.debug("Successfully updated Access and Refresh tokens...")
             self.update_tokens(resp.json())
             self.set_headers()
 
@@ -109,9 +111,9 @@ class EtsyClient:
 
     def get_shop_receipts(self):
         """
-        Retrieve Etsy shop transactions.
+        Retrieve Etsy shop receipts.
         """
-        logger.info("Retrieving shop transactions...")
+        logger.info("Retrieving shop receipts...")
         path = f"shops/{self.shop_id}/receipts"
         response = self._http_oauth_request(
             "GET",
@@ -122,5 +124,57 @@ class EtsyClient:
                 "sort_order": "ascending",
                 "was_shipped": False,
             },
+        )
+        return response
+
+    def get_shop_receipt(self, receipt_id: int):
+        """
+        Retrieve Etsy shop receipt by id.
+        """
+        logger.debug("Retrieving shop transactions...")
+        path = f"shops/{self.shop_id}/receipts/{receipt_id}"
+        response = self._http_oauth_request("GET", path)
+        return response
+
+    def get_shop_reviews(self):
+        """
+        Retrieve Etsy shop reviews.
+        """
+        logger.debug("Retrieving shop reviews...")
+        path = f"shops/{self.shop_id}/reviews"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+            params={
+                "min_created": int(round((datetime.now() - timedelta(minutes=16)).timestamp())),
+                "max_created": int(round(datetime.now().timestamp())),
+            },
+        )
+        return response
+
+    def get_uer_info(self, user_id: int):
+        """
+        Retrieves Etsy user information with user_id.
+        :param user_id: int, user id of the user to query.
+        """
+        logger.debug("Retrieving Etsy user")
+        path = f"users/{user_id}"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+        )
+        return response
+
+    def get_shop_transaction(self, transaction_id: int):
+        """
+        Retrieves Etsy user information with user_id.
+        :param transaction_id: int, transaction id of the shop to query.
+        """
+        logger.debug("Retrieving Etsy transaction")
+        # https://openapi.etsy.com/v3/application/
+        path = f"shops/{self.shop_id}/transactions/{transaction_id}"
+        response = self._http_oauth_request(
+            "GET",
+            path,
         )
         return response

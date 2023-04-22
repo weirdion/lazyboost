@@ -45,8 +45,8 @@ class OrderHandler:
         logger.info(f"Initializing OrderHandler for: {order_sync_type}")
 
         self.secret_manager_client = SecretManagerClient()
-        self.etsy_client = EtsyClient(self.secret_manager_client)
-        self.shopify_client = ShopifyClient(self.secret_manager_client)
+        self.etsy_client = EtsyClient()
+        self.shopify_client = ShopifyClient()
 
         if order_sync_type == OrdersEnum.SYNC:
             etsy_orders = self._get_etsy_orders()

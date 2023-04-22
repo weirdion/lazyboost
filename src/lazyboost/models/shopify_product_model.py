@@ -14,22 +14,24 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from aws_lambda_powertools import Logger
 
-from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
-
-logger = Logger()
+from dataclasses import dataclass
+from typing import Any
 
 
-def handler(event, context):
-    """
-    Handler function, entry point for the lambda triggers
-    """
-    logger.info(f"Starting lambda with event", event=event)
-    if event["task"] == "order_sync":
-        OrderHandler(order_sync_type=OrdersEnum.SYNC)
-    elif event["task"] == "review_sync":
-        ReviewHandler()
-    elif event["task"] == "sync":
-        OrderHandler(order_sync_type=OrdersEnum.SYNC)
-        ReviewHandler()
+@dataclass
+class ShopifyProduct:
+    id: str
+    title: str
+    online_store_url: str
+    handle: str
+    featured_image_url: str
+
+    @staticmethod
+    def from_dict(obj: Any) -> "ShopifyProduct":
+        _id = str(obj.get("id"))
+        _title = str(obj.get("title"))
+        _online_store_url = str(obj.get("onlineStoreUrl"))
+        _handle = str(obj.get("handle"))
+        _featured_image_url = dict(obj.get("featuredImage"))["url"]
+        return ShopifyProduct(_id, _title, _online_store_url, _handle, _featured_image_url)

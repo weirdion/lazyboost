@@ -14,22 +14,21 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from aws_lambda_powertools import Logger
-
-from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
-
-logger = Logger()
+from dataclasses import dataclass
+from typing import Any
 
 
-def handler(event, context):
-    """
-    Handler function, entry point for the lambda triggers
-    """
-    logger.info(f"Starting lambda with event", event=event)
-    if event["task"] == "order_sync":
-        OrderHandler(order_sync_type=OrdersEnum.SYNC)
-    elif event["task"] == "review_sync":
-        ReviewHandler()
-    elif event["task"] == "sync":
-        OrderHandler(order_sync_type=OrdersEnum.SYNC)
-        ReviewHandler()
+@dataclass
+class EtsyUser:
+    user_id: int
+    primary_email: str
+    first_name: str
+    last_name: str
+
+    @staticmethod
+    def from_dict(obj: Any) -> "EtsyUser":
+        _user_id = int(obj.get("user_id"))
+        _primary_email = str(obj.get("primary_email"))
+        _first_name = str(obj.get("first_name"))
+        _last_name = str(obj.get("last_name"))
+        return EtsyUser(_user_id, _primary_email, _first_name, _last_name)

@@ -21,7 +21,10 @@ import boto3
 from aws_lambda_powertools import Logger
 from botocore.exceptions import ClientError
 
+from lazyboost.models import singleton
 
+
+@singleton
 class SecretManagerClient:
     def __init__(self):
         self.client = boto3.client("secretsmanager")
