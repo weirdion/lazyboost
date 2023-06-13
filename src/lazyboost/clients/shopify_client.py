@@ -71,9 +71,8 @@ class ShopifyClient:
         default_address = shopify_customer.default_address
 
         # default_address will be None for customers that failed with Lambda timeout
-        is_existing_address = (
-            default_address.is_billing_address_same(etsy_buyer) if default_address else False
-        )
+        is_existing_address = default_address.is_billing_address_same(etsy_buyer)
+
         if not is_existing_address:
             for address in shopify_customer.addresses:
                 if address.is_billing_address_same(etsy_buyer):
