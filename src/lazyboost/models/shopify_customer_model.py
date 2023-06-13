@@ -43,7 +43,7 @@ class Address:
 
     def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
         if (
-            etsy_buyer.name != f"{self.first_name} {self.last_name}"
+            etsy_buyer.name != self.name
             or etsy_buyer.address_first_line != self.address1
             or etsy_buyer.address_second_line != self.address2
             or etsy_buyer.address_city != self.city
@@ -62,6 +62,8 @@ class Address:
         _company = str(_address_obj.get("company"))
         _address1 = str(_address_obj.get("address1"))
         _address2 = str(_address_obj.get("address2"))
+        if _address2 == "None":
+            _address2 = ""
         _city = str(_address_obj.get("city"))
         _province = str(_address_obj.get("province"))
         _country = str(_address_obj.get("country"))
