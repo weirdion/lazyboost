@@ -70,8 +70,10 @@ class ShopifyClient:
     def update_customer(self, etsy_buyer: EtsyBuyer, shopify_customer: ShopifyCustomer) -> None:
         default_address = shopify_customer.default_address
 
-        # default_address will be None for customers that failed with Lambda timeout
-        is_existing_address = default_address.is_billing_address_same(etsy_buyer)
+        is_existing_address = None
+        if default_address:
+            # default_address will be None for customers that failed with Lambda timeout
+            is_existing_address = default_address.is_billing_address_same(etsy_buyer)
 
         if not is_existing_address:
             for address in shopify_customer.addresses:
