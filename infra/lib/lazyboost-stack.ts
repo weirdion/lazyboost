@@ -84,12 +84,12 @@ export class LazyboostStack extends cdk.Stack {
             this,
             'LazyBoostError', {
             alarmName: 'LazyBoostError',
-            comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+            comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
             metric: lazyboost_lambda.metricErrors({
                 period: Duration.minutes(15)  // Sum invocation errors at 15 minute interval.
             }),
             threshold: 1,
-            evaluationPeriods: 15
+            evaluationPeriods: 1
         }
         );
 
