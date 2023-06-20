@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Alarm, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, ComparisonOperator, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { RuleTargetInput } from 'aws-cdk-lib/aws-events';
 import { AssetCode, DockerImageCode, DockerImageFunction, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
@@ -86,10 +86,11 @@ export class LazyboostStack extends cdk.Stack {
             alarmName: 'LazyBoostError',
             comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
             metric: lazyboost_lambda.metricErrors({
-                period: Duration.minutes(15)  // Sum invocation errors at 15 minute interval.
+                period: Duration.minutes(1)  // Sum invocation errors at 15 minute interval.
             }),
             threshold: 1,
             evaluationPeriods: 1
+            treatMissingData: TreatMissingData.NOT_BREACHING
         }
         );
 
