@@ -26,6 +26,14 @@ def handler(event, context):
     Handler function, entry point for the lambda triggers
     """
     logger.info(f"Starting lambda with event", event=event)
+
+    if not (
+        isinstance(event, dict)
+        and "task" in event.keys()
+        and event["task"] in ["order_sync", "review_sync", "sync"]
+    ):
+        raise ValueError(f"Invalid event or task type used: {event}, exiting...")
+
     if event["task"] == "order_sync":
         OrderHandler(order_sync_type=OrdersEnum.SYNC)
     elif event["task"] == "review_sync":
