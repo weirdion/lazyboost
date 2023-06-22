@@ -43,11 +43,11 @@ class Address:
 
     def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
         if (
-            etsy_buyer.name != self.name
-            or etsy_buyer.address_first_line != self.address1
-            or etsy_buyer.address_second_line != self.address2
-            or etsy_buyer.address_city != self.city
-            or etsy_buyer.address_state != self.province_code
+            etsy_buyer.name.casefold() != self.name.casefold()
+            or etsy_buyer.address_first_line.casefold() != self.address1.casefold()
+            or etsy_buyer.address_second_line.casefold() != self.address2.casefold()
+            or etsy_buyer.address_city.casefold() != self.city.casefold()
+            or etsy_buyer.address_state.casefold() != self.province_code.casefold()
         ):
             return False
         return True
