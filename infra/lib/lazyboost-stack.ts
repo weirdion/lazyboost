@@ -89,8 +89,8 @@ export class LazyboostStack extends cdk.Stack {
                 period: Duration.minutes(1)  // Sum invocation errors at 15 minute interval.
             }),
             threshold: 1,
-            evaluationPeriods: 1
-            treatMissingData: TreatMissingData.NOT_BREACHING
+            evaluationPeriods: 1,
+            treatMissingData: TreatMissingData.NOT_BREACHING,
         }
         );
 
@@ -100,7 +100,7 @@ export class LazyboostStack extends cdk.Stack {
 
         const lazyboostErrorEmail = new cdk.CfnParameter(this, "errorEmail", {
             type: "String",
-            description: "The email address that will be notified on LazyBoost error is in alarm state."
+            description: "The email address that will be notified on LazyBoost error is in alarm state.",
         });
 
         lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail.valueAsString));
