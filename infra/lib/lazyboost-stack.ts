@@ -1,18 +1,19 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration, RemovalPolicy } from 'aws-cdk-lib';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
-import { Alarm, ComparisonOperator, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
-import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { RuleTargetInput } from 'aws-cdk-lib/aws-events';
 import { AssetCode, DockerImageCode, DockerImageFunction, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Topic } from 'aws-cdk-lib/aws-sns';
-import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Construct } from 'constructs';
 import path = require('path');
 
+export interface LazyBoostProps extends cdk.StackProps {
+    serviceName: string
+    metricNamespace: string
+}
+
 export class LazyboostStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props: LazyBoostProps) {
         super(scope, id, props);
 
         const secret = new secretsmanager.Secret(this, 'LAZYBOOST_CREDS', {
@@ -60,7 +61,7 @@ export class LazyboostStack extends cdk.Stack {
             functionName: 'LazyBoostFunction',
             code: DockerImageCode.fromImageAsset(path.resolve('.')),
             environment: {
-                POWERTOOLS_SERVICE_NAME: 'LazyBoost',
+                POWERTOOLS_SERVICE_NAME: props.serviceName,
                 LOG_LEVEL: 'INFO'
             }
         });
@@ -79,31 +80,5 @@ export class LazyboostStack extends cdk.Stack {
             schedule: cdk.aws_events.Schedule.rate(Duration.minutes(16)),
         }
         );
-
-        const lazyboostFuncAlarm = new Alarm(
-            this,
-            'LazyBoostError', {
-            alarmName: 'LazyBoostError',
-            comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-            metric: lazyboost_lambda.metricErrors({
-                period: Duration.minutes(1)  // Sum invocation errors at 15 minute interval.
-            }),
-            threshold: 1,
-            evaluationPeriods: 1,
-            treatMissingData: TreatMissingData.NOT_BREACHING,
-        }
-        );
-
-        const lazyboostSNSTopic = new Topic(this, 'LazyBoostErrorTopic', {
-            displayName: 'LazyBoostErrorTopic',
-        });
-
-        const lazyboostErrorEmail = new cdk.CfnParameter(this, "errorEmail", {
-            type: "String",
-            description: "The email address that will be notified on LazyBoost error is in alarm state.",
-        });
-
-        lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail.valueAsString));
-        lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
     }
 }
