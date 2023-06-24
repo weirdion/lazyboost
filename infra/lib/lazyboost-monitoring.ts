@@ -33,12 +33,12 @@ export class LazyboostMonitoringStack extends cdk.Stack {
             displayName: 'LazyBoostErrorTopic',
         });
 
-        const lazyboostErrorEmail = new cdk.CfnParameter(this, "errorEmail", {
-            type: "String",
-            description: "The email address that will be notified on LazyBoost error is in alarm state.",
-        });
+        const lazyboostErrorEmail = process.env['LAZYBOOST_ERROR_EMAIL'] as string;
+        if (!lazyboostErrorEmail) {
+            throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.')
+        }
 
-        lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail.valueAsString));
+        lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
         lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
     }
 }
