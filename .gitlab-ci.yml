@@ -92,4 +92,4 @@ aws-cdk-deploy:
   script:
     - !reference [.assume, script]
     - cdk bootstrap
-    - cdk deploy --all --require-approval never --parameters errorEmail=${LAZYBOOST_ERROR_EMAIL}
+    - cdk deploy --all --require-approval never
