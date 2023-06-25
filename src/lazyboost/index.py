@@ -14,11 +14,14 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import warnings
+
 from aws_lambda_powertools import Logger, Metrics, single_metric
 from aws_lambda_powertools.metrics import MetricUnit
 
 from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
 
+warnings.filterwarnings("ignore", "No metrics to publish*")
 logger = Logger()
 metrics = Metrics()
 
