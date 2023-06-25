@@ -51,7 +51,7 @@ def handler(event, context):
         else:
             raise ValueError(f"Invalid task type received: {event['task']}")
     except Exception as e:
-        with single_metric(name="LazyBoostSyncFail", unit=MetricUnit.Count, value=1) as metric:
-            metric.add_dimension(name="Cause", value=str(e))
+        metrics.add_dimension(name="Cause", value=str(e))
+        metrics.add_metric(name="LazyBoostSyncFail", unit=MetricUnit.Count, value=1)
 
         logger.error(e)
