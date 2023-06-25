@@ -14,33 +14,30 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import warnings
 
-from aws_lambda_powertools import Logger, Metrics, single_metric
+from aws_lambda_powertools import Logger, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 
 from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
 
-warnings.filterwarnings("ignore", "No metrics to publish*")
 logger = Logger()
 metrics = Metrics()
 
 
-@metrics.log_metrics  # Make sure metrics are flushed
 def handler(event, context):
     """
     Handler function, entry point for the lambda triggers
     """
-    logger.info(f"Starting lambda with event", event=event)
-
-    if not (
-        isinstance(event, dict)
-        and "task" in event.keys()
-        and event["task"] in ["order_sync", "review_sync", "sync"]
-    ):
-        raise ValueError(f"Invalid event or task type used: {event}, exiting...")
-
     try:
+        logger.info(f"Starting lambda with event", event=event)
+
+        if not (
+            isinstance(event, dict)
+            and "task" in event.keys()
+            and event["task"] in ["order_sync", "review_sync", "sync"]
+        ):
+            raise ValueError(f"Invalid event or task type used: {event}, exiting...")
+
         if event["task"] == "order_sync":
             OrderHandler(order_sync_type=OrdersEnum.SYNC)
         elif event["task"] == "review_sync":
@@ -55,3 +52,5 @@ def handler(event, context):
         metrics.add_metric(name="LazyBoostSyncFail", unit=MetricUnit.Count, value=1)
 
         logger.error(e)
+    finally:
+        metrics.flush_metrics(raise_on_empty_metrics=False)
