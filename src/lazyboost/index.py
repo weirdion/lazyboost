@@ -15,13 +15,13 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from aws_lambda_powertools import Logger, Metrics
-from aws_lambda_powertools.metrics import MetricUnit
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.metrics import MetricUnit, EphemeralMetrics
 
 from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
 
 logger = Logger()
-metrics = Metrics()
+metrics = EphemeralMetrics()
 
 
 def handler(event, context):
@@ -48,7 +48,6 @@ def handler(event, context):
         else:
             raise ValueError(f"Invalid task type received: {event['task']}")
     except Exception as e:
-        metrics.add_dimension(name="Cause", value=str(e))
         metrics.add_metric(name="LazyBoostSyncFail", unit=MetricUnit.Count, value=1)
 
         logger.error(e)
