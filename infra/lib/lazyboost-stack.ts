@@ -62,7 +62,8 @@ export class LazyboostStack extends cdk.Stack {
             code: DockerImageCode.fromImageAsset(path.resolve('.')),
             environment: {
                 POWERTOOLS_SERVICE_NAME: props.serviceName,
-                LOG_LEVEL: 'INFO'
+                LOG_LEVEL: 'INFO',
+                POWERTOOLS_METRICS_NAMESPACE: props.metricNamespace,
             }
         });
         secret.grantRead(lazyboost_lambda);
