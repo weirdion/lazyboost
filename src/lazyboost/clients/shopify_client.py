@@ -35,7 +35,7 @@ logger = Logger()
 class ShopifyClient:
     def __init__(self):
         self.sm_client = SecretManagerClient()
-        self.api_version = "2023-01"
+        self.api_version = "2023-04"
         self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 
         if self.is_test_mode:

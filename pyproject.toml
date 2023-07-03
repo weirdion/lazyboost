@@ -19,7 +19,7 @@ requests = "^2.28.2"
 pyperclip = "^1.8.2"
 shopifyapi = "^12.2.0"
 boto3 = "^1.26.84"
-aws-lambda-powertools = {extras = ["aws-sdk"], version = "^2.9.1"}
+aws-lambda-powertools = {extras = ["all"], version = "^2.9.1"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
