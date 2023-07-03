@@ -1,44 +1,45 @@
 import * as cdk from 'aws-cdk-lib';
-import { Alarm, ComparisonOperator, Metric, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
-import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
-import { Topic } from "aws-cdk-lib/aws-sns";
-import { EmailSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
-import { Construct } from 'constructs';
+import {ComparisonOperator, Metric, TreatMissingData} from "aws-cdk-lib/aws-cloudwatch";
+import {SnsAction} from "aws-cdk-lib/aws-cloudwatch-actions";
+import {Topic} from "aws-cdk-lib/aws-sns";
+import {EmailSubscription} from "aws-cdk-lib/aws-sns-subscriptions";
+import {Construct} from 'constructs';
 
 export interface LazyBoostMonitoringProps extends cdk.StackProps {
-    metricNamespace: string
+  metricNamespace: string
 }
 
 export class LazyboostMonitoringStack extends cdk.Stack {
-    constructor(scope: Construct, id: string, props: LazyBoostMonitoringProps) {
-        super(scope, id, props);
+  constructor(scope: Construct, id: string, props: LazyBoostMonitoringProps) {
+    super(scope, id, props);
 
-        const lazyboostSyncFailMetric = new Metric({
-            namespace: props.metricNamespace,
-            metricName: 'LazyBoostSyncFail',
-        });
+    const lazyboostSyncFailMetric = new Metric({
+      namespace: props.metricNamespace,
+      metricName: 'LazyBoostSyncFail',
+    });
 
-        const lazyboostFuncAlarm = lazyboostSyncFailMetric.createAlarm(
-            this,
-            'LazyBoostSyncFailAlarm', {
-                alarmName: 'LazyBoostSyncFailAlarm',
-                comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
-                threshold: 0,
-                evaluationPeriods: 1,
-                treatMissingData: TreatMissingData.NOT_BREACHING,
-            }
-        );
+    const lazyboostFuncAlarm = lazyboostSyncFailMetric.createAlarm(
+      this,
+      'LazyBoostSyncFailAlarm', {
+        alarmName: 'LazyBoostSyncFailAlarm',
+        comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+        threshold: 0,
+        evaluationPeriods: 1,
+        treatMissingData: TreatMissingData.NOT_BREACHING,
+        actionsEnabled: true,
+      }
+    );
 
-        const lazyboostSNSTopic = new Topic(this, 'LazyBoostErrorTopic', {
-            displayName: 'LazyBoostErrorTopic',
-        });
+    const lazyboostSNSTopic = new Topic(this, 'LazyBoostErrorTopic', {
+      displayName: 'LazyBoostErrorTopic',
+    });
 
-        const lazyboostErrorEmail = process.env['LAZYBOOST_ERROR_EMAIL'] as string;
-        if (!lazyboostErrorEmail) {
-            throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.')
-        }
-
-        lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
-        lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
+    const lazyboostErrorEmail = process.env['LAZYBOOST_ERROR_EMAIL'] as string;
+    if (!lazyboostErrorEmail) {
+      throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.')
     }
+
+    lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
+    lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
+  }
 }
