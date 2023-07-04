@@ -21,7 +21,7 @@ from typing import Any
 from lazyboost.clients import EtsyClient
 from lazyboost.models import EtsyOrder
 from lazyboost.models.etsy_transaction_model import EtsyTransaction
-from lazyboost.models.shopify_product_model import ShopifyProduct
+from lazyboost.models.shopify_product_model import ShopifyMinimalProduct
 from lazyboost.utilities import constants
 from lazyboost.utilities.constants import JUDGE_ME_TIME_FORMAT
 
@@ -81,7 +81,7 @@ class EtsyReview:
         etsy_order_response = etsy_client.get_shop_receipt(self.etsy_transaction.receipt_id)
         self.etsy_order = EtsyOrder.from_dict(etsy_order_response)
 
-    def to_stamped_io_review_dict(self, product_sku: str, shopify_product: ShopifyProduct) -> dict:
+    def to_stamped_io_review_dict(self, product_sku: str, shopify_product: ShopifyMinimalProduct) -> dict:
         review_dict = {
             "productId": shopify_product.id,
             "author": self.etsy_order.buyer.name,
@@ -120,7 +120,7 @@ class EtsyReview:
 
         return review_dict
 
-    def csv_row_judge_me(self, shopify_product: ShopifyProduct) -> list:
+    def csv_row_judge_me(self, shopify_product: ShopifyMinimalProduct) -> list:
         return [
             self.title,
             self.review if self.review else " ",

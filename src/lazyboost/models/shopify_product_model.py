@@ -20,7 +20,7 @@ from typing import Any
 
 
 @dataclass
-class ShopifyProduct:
+class ShopifyMinimalProduct:
     id: str
     title: str
     online_store_url: str
@@ -28,10 +28,10 @@ class ShopifyProduct:
     featured_image_url: str
 
     @staticmethod
-    def from_dict(obj: Any) -> "ShopifyProduct":
+    def from_dict(obj: Any) -> "ShopifyMinimalProduct":
         _id = str(obj.get("id"))
         _title = str(obj.get("title"))
         _online_store_url = str(obj.get("onlineStoreUrl"))
         _handle = str(obj.get("handle"))
         _featured_image_url = dict(obj.get("featuredImage"))["url"]
-        return ShopifyProduct(_id, _title, _online_store_url, _handle, _featured_image_url)
+        return ShopifyMinimalProduct(_id, _title, _online_store_url, _handle, _featured_image_url)

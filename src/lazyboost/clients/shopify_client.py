@@ -26,7 +26,7 @@ from lazyboost.models import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import ShopifyProduct
+from lazyboost.models.shopify_product_model import ShopifyMinimalProduct
 
 logger = Logger()
 
@@ -139,7 +139,7 @@ class ShopifyClient:
 
         response_dict: dict = json.loads(res)
         if "errors" in response_dict.keys() and response_dict["errors"]:
-            logger.error("Failed to get product variant.", error=response_dict)
+            logger.error("Failed to get product variant", error=response_dict)
         else:
             products = json.loads(res)["data"]["productVariants"]["edges"]
             logger.info(f"Product found: {products}")
@@ -172,7 +172,7 @@ class ShopifyClient:
 
         response_dict: dict = json.loads(res)
         if "errors" in response_dict.keys() and response_dict["errors"]:
-            logger.error("Failed to get product.", error=response_dict)
+            logger.error("Failed to get product info", error=response_dict)
         else:
             products = json.loads(res)["data"]["productVariants"]["edges"]
             logger.debug(f"Product found: {products}")
