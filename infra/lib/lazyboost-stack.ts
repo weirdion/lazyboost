@@ -19,9 +19,13 @@
 import * as cdk from 'aws-cdk-lib';
 import {Duration, RemovalPolicy} from 'aws-cdk-lib';
 import {LambdaIntegration, RestApi} from 'aws-cdk-lib/aws-apigateway';
+import {ComparisonOperator, TreatMissingData} from 'aws-cdk-lib/aws-cloudwatch';
+import {SnsAction} from 'aws-cdk-lib/aws-cloudwatch-actions';
 import {RuleTargetInput} from 'aws-cdk-lib/aws-events';
 import {Architecture, AssetCode, DockerImageCode, DockerImageFunction, Function, Runtime} from 'aws-cdk-lib/aws-lambda';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import {Topic} from 'aws-cdk-lib/aws-sns';
+import {EmailSubscription} from 'aws-cdk-lib/aws-sns-subscriptions';
 import {Construct} from 'constructs';
 import path = require('path');
 
@@ -87,6 +91,35 @@ export class LazyboostStack extends cdk.Stack {
     });
     secret.grantRead(lazyboost_lambda);
     secret.grantWrite(lazyboost_lambda);
+
+    const lazyboostMetricErrors = lazyboost_lambda.metricErrors({
+      label: "LazyBoostError",
+      period: Duration.minutes(1),
+    });
+
+    const lazyboostFuncAlarm = lazyboostMetricErrors.createAlarm(
+      this,
+      'LazyBoostErrorAlarm', {
+        alarmName: 'LazyBoostErrorAlarm',
+        comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+        threshold: 0,
+        evaluationPeriods: 1,
+        treatMissingData: TreatMissingData.NOT_BREACHING,
+        actionsEnabled: true,
+      }
+    );
+
+    const lazyboostSNSTopic = new Topic(this, 'LazyBoostErrorTopic', {
+      displayName: 'LazyBoostErrorTopic',
+    });
+
+    const lazyboostErrorEmail = process.env['LAZYBOOST_ERROR_EMAIL'] as string;
+    if (!lazyboostErrorEmail) {
+      throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.')
+    }
+
+    lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
+    lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
 
     new cdk.aws_events.Rule(this, 'order-sync-rule', {
         description: 'Rule to sync orders between Etsy and Shopify',
