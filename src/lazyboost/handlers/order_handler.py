@@ -24,16 +24,16 @@ from typing import List
 
 from aws_lambda_powertools import Logger
 
-from lazyboost import models
 from lazyboost.clients.etsy_client import EtsyClient
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.clients.shopify_client import ShopifyClient
+from lazyboost.models.base_enum import BaseEnum
 from lazyboost.models.etsy_order import EtsyOrder
 
 logger = Logger()
 
 
-class OrdersEnum(models.BaseEnum):
+class OrdersEnum(BaseEnum):
     SYNC = auto()
     ETSY_TO_SHOPIFY = "e2s"
     SHOPIFY_TO_ETSY = "s2e"

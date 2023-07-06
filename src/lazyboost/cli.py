@@ -111,7 +111,7 @@ def create_parser() -> ArgumentParser:
 
     options_subparser.add_parser("review-sync", help="listings help")
 
-    # listings_parser = options_subparser.add_parser("listings", help="listings help")
+    listings_parser = options_subparser.add_parser("listings", help="listings help")
 
     return parser
 

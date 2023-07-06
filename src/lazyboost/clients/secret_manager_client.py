@@ -21,7 +21,7 @@ import boto3
 from aws_lambda_powertools import Logger
 from botocore.exceptions import ClientError
 
-from lazyboost.models import singleton
+from lazyboost.models.base_singleton import singleton
 
 
 @singleton

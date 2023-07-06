@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from lazyboost.clients import EtsyClient
-from lazyboost.models import EtsyOrder
+from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.etsy_transaction_model import EtsyTransaction
 from lazyboost.models.shopify_product_model import ShopifyMinimalProduct
 from lazyboost.utilities import constants

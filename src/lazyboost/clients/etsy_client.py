@@ -21,7 +21,7 @@ import requests
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.models import singleton
+from lazyboost.models.base_singleton import singleton
 from lazyboost.utilities import constants
 
 logger = Logger()

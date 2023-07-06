@@ -17,16 +17,18 @@
 
 import json
 import os
+from datetime import datetime, timedelta
+from typing import List
 
 import shopify
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.models import singleton
+from lazyboost.models.base_singleton import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import ShopifyMinimalProduct
+from lazyboost.models.shopify_product_model import ShopifyMinimalProduct, ShopifyNewVariant, ShopifyNewListing
 
 logger = Logger()
 
@@ -177,9 +179,68 @@ class ShopifyClient:
             products = json.loads(res)["data"]["productVariants"]["edges"]
             logger.debug(f"Product found: {products}")
             if products:
-                return ShopifyProduct.from_dict(products[0]["node"]["product"])
+                return ShopifyMinimalProduct.from_dict(products[0]["node"]["product"])
             else:
                 return None
+
+    def get_new_products(self, timestamp_to_check: datetime) -> List[ShopifyNewListing]:
+        timestamp = timestamp_to_check.strftime('%Y-%m-%dT%H:%M:%SZ')
+        res = shopify.GraphQL().execute(
+            query="""
+                query($filter: String!, $lzNamespace: String!) {
+                  products(first: 10, query: $filter) {
+                    edges {
+                      node {
+                        id
+                        hasOnlyDefaultVariant
+                        updatedAt
+                        totalInventory
+                        metafields(first: 1, namespace: $lzNamespace) {
+                          edges {
+                            node {
+                              namespace
+                              key
+                              value
+                            }
+                          }
+                        }
+                        variants(first: 10) {
+                          edges {
+                            node {
+                              id
+                              updatedAt
+                              metafields(first: 1, namespace: $lzNamespace) {
+                                edges {
+                                  node {
+                                    namespace
+                                    key
+                                    value
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                """,
+            variables={
+                "filter": f"status:ACTIVE AND updated_at:>{timestamp}",
+                "lzNamespace": "lazyboost"
+            },
+        )
+
+        response_dict: dict = json.loads(res)
+        if "errors" in response_dict.keys() and response_dict["errors"]:
+            logger.error("Failed to get products", error=response_dict)
+            return []
+
+        raw_products = json.loads(res)["data"]["products"]["edges"]
+        products = [ShopifyNewListing.from_dict(p["node"]) for p in raw_products]
+        logger.debug(f"Products found: {products}")
+        return products
 
     def does_order_exist(self, receipt_id: int) -> str:
         res = shopify.GraphQL().execute(
