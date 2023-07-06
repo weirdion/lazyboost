@@ -28,7 +28,7 @@ from lazyboost.models.base_singleton import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import ShopifyMinimalProduct, ShopifyNewVariant, ShopifyNewListing
+from lazyboost.models.shopify_product_model import ShopifyMinimalProduct, ShopifyVariant, ShopifyListing
 
 logger = Logger()
 
@@ -183,7 +183,7 @@ class ShopifyClient:
             else:
                 return None
 
-    def get_new_products(self, timestamp_to_check: datetime) -> List[ShopifyNewListing]:
+    def get_new_products(self, timestamp_to_check: datetime) -> List[ShopifyListing]:
         timestamp = timestamp_to_check.strftime('%Y-%m-%dT%H:%M:%SZ')
         res = shopify.GraphQL().execute(
             query="""
@@ -192,9 +192,11 @@ class ShopifyClient:
                     edges {
                       node {
                         id
-                        hasOnlyDefaultVariant
+                        title
+                        description
                         updatedAt
                         totalInventory
+                        tags
                         metafields(first: 1, namespace: $lzNamespace) {
                           edges {
                             node {
@@ -208,6 +210,9 @@ class ShopifyClient:
                           edges {
                             node {
                               id
+                              price
+                              sku
+                              inventoryQuantity
                               updatedAt
                               metafields(first: 1, namespace: $lzNamespace) {
                                 edges {
@@ -237,8 +242,10 @@ class ShopifyClient:
             logger.error("Failed to get products", error=response_dict)
             return []
 
+        logger.info("Query cost for get_new_products", cost=response_dict["extensions"]["cost"])
+
         raw_products = json.loads(res)["data"]["products"]["edges"]
-        products = [ShopifyNewListing.from_dict(p["node"]) for p in raw_products]
+        products = [ShopifyListing.from_dict(p["node"]) for p in raw_products]
         logger.debug(f"Products found: {products}")
         return products
 

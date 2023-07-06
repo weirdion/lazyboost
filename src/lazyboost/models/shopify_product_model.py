@@ -39,52 +39,65 @@ class ShopifyMinimalProduct:
 
 
 @dataclass
-class ShopifyNewVariant:
+class ShopifyVariant:
     id: str
+    price: str
+    sku: str
+    inventory_quantity: int
     metafields: list
     updated_at: datetime
 
     @staticmethod
-    def from_dict(obj: Any) -> "ShopifyNewVariant":
+    def from_dict(obj: Any) -> "ShopifyVariant":
         _id = str(obj.get("id"))
+        _price = str(obj.get("price"))
+        _sku = str(obj.get("sku"))
+        _inventory_quantity = int(obj.get("inventoryQuantity"))
         _metafields = [m for m in obj.get("metafields").get("edges")]
         _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace('Z', '+00:00'))
 
-        return ShopifyNewVariant(
+        return ShopifyVariant(
             id=_id,
+            price=_price,
+            sku=_sku,
+            inventory_quantity=_inventory_quantity,
             metafields=_metafields,
             updated_at=_updated_at
         )
 
 
 @dataclass
-class ShopifyNewListing:
+class ShopifyListing:
     id: str
-    published_at: datetime
-    has_only_default_variant: bool
+    title: str
+    description: str
     status: str
     updated_at: datetime
     total_inventory: int
     metafields: list
-    variants: List[ShopifyNewVariant]
+    variants: List[ShopifyVariant]
+    tags: str
 
     @staticmethod
-    def from_dict(obj: Any) -> "ShopifyNewListing":
+    def from_dict(obj: Any) -> "ShopifyListing":
         _id = str(obj.get("id"))
-        _published_at = datetime.fromisoformat(str(obj.get("publishedAt")).replace('Z', '+00:00'))
-        _has_only_default_variant = bool(obj.get("hasOnlyDefaultVariant"))
+        _title = str(obj.get("title"))
+        _description = str(obj.get("description"))
         _status = str(obj.get("status"))
         _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace('Z', '+00:00'))
         _total_inventory = int(obj.get("totalInventory"))
         _metafields = [m for m in obj.get("metafields").get("edges")]
-        _variants = [ShopifyNewVariant.from_dict(v["node"]) for v in obj.get("variants").get("edges")]
+        _variants = [ShopifyVariant.from_dict(v["node"]) for v in obj.get("variants").get("edges")]
+        _tags = str(obj.get("tags"))
 
-        return ShopifyNewListing(
+        return ShopifyListing(
             id=_id,
-            published_at=_published_at,
-            has_only_default_variant=_has_only_default_variant,
+            title=_title,
+            description=_description,
             status=_status,
             updated_at=_updated_at,
+            total_inventory=_total_inventory,
             metafields=_metafields,
-            variants=_variants
+            variants=_variants,
+            tags=_tags
         )
