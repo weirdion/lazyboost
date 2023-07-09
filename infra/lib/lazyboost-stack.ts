@@ -81,7 +81,10 @@ export class LazyboostStack extends cdk.Stack {
 
     const lazyboost_lambda = new DockerImageFunction(this, 'LazyBoostFunction', {
       functionName: 'LazyBoostFunction',
-      code: DockerImageCode.fromImageAsset(path.resolve('.')),
+      code: DockerImageCode.fromImageAsset(path.resolve('.'), {
+        assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
+      }),
+
       architecture: Architecture.ARM_64,
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,
@@ -115,7 +118,7 @@ export class LazyboostStack extends cdk.Stack {
 
     const lazyboostErrorEmail = process.env['LAZYBOOST_ERROR_EMAIL'] as string;
     if (!lazyboostErrorEmail) {
-      throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.')
+      throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.');
     }
 
     lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
