@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import os
 from datetime import datetime, timedelta
 
 from aws_lambda_powertools import Logger
@@ -31,7 +32,8 @@ class ListingHandler:
         self.etsy_client: EtsyClient = EtsyClient()
         self.shopify_client: ShopifyClient = ShopifyClient()
 
-        self.timestamp_to_check = datetime.utcnow() - timedelta(minutes=20)
+        self.sync_interval_listings = int(os.getenv("SYNC_INTERVAL_LISTINGS_MIN", 17))
+        self.timestamp_to_check = datetime.utcnow() - timedelta(minutes=self.sync_interval_listings)
         self.updated_listings = self.shopify_client.get_new_products(self.timestamp_to_check)
 
         logger.info(f"{len(self.updated_listings)} updated listings detected")
@@ -49,7 +51,9 @@ class ListingHandler:
                 ):
                     etsy_listing_dict = listing.to_etsy_listing(variant)
                     logger.info(f"Creating new listing: {etsy_listing_dict}")
-                    self.etsy_client.create_listing(etsy_listing_dict)
+                    response = self.etsy_client.create_listing(etsy_listing_dict)
+                    logger.info(f"Successfully created new listing: {response['listing_id']}")
+                    logger.info(f"Etsy listing response: {response}")
                 else:
                     logger.info(f"Listing {listing.id} variant {variant.id} is too old to sync.")
 
