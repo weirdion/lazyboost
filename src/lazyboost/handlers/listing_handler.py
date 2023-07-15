@@ -31,7 +31,7 @@ class ListingHandler:
         self.etsy_client: EtsyClient = EtsyClient()
         self.shopify_client: ShopifyClient = ShopifyClient()
 
-        self.timestamp_to_check = datetime.utcnow() - timedelta(days=7)
+        self.timestamp_to_check = datetime.utcnow() - timedelta(minutes=20)
         self.updated_listings = self.shopify_client.get_new_products(self.timestamp_to_check)
 
         logger.info(f"{len(self.updated_listings)} updated listings detected")
