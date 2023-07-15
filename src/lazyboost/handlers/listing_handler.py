@@ -43,4 +43,15 @@ class ListingHandler:
         self._sync_new_listings_to_etsy()
 
     def _sync_new_listings_to_etsy(self):
-        pass
+        for listing in self.updated_listings:
+            for variant in listing.variants:
+                if variant.updated_at > self.timestamp_to_check and variant.inventory_quantity > 0:
+                    etsy_listing_dict = listing.to_etsy_listing(variant)
+                    logger.info(f"Creating new listing: {etsy_listing_dict}")
+                    self.etsy_client.create_listing(etsy_listing_dict)
+
+        # Check etsy if it already exists?
+        # getShopShippingProfiles
+        # getShopReturnPolicies
+        # getShopSections
+        # createDraftListing

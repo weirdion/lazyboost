@@ -132,7 +132,7 @@ class ShopifyListing:
             "sku": variant.sku,
             "who_made": "i_did",
             "when_made": "2020_2023",
-            "taxonomy_id": get_taxonomy_by_product_type(self.type),
+            "taxonomy_id": get_taxonomy_by_product_type(self.product_type),
             "item_dimensions_unit": "in",
             "item_length": height,
             "item_width": width,
