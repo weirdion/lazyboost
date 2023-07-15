@@ -29,9 +29,9 @@ def handler(event, context):
     logger.info(f"Starting lambda with event", event=event)
 
     if not (
-            isinstance(event, dict)
-            and "task" in event.keys()
-            and event["task"] in ["order_sync", "review_sync", "sync"]
+        isinstance(event, dict)
+        and "task" in event.keys()
+        and event["task"] in ["order_sync", "review_sync", "sync"]
     ):
         raise ValueError(f"Invalid event or task type used: {event}, exiting...")
 

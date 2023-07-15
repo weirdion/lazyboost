@@ -19,10 +19,16 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
 
-from lazyboost.utilities.utility_etsy import get_taxonomy_by_product_type
+from lazyboost.utilities.constants import ETSY_RETURN_POLICY_ID
+from lazyboost.utilities.utility_etsy import (
+    get_taxonomy_by_product_type,
+    get_shipping_profile_id,
+    get_section_id,
+    format_materials_to_list,
+)
 
-DIMENSIONS_REGEX = r"^.*(\d)+\s+inches\s+in\s+height,\s+(\d)+\s+inches\s+in" \
-                   r"\s+width\s+and\s+(\d)+\s+inches\s+in\s+depth.*$"
+DIMENSIONS_REGEX = r"^.*(\d{2})\s+inches\s+in\s+height,\s+(\d{1,2})\s+inches\s+in\s+width\s+" \
+                   r"and\s+(\d{1,2})\s+inches\s+in\s+depth.*$"
 
 
 @dataclass
@@ -59,7 +65,7 @@ class ShopifyVariant:
         _sku = str(obj.get("sku"))
         _inventory_quantity = int(obj.get("inventoryQuantity"))
         _metafields = [m for m in obj.get("metafields").get("edges")]
-        _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace('Z', '+00:00'))
+        _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace("Z", "+00:00"))
 
         return ShopifyVariant(
             id=_id,
@@ -67,7 +73,7 @@ class ShopifyVariant:
             sku=_sku,
             inventory_quantity=_inventory_quantity,
             metafields=_metafields,
-            updated_at=_updated_at
+            updated_at=_updated_at,
         )
 
 
@@ -91,7 +97,7 @@ class ShopifyListing:
         _description = str(obj.get("description"))
         _product_type = str(obj.get("productType"))
         _status = str(obj.get("status"))
-        _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace('Z', '+00:00'))
+        _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace("Z", "+00:00"))
         _total_inventory = int(obj.get("totalInventory"))
         _metafields = [m for m in obj.get("metafields").get("edges")]
         _variants = [ShopifyVariant.from_dict(v["node"]) for v in obj.get("variants").get("edges")]
@@ -107,10 +113,10 @@ class ShopifyListing:
             total_inventory=_total_inventory,
             metafields=_metafields,
             variants=_variants,
-            tags=_tags
+            tags=_tags,
         )
 
-    def to_etsy_listing(self, variant:  ShopifyVariant) -> dict:
+    def to_etsy_listing(self, variant: ShopifyVariant) -> dict:
         """
         Converts ShopifyListing to EtsyListing
         """
@@ -126,8 +132,8 @@ class ShopifyListing:
 
         return {
             "title": self.title,
-            "description": f"{self.description}\n{self.tags}",
-            "price": variant.price,
+            "description": f"{self.description}\n{self.tags.join(', ')}",
+            "price": float(variant.price),
             "quantity": variant.inventory_quantity,
             "sku": variant.sku,
             "who_made": "i_did",
@@ -136,8 +142,12 @@ class ShopifyListing:
             "item_dimensions_unit": "in",
             "item_length": height,
             "item_width": width,
-            "item_depth": depth,
+            "item_height": depth,
             "should_auto_renew": False if self.product_type.casefold() == "bows" else True,
             "is_taxable": True,
-            "type": "physical"
+            "type": "physical",
+            "return_policy_id": ETSY_RETURN_POLICY_ID,
+            "shipping_profile_id": get_shipping_profile_id(self.product_type, variant.price),
+            "shop_section_id": get_section_id(self.tags),
+            "materials": format_materials_to_list(self.description),
         }

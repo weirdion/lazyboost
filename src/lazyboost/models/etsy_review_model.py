@@ -81,7 +81,9 @@ class EtsyReview:
         etsy_order_response = etsy_client.get_shop_receipt(self.etsy_transaction.receipt_id)
         self.etsy_order = EtsyOrder.from_dict(etsy_order_response)
 
-    def to_stamped_io_review_dict(self, product_sku: str, shopify_product: ShopifyMinimalProduct) -> dict:
+    def to_stamped_io_review_dict(
+        self, product_sku: str, shopify_product: ShopifyMinimalProduct
+    ) -> dict:
         review_dict = {
             "productId": shopify_product.id,
             "author": self.etsy_order.buyer.name,

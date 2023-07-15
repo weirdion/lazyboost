@@ -14,12 +14,10 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from datetime import datetime, timedelta
-from typing import List
 
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients import SecretManagerClient, ShopifyClient, EtsyClient
-from lazyboost.models.shopify_product_model import ShopifyListing
 
 logger = Logger()
 
@@ -33,11 +31,11 @@ class ListingHandler:
         self.etsy_client: EtsyClient = EtsyClient()
         self.shopify_client: ShopifyClient = ShopifyClient()
 
-        self.timestamp_to_check = datetime.now() - timedelta(days=2)
+        self.timestamp_to_check = datetime.utcnow() - timedelta(days=7)
         self.updated_listings = self.shopify_client.get_new_products(self.timestamp_to_check)
 
         logger.info(f"{len(self.updated_listings)} updated listings detected")
-        if len(self.updated_listings) is 0:
+        if len(self.updated_listings) == 0:
             return
 
         self._sync_new_listings_to_etsy()
@@ -45,13 +43,35 @@ class ListingHandler:
     def _sync_new_listings_to_etsy(self):
         for listing in self.updated_listings:
             for variant in listing.variants:
-                if variant.updated_at > self.timestamp_to_check and variant.inventory_quantity > 0:
+                if (
+                    variant.updated_at.timestamp() >= self.timestamp_to_check.timestamp()
+                    and variant.inventory_quantity > 0
+                ):
                     etsy_listing_dict = listing.to_etsy_listing(variant)
                     logger.info(f"Creating new listing: {etsy_listing_dict}")
                     self.etsy_client.create_listing(etsy_listing_dict)
+                else:
+                    logger.info(f"Listing {listing.id} variant {variant.id} is too old to sync.")
 
-        # Check etsy if it already exists?
-        # getShopShippingProfiles
-        # getShopReturnPolicies
-        # getShopSections
-        # createDraftListing
+    def _get_shipping_profile_ids(self):
+        response = self.etsy_client.get_shipping_profiles()
+        shipping_profile_ids = {
+            shipping_profile["title"]: shipping_profile["shipping_profile_id"]
+            for shipping_profile in response["results"]
+        }
+        return shipping_profile_ids
+
+    def _get_shop_section_ids(self):
+        response = self.etsy_client.get_shop_sections()
+        shop_section_ids = {
+            section["title"]: section["shop_section_id"] for section in response["results"]
+        }
+        return shop_section_ids
+
+    def _get_return_policy_ids(self):
+        response = self.etsy_client.get_return_policies()
+        return_policy_ids = {
+            return_policy["title"]: return_policy["return_policy_id"]
+            for return_policy in response["results"]
+        }
+        return return_policy_ids

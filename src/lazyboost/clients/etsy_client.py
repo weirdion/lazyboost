@@ -72,7 +72,9 @@ class EtsyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            raise ConnectionError(f"Could Not Connect. Status Code: {response.status_code}")
+            raise ConnectionError(
+                f"Could Not Connect. Status Code: {response.status_code} {response.reason}"
+            )
 
     def _refresh_token(self):
         """
@@ -98,10 +100,8 @@ class EtsyClient:
         """
         if method.casefold() == "post":
             request_headers = self.headers.copy()
-            request_headers.update({
-                "Content-Type": "application/x-www-form-urlencoded"
-            })
-            return  request_headers
+            request_headers.update({"Content-Type": "application/x-www-form-urlencoded"})
+            return request_headers
         else:
             return self.headers
 
@@ -211,7 +211,7 @@ class EtsyClient:
         Retrieves return policies based on shop id.
         """
         logger.debug("Retrieving return policies")
-        path = f"shops/{self.shop_id}/return-policies"
+        path = f"shops/{self.shop_id}/policies/return"
         response = self._http_oauth_request(
             "GET",
             path,
@@ -243,4 +243,3 @@ class EtsyClient:
             data=data,
         )
         return response
-

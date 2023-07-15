@@ -50,4 +50,26 @@ ETSY_TAXONOMY_ID_DICT = {
     "swags": 1931,
 }
 
+ETSY_SHIPPING_PROFILE_ID_DICT = {
+    "Bows": 134564374043,
+    "SmallWreath-FixedShipCost": 102504595187,
+    "MediumWreath-FixedShipCost": 103663156927,
+    "WreathUSFreeShip": 80936078610,
+}
+
+ETSY_SECTION_ID_DICT = {
+    "Pet Lovers": 28736369,
+    "Bows": 33135046,
+    "Spring Collection": 28736387,
+    "Summer Fun": 29625639,
+    "Patriotic": 28736371,
+    "Beautiful Everyday": 28736377,
+    "Mom/Grandma Love": 28736361,
+    "Fall Collection": 29194414,
+    "Halloween": 29334572,
+    "Winter and Christmas": 29975497,
+}
+
+ETSY_RETURN_POLICY_ID = 1097280283271
+
 # SHOPIFY constants

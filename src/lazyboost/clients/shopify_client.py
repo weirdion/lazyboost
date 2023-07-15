@@ -28,7 +28,11 @@ from lazyboost.models.base_singleton import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import ShopifyMinimalProduct, ShopifyVariant, ShopifyListing
+from lazyboost.models.shopify_product_model import (
+    ShopifyMinimalProduct,
+    ShopifyVariant,
+    ShopifyListing,
+)
 
 logger = Logger()
 
@@ -184,7 +188,7 @@ class ShopifyClient:
                 return None
 
     def get_new_products(self, timestamp_to_check: datetime) -> List[ShopifyListing]:
-        timestamp = timestamp_to_check.strftime('%Y-%m-%dT%H:%M:%SZ')
+        timestamp = timestamp_to_check.strftime("%Y-%m-%dT%H:%M:%SZ")
         res = shopify.GraphQL().execute(
             query="""
                 query($filter: String!, $lzNamespace: String!) {
@@ -234,7 +238,7 @@ class ShopifyClient:
                 """,
             variables={
                 "filter": f"status:ACTIVE AND updated_at:>{timestamp}",
-                "lzNamespace": "lazyboost"
+                "lzNamespace": "lazyboost",
             },
         )
 
