@@ -15,7 +15,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from lazyboost.handlers.listing_handler import ListingHandler
 from lazyboost.handlers.order_handler import OrderHandler, OrdersEnum
 from lazyboost.handlers.review_handler import ReviewHandler
 
-__all__ = [OrdersEnum, OrderHandler, ReviewHandler]
+__all__ = [ListingHandler, OrdersEnum, OrderHandler, ReviewHandler]

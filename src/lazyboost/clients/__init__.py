@@ -16,6 +16,7 @@
 #
 
 from lazyboost.clients.etsy_client import EtsyClient
+from lazyboost.clients.judge_me_client import JudgeMeClient
 from lazyboost.clients.secret_manager_client import SecretManagerClient
 from lazyboost.clients.shopify_client import ShopifyClient
 

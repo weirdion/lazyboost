@@ -15,13 +15,14 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 from datetime import datetime, timedelta
+from typing import Dict
 from urllib.parse import urljoin
 
 import requests
 from aws_lambda_powertools import Logger
 
 from lazyboost.clients.secret_manager_client import SecretManagerClient
-from lazyboost.models import singleton
+from lazyboost.models.base_singleton import singleton
 from lazyboost.utilities import constants
 
 logger = Logger()
@@ -50,7 +51,7 @@ class EtsyClient:
         response = requests.request(
             method=method,
             url=request_url,
-            headers=self.headers,
+            headers=self.get_request_header(),
             params=params,
             data=data,
         )
@@ -63,7 +64,7 @@ class EtsyClient:
             response = requests.request(
                 method=method,
                 url=request_url,
-                headers=self.headers,
+                headers=self.get_request_header(),
                 params=params,
                 data=data,
             )
@@ -71,7 +72,9 @@ class EtsyClient:
         if response.status_code == 200:
             return response.json()
         else:
-            raise ConnectionError(f"Could Not Connect. Status Code: {response.status_code}")
+            raise ConnectionError(
+                f"Could Not Connect. Status Code: {response.status_code} {response.reason}"
+            )
 
     def _refresh_token(self):
         """
@@ -89,6 +92,18 @@ class EtsyClient:
             logger.debug("Successfully updated Access and Refresh tokens...")
             self.update_tokens(resp.json())
             self.set_headers()
+
+    def get_request_header(self, method: str = "GET") -> Dict[str, str]:
+        """
+        Return the headers for the request based on method type.
+        POST method requires Content-Type for Etsy API.
+        """
+        if method.casefold() == "post":
+            request_headers = self.headers.copy()
+            request_headers.update({"Content-Type": "application/x-www-form-urlencoded"})
+            return request_headers
+        else:
+            return self.headers
 
     def update_tokens(self, response_dict: dict):
         """
@@ -176,5 +191,55 @@ class EtsyClient:
         response = self._http_oauth_request(
             "GET",
             path,
+        )
+        return response
+
+    def get_shipping_profiles(self):
+        """
+        Retrieves shipping profiles based on shop id.
+        """
+        logger.debug("Retrieving shipping profiles")
+        path = f"shops/{self.shop_id}/shipping-profiles"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+        )
+        return response
+
+    def get_return_policies(self):
+        """
+        Retrieves return policies based on shop id.
+        """
+        logger.debug("Retrieving return policies")
+        path = f"shops/{self.shop_id}/policies/return"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+        )
+        return response
+
+    def get_shop_sections(self):
+        """
+        Retrieves shop sections based on shop id.
+        """
+        logger.debug("Retrieving shop sections")
+        path = f"shops/{self.shop_id}/sections"
+        response = self._http_oauth_request(
+            "GET",
+            path,
+        )
+        return response
+
+    def create_listing(self, data: dict):
+        """
+        Create listing based on data.
+        :param data: dict, data to create listing.
+        """
+        logger.debug("Creating listing")
+        path = f"shops/{self.shop_id}/listings"
+        response = self._http_oauth_request(
+            "POST",
+            path,
+            data=data,
         )
         return response

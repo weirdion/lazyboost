@@ -21,7 +21,7 @@ Command Handler module handles operations after the cli receives a command
 from aws_lambda_powertools import Logger
 
 from lazyboost import clipboard
-from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler
+from lazyboost.handlers import OrderHandler, OrdersEnum, ReviewHandler, ListingHandler
 
 logger = Logger()
 
@@ -37,7 +37,7 @@ def parse_received_command(received_args):
     elif received_args.opt == "orders":
         OrderHandler(order_sync_type=OrdersEnum(received_args.order_option))
     elif received_args.opt == "listings":
-        logger.info("Listings: Under construction")
+        ListingHandler()
     elif received_args.opt == "review-sync":
         ReviewHandler()
     else:
