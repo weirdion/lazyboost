@@ -31,7 +31,6 @@ import path = require('path');
 
 export interface LazyBoostProps extends cdk.StackProps {
   serviceName: string
-  metricNamespace: string
 }
 
 export class LazyboostStack extends cdk.Stack {
@@ -84,12 +83,10 @@ export class LazyboostStack extends cdk.Stack {
       code: DockerImageCode.fromImageAsset(path.resolve('.'), {
         assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
       }),
-
       architecture: Architecture.ARM_64,
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,
         LOG_LEVEL: 'INFO',
-        POWERTOOLS_METRICS_NAMESPACE: props.metricNamespace,
       }
     });
     secret.grantRead(lazyboost_lambda);

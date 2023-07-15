@@ -24,9 +24,7 @@ import {LazyboostStack} from '../lib/lazyboost-stack';
 const app = new cdk.App();
 
 const serviceName = 'LazyBoost';
-const metricNamespace = 'LazyBoost';
 
 new LazyboostStack(app, 'LazyboostStack', {
   serviceName: serviceName,
-  metricNamespace: metricNamespace,
 });
