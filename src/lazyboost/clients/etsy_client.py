@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+import os
 from datetime import datetime, timedelta
 from typing import Dict
 from urllib.parse import urljoin
@@ -36,6 +37,10 @@ class EtsyClient:
         self.access_token = self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"]
         self.refresh_token = self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"]
         self.shop_id = self.sm_client.secret_variables["ETSY_SHOP_ID"]
+
+        self.sync_interval_orders = int(os.getenv("SYNC_INTERVAL_ORDERS_MIN", 20))
+        self.sync_interval_reviews = int(os.getenv("SYNC_INTERVAL_REVIEWS_MIN", 17))
+
         self.headers = {
             "x-api-key": self.api_key_string,
             "Authorization": f"Bearer {self.access_token}",
@@ -134,7 +139,9 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round((datetime.now() - timedelta(minutes=20)).timestamp())),
+                "min_created": int(round(
+                    (datetime.now() - timedelta(minutes=self.sync_interval_orders)).timestamp()
+                )),
                 "max_created": int(round(datetime.now().timestamp())),
                 "sort_order": "ascending",
                 "was_shipped": False,
@@ -161,7 +168,9 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round((datetime.now() - timedelta(minutes=16)).timestamp())),
+                "min_created": int(round(
+                    (datetime.now() - timedelta(minutes=self.sync_interval_reviews)).timestamp()
+                )),
                 "max_created": int(round(datetime.now().timestamp())),
             },
         )

@@ -87,6 +87,9 @@ export class LazyboostStack extends cdk.Stack {
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,
         LOG_LEVEL: 'INFO',
+        SYNC_INTERVAL_ORDERS_MIN: '20',
+        SYNC_INTERVAL_REVIEWS_MIN: '17',
+        SYNC_INTERVAL_LISTINGS_MIN: '17',
       }
     });
     secret.grantRead(lazyboost_lambda);
@@ -130,7 +133,7 @@ export class LazyboostStack extends cdk.Stack {
               event: RuleTargetInput.fromObject({"task": "sync"})
             }
           )],
-        schedule: cdk.aws_events.Schedule.rate(Duration.minutes(16)),
+        schedule: cdk.aws_events.Schedule.rate(Duration.minutes(17)),
       }
     );
   }
