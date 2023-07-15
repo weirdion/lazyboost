@@ -14,10 +14,15 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
+
+from lazyboost.utilities.utility_etsy import get_taxonomy_by_product_type
+
+DIMENSIONS_REGEX = r"^.*(\d)+\s+inches\s+in\s+height,\s+(\d)+\s+inches\s+in" \
+                   r"\s+width\s+and\s+(\d)+\s+inches\s+in\s+depth.*$"
 
 
 @dataclass
@@ -71,6 +76,7 @@ class ShopifyListing:
     id: str
     title: str
     description: str
+    product_type: str
     status: str
     updated_at: datetime
     total_inventory: int
@@ -83,6 +89,7 @@ class ShopifyListing:
         _id = str(obj.get("id"))
         _title = str(obj.get("title"))
         _description = str(obj.get("description"))
+        _product_type = str(obj.get("productType"))
         _status = str(obj.get("status"))
         _updated_at = datetime.fromisoformat(str(obj.get("updatedAt")).replace('Z', '+00:00'))
         _total_inventory = int(obj.get("totalInventory"))
@@ -94,6 +101,7 @@ class ShopifyListing:
             id=_id,
             title=_title,
             description=_description,
+            product_type=_product_type,
             status=_status,
             updated_at=_updated_at,
             total_inventory=_total_inventory,
@@ -101,3 +109,35 @@ class ShopifyListing:
             variants=_variants,
             tags=_tags
         )
+
+    def to_etsy_listing(self, variant:  ShopifyVariant) -> dict:
+        """
+        Converts ShopifyListing to EtsyListing
+        """
+        match = re.match(DIMENSIONS_REGEX, self.description)
+        if match:
+            height = match.group(1)[0]
+            width = match.group(2)[0]
+            depth = match.group(3)[0]
+        else:
+            height = None
+            width = None
+            depth = None
+
+        return {
+            "title": self.title,
+            "description": f"{self.description}\n{self.tags}",
+            "price": variant.price,
+            "quantity": variant.inventory_quantity,
+            "sku": variant.sku,
+            "who_made": "i_did",
+            "when_made": "2020_2023",
+            "taxonomy_id": get_taxonomy_by_product_type(self.type),
+            "item_dimensions_unit": "in",
+            "item_length": height,
+            "item_width": width,
+            "item_depth": depth,
+            "should_auto_renew": False if self.product_type.casefold() == "bows" else True,
+            "is_taxable": True,
+            "type": "physical"
+        }

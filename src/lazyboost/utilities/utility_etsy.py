@@ -14,7 +14,13 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
+from lazyboost.utilities.constants import ETSY_TAXONOMY_ID_DICT
 
 
 def get_float_amount(price_dict: dict) -> float:
     return price_dict["amount"] / price_dict["divisor"]
+
+
+def get_taxonomy_by_product_type(product_type: str) -> str:
+    product_type = product_type.casefold()
+    return ETSY_TAXONOMY_ID_DICT[product_type]

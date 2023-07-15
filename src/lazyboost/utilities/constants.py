@@ -43,6 +43,11 @@ JUDGE_ME_TIME_FORMAT = "%Y-%m-%d %H:%M:%S %Z"
 # Home & Living > Home Decor > Ornaments & Accents - #1023
 # Home & Living > Home Decor > Wreaths & Door Hangers > Wreaths - #1930
 # Home & Living > Home Decor > Wreaths & Door Hangers > Door Hangers - #1931
-ETSY_TRANSACTION_ID_DICT = {"Bows": 1023, "Wreaths": 1930, "Door Hangers": 1931, "Swags": 1931}
+ETSY_TAXONOMY_ID_DICT = {
+    "bows": 1023,
+    "wreaths": 1930,
+    "door hangers": 1931,
+    "swags": 1931,
+}
 
 # SHOPIFY constants

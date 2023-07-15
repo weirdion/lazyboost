@@ -18,7 +18,7 @@ from typing import List
 
 from aws_lambda_powertools import Logger
 
-from lazyboost.clients import SecretManagerClient, ShopifyClient
+from lazyboost.clients import SecretManagerClient, ShopifyClient, EtsyClient
 from lazyboost.models.shopify_product_model import ShopifyListing
 
 logger = Logger()
@@ -30,7 +30,7 @@ class ListingHandler:
         logger.info(f"Initializing ListingHandler")
 
         self.secret_manager_client: SecretManagerClient = SecretManagerClient()
-        # self.etsy_client: EtsyClient = EtsyClient()
+        self.etsy_client: EtsyClient = EtsyClient()
         self.shopify_client: ShopifyClient = ShopifyClient()
 
         self.timestamp_to_check = datetime.now() - timedelta(days=2)

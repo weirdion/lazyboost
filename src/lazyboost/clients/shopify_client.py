@@ -194,6 +194,7 @@ class ShopifyClient:
                         id
                         title
                         description
+                        productType
                         updatedAt
                         totalInventory
                         tags
