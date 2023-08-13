@@ -1,13 +1,11 @@
-name: 'Run poetry update on a schedule'
+name: 'Run poetry and npm update on a schedule'
 on:
-  push:
-    branches:
-      - main
   schedule:
-    - cron: '15 18-20 * * 0' 
+    - cron: '15 9 * * 6' 
 
 jobs:
-  poetry-update:
+  dependency-update:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,9 +32,9 @@ jobs:
             poetry.lock
             package.json
             package-lock.json
-          commit-message: poetry update
+          commit-message: poetry and npm update
           title: workflow - poetry update
           base: main
           labels: dependencies
-          branch: workflow-poetry-update
+          branch: workflow-dependency-update
           delete-branch: true
