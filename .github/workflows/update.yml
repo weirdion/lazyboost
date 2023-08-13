@@ -1,0 +1,38 @@
+name: 'Run poetry update on a schedule'
+on:
+  schedule:
+    - cron: '* * * * 6-7' 
+
+jobs:
+  poetry-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.3
+      - name: Setup Python
+        uses: actions/setup-python@v4.7.0
+        with:
+          cache: poetry
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.7.0
+      - name: Install poetry
+        run: |
+          python3 -m pip install -U pip poetry
+      - name: Update dependencies
+        run: |
+          poetry update
+          npm update
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          add-paths: |
+            pyproject.toml
+            poetry.lock
+            package.json
+            package-lock.json
+          commit-message: poetry update
+          title: workflow - poetry update
+          base: main
+          labels: dependencies
+          branch: workflow-poetry-update
+          delete-branch: true
