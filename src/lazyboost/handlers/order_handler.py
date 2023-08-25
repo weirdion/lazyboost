@@ -67,6 +67,7 @@ class OrderHandler:
 
         etsy_orders = []
         for r in response["results"]:
+            logger.info(f"Checking open order...", order=r)
             e = EtsyOrder.from_dict(r)
 
             logger.info(f"Detected open etsy order: {e}")
