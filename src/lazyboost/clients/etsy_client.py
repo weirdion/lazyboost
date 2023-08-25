@@ -145,6 +145,8 @@ class EtsyClient:
                 "max_created": int(round(datetime.now().timestamp())),
                 "sort_order": "ascending",
                 "was_shipped": False,
+                "was_paid": True,
+                "was_canceled": False
             },
         )
         return response
