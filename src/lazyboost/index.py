@@ -15,7 +15,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 import os
-from datetime import datetime
 
 import boto3
 from aws_lambda_powertools import Logger
@@ -50,18 +49,14 @@ def handler(event, context):
             raise ValueError(f"Invalid task type received: {event['task']}")
     except Exception as e:
         sns_topic_arn = os.getenv("SNS_ERROR_TOPIC")
-        date_now = datetime.now().strftime("%m/%d/%Y, %-I:%M:%S %p")
         if sns_topic_arn:
             sns_client = boto3.client("sns")
             response = sns_client.publish(
                 TopicArn=sns_topic_arn,
-                Message=f"""
-                An error occurred during execution of LazyBoost at {date_now}.\n\n
-                Error: `{e}`\n
-                ```{e.__traceback__}```
-                """,
-                Subject=f"LazyBoost encountered an error at {date_now}",
+                Message=f"An error occurred during execution of LazyBoost.\n\n"
+                        f"Error: `{e}`\n",
+                Subject=f"LazyBoost encountered an error",
             )
             logger.info(f"SNS response: {response}")
-        else:
-            raise e
+
+        raise e
