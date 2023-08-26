@@ -78,40 +78,6 @@ export class LazyboostStack extends cdk.Stack {
       new LambdaIntegration(oauthRedirect)
     );
 
-    const lazyboost_lambda = new DockerImageFunction(this, 'LazyBoostFunction', {
-      functionName: 'LazyBoostFunction',
-      code: DockerImageCode.fromImageAsset(path.resolve('.'), {
-        assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
-      }),
-      architecture: Architecture.ARM_64,
-      environment: {
-        POWERTOOLS_SERVICE_NAME: props.serviceName,
-        LOG_LEVEL: 'INFO',
-        SYNC_INTERVAL_ORDERS_MIN: '20',
-        SYNC_INTERVAL_REVIEWS_MIN: '17',
-        SYNC_INTERVAL_LISTINGS_MIN: '17',
-      }
-    });
-    secret.grantRead(lazyboost_lambda);
-    secret.grantWrite(lazyboost_lambda);
-
-    const lazyboostMetricErrors = lazyboost_lambda.metricErrors({
-      label: "LazyBoostError",
-      period: Duration.minutes(1),
-    });
-
-    const lazyboostFuncAlarm = lazyboostMetricErrors.createAlarm(
-      this,
-      'LazyBoostErrorAlarm', {
-        alarmName: 'LazyBoostErrorAlarm',
-        comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
-        threshold: 0,
-        evaluationPeriods: 1,
-        treatMissingData: TreatMissingData.NOT_BREACHING,
-        actionsEnabled: true,
-      }
-    );
-
     const lazyboostSNSTopic = new Topic(this, 'LazyBoostErrorTopic', {
       displayName: 'LazyBoostErrorTopic',
     });
@@ -122,7 +88,24 @@ export class LazyboostStack extends cdk.Stack {
     }
 
     lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
-    lazyboostFuncAlarm.addAlarmAction(new SnsAction(lazyboostSNSTopic));
+    const lazyboost_lambda = new DockerImageFunction(this, 'LazyBoostFunction', {
+      functionName: 'LazyBoostFunction',
+      code: DockerImageCode.fromImageAsset(path.resolve('.'), {
+        assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
+      }),
+      architecture: Architecture.ARM_64,
+      environment: {
+        POWERTOOLS_SERVICE_NAME: props.serviceName,
+        LOG_LEVEL: 'INFO',
+        SNS_ERROR_TOPIC: lazyboostSNSTopic.topicArn,
+        SYNC_INTERVAL_ORDERS_MIN: '20',
+        SYNC_INTERVAL_REVIEWS_MIN: '17',
+        SYNC_INTERVAL_LISTINGS_MIN: '17',
+      }
+    });
+    secret.grantRead(lazyboost_lambda);
+    secret.grantWrite(lazyboost_lambda);
+    lazyboostSNSTopic.grantPublish(lazyboost_lambda);
 
     new cdk.aws_events.Rule(this, 'order-sync-rule', {
         description: 'Rule to sync orders between Etsy and Shopify',
