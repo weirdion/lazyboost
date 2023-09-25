@@ -1,5 +1,5 @@
 #  LazyBoost: A lazy pythonian way to sync stuff between Shopify and Etsy.
-#  Copyright (C) 2023  Ankit Sadana
+#  Copyright (C) 2023  Ankit Patterson
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
@@ -40,8 +40,9 @@ def get_shipping_profile_id(product_type: str, price: str) -> int:
         return ETSY_SHIPPING_PROFILE_ID_DICT["WreathUSFreeShip"]
 
 
-def get_section_id(tags: str) -> int:
-    normalized_tags = tags.casefold()
+def get_section_id(tags: list) -> int:
+    tags_str = str(tags)
+    normalized_tags = tags_str.casefold()
     if "bow" in normalized_tags:
         return ETSY_SECTION_ID_DICT["Bows"]
     elif "halloween" in normalized_tags:

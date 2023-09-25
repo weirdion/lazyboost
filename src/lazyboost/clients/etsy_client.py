@@ -1,5 +1,5 @@
 #  LazyBoost: A lazy pythonian way to sync stuff between Shopify and Etsy.
-#  Copyright (C) 2023  Ankit Sadana
+#  Copyright (C) 2023  Ankit Patterson
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License as published
@@ -74,7 +74,7 @@ class EtsyClient:
                 data=data,
             )
 
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             return response.json()
         else:
             raise ConnectionError(
