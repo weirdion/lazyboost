@@ -33,7 +33,7 @@ class ListingHandler:
         self.shopify_client: ShopifyClient = ShopifyClient()
 
         self.sync_interval_listings = int(os.getenv("SYNC_INTERVAL_LISTINGS_MIN", 17))
-        self.timestamp_to_check = datetime.utcnow() - timedelta(minutes=self.sync_interval_listings)
+        self.timestamp_to_check = datetime.now() - timedelta(minutes=self.sync_interval_listings)
         self.updated_listings = self.shopify_client.get_new_products(self.timestamp_to_check)
 
         logger.info(f"{len(self.updated_listings)} updated listings detected")

@@ -101,7 +101,7 @@ class ShopifyListing:
         _total_inventory = int(obj.get("totalInventory"))
         _metafields = [m for m in obj.get("metafields").get("edges")]
         _variants = [ShopifyVariant.from_dict(v["node"]) for v in obj.get("variants").get("edges")]
-        _tags = str(obj.get("tags"))
+        _tags = list(obj.get("tags"))
 
         return ShopifyListing(
             id=_id,
