@@ -2,7 +2,7 @@
 name = "lazyboost"
 version = "1.0.0"
 description = "Python application to pull and sync Orders and Listings between Shopify and Etsy."
-authors = ["Ankit Sadana <sadana.ankit@gmail.com>"]
+authors = ["Ankit Patterson <dev+lazyboost@weirdion.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
 keywords = ["python", "e-commerce", "etsy", "shopify"]
