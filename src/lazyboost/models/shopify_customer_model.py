@@ -19,6 +19,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, List
 
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
+from lazyboost.utilities.utility_generic import is_string_different
 
 
 @dataclass
@@ -43,11 +44,11 @@ class Address:
 
     def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
         if (
-            etsy_buyer.name.casefold() != self.name.casefold()
-            or etsy_buyer.address_first_line.casefold() != self.address1.casefold()
-            or etsy_buyer.address_second_line.casefold() != self.address2.casefold()
-            or etsy_buyer.address_city.casefold() != self.city.casefold()
-            or etsy_buyer.address_state.casefold() != self.province_code.casefold()
+            is_string_different(etsy_buyer.name, self.name)
+            or is_string_different(etsy_buyer.address_first_line, self.address1)
+            or is_string_different(etsy_buyer.address_second_line, self.address2)
+            or is_string_different(etsy_buyer.address_city, self.city)
+            or is_string_different(etsy_buyer.address_state, self.province_code)
         ):
             return False
         return True

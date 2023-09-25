@@ -95,6 +95,10 @@ def format_materials_to_list(description: str) -> list:
     if material_line:
         raw_list = material_line.split(",")
         for raw_material in raw_list:
-            materials_list.append(raw_material.strip().rstrip(".").title())
+            if "and" in raw_material:
+                for material in raw_material.split("and"):
+                    materials_list.append(material.strip().rstrip(".").title())
+            else:
+                materials_list.append(raw_material.strip().rstrip(".").title())
 
     return materials_list
