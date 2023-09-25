@@ -88,7 +88,7 @@ class ShopifyListing:
     total_inventory: int
     metafields: list
     variants: List[ShopifyVariant]
-    tags: str
+    tags: list
 
     @staticmethod
     def from_dict(obj: Any) -> "ShopifyListing":
@@ -120,29 +120,16 @@ class ShopifyListing:
         """
         Converts ShopifyListing to EtsyListing
         """
-        match = re.match(DIMENSIONS_REGEX, self.description)
-        if match:
-            height = match.group(1)[0]
-            width = match.group(2)[0]
-            depth = match.group(3)[0]
-        else:
-            height = None
-            width = None
-            depth = None
 
         return {
             "title": self.title,
-            "description": f"{self.description}\n{self.tags.join(', ')}",
+            "description": f"{self.description}\n\n{', '.join(self.tags)}",
             "price": float(variant.price),
             "quantity": variant.inventory_quantity,
             "sku": variant.sku,
             "who_made": "i_did",
             "when_made": "2020_2023",
             "taxonomy_id": get_taxonomy_by_product_type(self.product_type),
-            "item_dimensions_unit": "in",
-            "item_length": height,
-            "item_width": width,
-            "item_height": depth,
             "should_auto_renew": False if self.product_type.casefold() == "bows" else True,
             "is_taxable": True,
             "type": "physical",
