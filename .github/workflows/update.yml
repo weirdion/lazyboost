@@ -34,7 +34,6 @@ jobs:
             package-lock.json
           commit-message: poetry and npm update
           title: workflow - poetry update
-          reviewers: weirdion
           base: main
           labels: dependencies
           branch: workflow-dependency-update
