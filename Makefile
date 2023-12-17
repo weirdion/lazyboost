@@ -13,6 +13,7 @@ dependency-prod:
 
 dependency-update:
 	poetry update
+	npm update
 
 # Create a job for running pytlint on the src
 lint:
