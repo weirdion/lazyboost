@@ -36,7 +36,6 @@ jobs:
           base: main
           labels: dependencies
           branch: workflow-dependency-update
-          author: ${{ secrets.GIT_AUTHOR_NAME }} <${{ vars.GIT_AUTHOR_EMAIL }}>
           assignees: weirdion
           reviewers: weirdion
           delete-branch: true
