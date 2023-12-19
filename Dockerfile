@@ -1,7 +1,7 @@
-FROM public.ecr.aws/lambda/python:3.10-arm64
+FROM public.ecr.aws/lambda/python:3.11-arm64
 
 # Install poetry
-RUN pip install poetry
+RUN python3 -m pip install -U pip poetry
 
 # Copy only requirements to cache them in docker layer
 WORKDIR ${LAMBDA_TASK_ROOT}
