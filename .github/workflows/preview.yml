@@ -24,14 +24,17 @@ jobs:
       - name: Install poetry
         run: |
           python3 -m pip install -U pip poetry
+          poetry install --only main
       - name: Set up CDK
-        run: npm install -g aws-cdk
+        run: |
+          npm install -g aws-cdk
+          npm install
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-      - name: CDK Deploy
+      - name: CDK Diff
         run: cdk diff --all
         env:
           LAZYBOOST_ERROR_EMAIL: ${{ secrets.LAZYBOOST_ERROR_EMAIL }}
