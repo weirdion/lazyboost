@@ -32,6 +32,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
       - name: CDK Deploy
-        run: cdk preview --all
+        run: cdk diff --all
         env:
           LAZYBOOST_ERROR_EMAIL: ${{ secrets.LAZYBOOST_ERROR_EMAIL }}
