@@ -1,0 +1,33 @@
+name: 'Deploy on merge'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  merge-deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3.5.3
+      - name: Setup Python
+        uses: actions/setup-python@v4.7.0
+        with:
+          cache: poetry
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.7.0
+      - name: Install poetry
+        run: |
+          python3 -m pip install -U pip poetry
+      - name: Set up CDK
+        run: npm install -g aws-cdk
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      - name: CDK Deploy
+        run: cdk deploy --all --require-approval never
+        env:
+          LAZYBOOST_ERROR_EMAIL: ${{ secrets.LAZYBOOST_ERROR_EMAIL }}
