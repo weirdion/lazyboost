@@ -2,7 +2,11 @@ name: 'PR Preview'
 on:
   pull_request:
     types:
+      - opened
       - synchronize
+
+permissions:
+  id-token: write
 
 jobs:
   pr-preview:
