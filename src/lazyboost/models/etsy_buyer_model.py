@@ -15,24 +15,25 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 
 @dataclass
 class EtsyBuyer:
     name: str
-    email: str
+    email: Optional[str]
     address_first_line: str
     address_second_line: str
     address_city: str
     address_state: str
     address_zip: str
     address_country_code: str
+    user_id: str
 
     @staticmethod
     def from_dict(obj: Any) -> "EtsyBuyer":
         _name = str(obj.get("name"))
-        _email = str(obj.get("buyer_email"))
+        _email = obj.get("buyer_email", None)
         _address_first_line = str(obj.get("first_line")).rstrip()
         _address_second_temp = str(obj.get("second_line"))
         _address_second_line = (

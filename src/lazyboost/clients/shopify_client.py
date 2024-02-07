@@ -17,8 +17,8 @@
 
 import json
 import os
-from datetime import datetime, timedelta
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
 import shopify
 from aws_lambda_powertools import Logger
@@ -30,7 +30,6 @@ from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
 from lazyboost.models.shopify_product_model import (
     ShopifyMinimalProduct,
-    ShopifyVariant,
     ShopifyListing,
 )
 
@@ -41,7 +40,7 @@ logger = Logger()
 class ShopifyClient:
     def __init__(self):
         self.sm_client = SecretManagerClient()
-        self.api_version = "2023-04"
+        self.api_version = "2024-01"
         self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 
         if self.is_test_mode:
