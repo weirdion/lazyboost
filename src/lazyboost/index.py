@@ -44,7 +44,6 @@ def handler(event, context):
             ReviewHandler()
         elif event["task"] == "sync":
             OrderHandler(order_sync_type=OrdersEnum.SYNC)
-            ReviewHandler()
         else:
             raise ValueError(f"Invalid task type received: {event['task']}")
     except Exception as e:
