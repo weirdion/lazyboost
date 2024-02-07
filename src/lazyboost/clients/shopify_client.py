@@ -66,8 +66,8 @@ class ShopifyClient:
     def shopify_domain(self) -> str:
         return self.session.url
 
-    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer:
-        response = shopify.Customer.search(session=self.session, query=f"email:{etsy_buyer.email}")
+    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> Optional[ShopifyCustomer]:
+        response = shopify.Customer.search(session=self.session, query=f"tag:{etsy_buyer.etsy_tag}")
         if not response:
             return None
         return ShopifyCustomer.from_dict(response[0].attributes)
@@ -117,9 +117,11 @@ class ShopifyClient:
         new_customer = shopify.Customer()
         new_customer.first_name = buyer_name1
         new_customer.last_name = buyer_name2
-        new_customer.email = etsy_buyer.email
-        new_customer.verified_email = True
-        new_customer.send_email_welcome: False
+        if etsy_buyer.email:
+            new_customer.email = etsy_buyer.email
+            new_customer.verified_email = True
+            new_customer.send_email_welcome: False
+        new_customer.tags = etsy_buyer.etsy_tag
         new_customer.save()
 
         logger.info(f"add new customer response: {new_customer.id}")

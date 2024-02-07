@@ -45,15 +45,17 @@ class EtsyBuyer:
         _address_state = str(obj.get("state"))
         _address_zip = str(obj.get("zip"))
         _address_country_code = str(obj.get("country_iso"))
+        _buyer_user_id = str(obj.get("buyer_user_id"))
         return EtsyBuyer(
-            _name,
-            _email,
-            _address_first_line,
-            _address_second_line,
-            _address_city,
-            _address_state,
-            _address_zip,
-            _address_country_code,
+            name=_name,
+            email=_email,
+            address_first_line=_address_first_line,
+            address_second_line=_address_second_line,
+            address_city=_address_city,
+            address_state=_address_state,
+            address_zip=_address_zip,
+            address_country_code=_address_country_code,
+            user_id=_buyer_user_id
         )
 
     def to_shopify_address(self) -> dict:
@@ -69,3 +71,7 @@ class EtsyBuyer:
             "province_code": self.address_state,
             "country_code": self.address_country_code,
         }
+
+    @property
+    def etsy_tag(self) -> str:
+        return f"ETSY_BUYER_ID_{self.user_id}"
