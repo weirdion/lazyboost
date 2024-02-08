@@ -130,7 +130,7 @@ class ShopifyCustomer:
         _state = str(obj.get("state"))
         _total_spent = str(obj.get("total_spent"))
         _last_order_id = str(obj.get("last_order_id"))
-        _tags = str(obj.get("tags"))
+        _tags = str(obj.get("tags")) if obj.get("tags") else ""
         _last_order_name = str(obj.get("last_order_name"))
         _currency = str(obj.get("currency"))
         _phone = str(obj.get("phone"))

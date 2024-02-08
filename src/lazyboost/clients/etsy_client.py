@@ -139,14 +139,16 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round(
-                    (datetime.now() - timedelta(minutes=self.sync_interval_orders)).timestamp()
-                )),
+                "min_created": int(
+                    round(
+                        (datetime.now() - timedelta(minutes=self.sync_interval_orders)).timestamp()
+                    )
+                ),
                 "max_created": int(round(datetime.now().timestamp())),
                 "sort_order": "ascending",
                 "was_shipped": False,
                 "was_paid": True,
-                "was_canceled": False
+                "was_canceled": False,
             },
         )
         return response
@@ -170,9 +172,11 @@ class EtsyClient:
             "GET",
             path,
             params={
-                "min_created": int(round(
-                    (datetime.now() - timedelta(minutes=self.sync_interval_reviews)).timestamp()
-                )),
+                "min_created": int(
+                    round(
+                        (datetime.now() - timedelta(minutes=self.sync_interval_reviews)).timestamp()
+                    )
+                ),
                 "max_created": int(round(datetime.now().timestamp())),
             },
         )

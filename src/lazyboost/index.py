@@ -44,7 +44,6 @@ def handler(event, context):
             ReviewHandler()
         elif event["task"] == "sync":
             OrderHandler(order_sync_type=OrdersEnum.SYNC)
-            ReviewHandler()
         else:
             raise ValueError(f"Invalid task type received: {event['task']}")
     except Exception as e:
@@ -53,8 +52,7 @@ def handler(event, context):
             sns_client = boto3.client("sns")
             response = sns_client.publish(
                 TopicArn=sns_topic_arn,
-                Message=f"An error occurred during execution of LazyBoost.\n\n"
-                        f"Error: `{e}`\n",
+                Message=f"An error occurred during execution of LazyBoost.\n\n" f"Error: `{e}`\n",
                 Subject=f"LazyBoost encountered an error",
             )
             logger.info(f"SNS response: {response}")

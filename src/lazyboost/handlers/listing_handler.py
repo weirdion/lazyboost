@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 
 from aws_lambda_powertools import Logger
 
-from lazyboost.clients import SecretManagerClient, ShopifyClient, EtsyClient
+from lazyboost.clients import EtsyClient, SecretManagerClient, ShopifyClient
 
 logger = Logger()
 

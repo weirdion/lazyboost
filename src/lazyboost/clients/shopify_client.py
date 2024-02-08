@@ -17,8 +17,8 @@
 
 import json
 import os
-from datetime import datetime, timedelta
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
 import shopify
 from aws_lambda_powertools import Logger
@@ -28,11 +28,7 @@ from lazyboost.models.base_singleton import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import (
-    ShopifyMinimalProduct,
-    ShopifyVariant,
-    ShopifyListing,
-)
+from lazyboost.models.shopify_product_model import ShopifyListing, ShopifyMinimalProduct
 
 logger = Logger()
 
@@ -41,7 +37,7 @@ logger = Logger()
 class ShopifyClient:
     def __init__(self):
         self.sm_client = SecretManagerClient()
-        self.api_version = "2023-04"
+        self.api_version = "2024-01"
         self.is_test_mode = True if os.getenv("SHOPIFY_TEST_MODE", "").lower() == "true" else False
 
         if self.is_test_mode:
@@ -67,8 +63,16 @@ class ShopifyClient:
     def shopify_domain(self) -> str:
         return self.session.url
 
-    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> ShopifyCustomer:
-        response = shopify.Customer.search(session=self.session, query=f"email:{etsy_buyer.email}")
+    def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> Optional[ShopifyCustomer]:
+        logger.debug(f"Attempting to find customer by tag: {etsy_buyer.etsy_tag}")
+        response = shopify.Customer.search(session=self.session, query=f"tag:{etsy_buyer.etsy_tag}")
+        if not response:
+            logger.debug("Attempting to find customer by name")
+            (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+            response = shopify.Customer.search(
+                session=self.session,
+                query=f"first_name:{buyer_name1} last_name:{buyer_name2} address1:{etsy_buyer.address_first_line}",
+            )
         if not response:
             return None
         return ShopifyCustomer.from_dict(response[0].attributes)
@@ -103,6 +107,17 @@ class ShopifyClient:
         if not is_existing_address:
             self.add_customer_address(etsy_buyer, shopify_customer.id)
 
+        # if etsy buyer tag is not in tags, add it
+        if etsy_buyer.etsy_tag not in shopify_customer.tags:
+            _tags = shopify_customer.tags.split(",")
+            _tags.append(etsy_buyer.etsy_tag)
+            shopify.Customer.put(
+                f"{shopify_customer.id}",
+                body=json.dumps(
+                    {"customer": {"id": shopify_customer.id, "tags": ",".join(filter(None, _tags))}}
+                ).encode("utf-8"),
+            )
+
     def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
         logger.info(f"Adding new address for {shopify_customer_id}")
 
@@ -118,9 +133,11 @@ class ShopifyClient:
         new_customer = shopify.Customer()
         new_customer.first_name = buyer_name1
         new_customer.last_name = buyer_name2
-        new_customer.email = etsy_buyer.email
-        new_customer.verified_email = True
-        new_customer.send_email_welcome: False
+        if etsy_buyer.email:
+            new_customer.email = etsy_buyer.email
+            new_customer.verified_email = True
+            new_customer.send_email_welcome: False
+        new_customer.tags = etsy_buyer.etsy_tag
         new_customer.save()
 
         logger.info(f"add new customer response: {new_customer.id}")
