@@ -52,8 +52,7 @@ def handler(event, context):
             sns_client = boto3.client("sns")
             response = sns_client.publish(
                 TopicArn=sns_topic_arn,
-                Message=f"An error occurred during execution of LazyBoost.\n\n"
-                        f"Error: `{e}`\n",
+                Message=f"An error occurred during execution of LazyBoost.\n\n" f"Error: `{e}`\n",
                 Subject=f"LazyBoost encountered an error",
             )
             logger.info(f"SNS response: {response}")

@@ -55,7 +55,7 @@ class EtsyBuyer:
             address_state=_address_state,
             address_zip=_address_zip,
             address_country_code=_address_country_code,
-            user_id=_buyer_user_id
+            user_id=_buyer_user_id,
         )
 
     def to_shopify_address(self) -> dict:

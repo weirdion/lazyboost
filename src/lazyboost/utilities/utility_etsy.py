@@ -15,9 +15,9 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 from lazyboost.utilities.constants import (
-    ETSY_TAXONOMY_ID_DICT,
-    ETSY_SHIPPING_PROFILE_ID_DICT,
     ETSY_SECTION_ID_DICT,
+    ETSY_SHIPPING_PROFILE_ID_DICT,
+    ETSY_TAXONOMY_ID_DICT,
 )
 
 

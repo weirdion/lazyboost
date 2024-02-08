@@ -21,14 +21,16 @@ from typing import Any, List
 
 from lazyboost.utilities.constants import ETSY_RETURN_POLICY_ID
 from lazyboost.utilities.utility_etsy import (
-    get_taxonomy_by_product_type,
-    get_shipping_profile_id,
-    get_section_id,
     format_materials_to_list,
+    get_section_id,
+    get_shipping_profile_id,
+    get_taxonomy_by_product_type,
 )
 
-DIMENSIONS_REGEX = r"^.*(\d{2})\s+inches\s+in\s+height,\s+(\d{1,2})\s+inches\s+in\s+width\s+" \
-                   r"and\s+(\d{1,2})\s+inches\s+in\s+depth.*$"
+DIMENSIONS_REGEX = (
+    r"^.*(\d{2})\s+inches\s+in\s+height,\s+(\d{1,2})\s+inches\s+in\s+width\s+"
+    r"and\s+(\d{1,2})\s+inches\s+in\s+depth.*$"
+)
 
 
 @dataclass

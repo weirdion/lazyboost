@@ -28,10 +28,7 @@ from lazyboost.models.base_singleton import singleton
 from lazyboost.models.etsy_buyer_model import EtsyBuyer
 from lazyboost.models.etsy_order import EtsyOrder
 from lazyboost.models.shopify_customer_model import ShopifyCustomer
-from lazyboost.models.shopify_product_model import (
-    ShopifyMinimalProduct,
-    ShopifyListing,
-)
+from lazyboost.models.shopify_product_model import ShopifyListing, ShopifyMinimalProduct
 
 logger = Logger()
 
@@ -67,7 +64,15 @@ class ShopifyClient:
         return self.session.url
 
     def is_existing_customer(self, etsy_buyer: EtsyBuyer) -> Optional[ShopifyCustomer]:
+        logger.debug(f"Attempting to find customer by tag: {etsy_buyer.etsy_tag}")
         response = shopify.Customer.search(session=self.session, query=f"tag:{etsy_buyer.etsy_tag}")
+        if not response:
+            logger.debug("Attempting to find customer by name")
+            (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+            response = shopify.Customer.search(
+                session=self.session,
+                query=f"first_name:{buyer_name1} last_name:{buyer_name2} address1:{etsy_buyer.address_first_line}",
+            )
         if not response:
             return None
         return ShopifyCustomer.from_dict(response[0].attributes)
@@ -101,6 +106,17 @@ class ShopifyClient:
         # Address not found in any existing addresses
         if not is_existing_address:
             self.add_customer_address(etsy_buyer, shopify_customer.id)
+
+        # if etsy buyer tag is not in tags, add it
+        if etsy_buyer.etsy_tag not in shopify_customer.tags:
+            _tags = shopify_customer.tags.split(",")
+            _tags.append(etsy_buyer.etsy_tag)
+            shopify.Customer.put(
+                f"{shopify_customer.id}",
+                body=json.dumps(
+                    {"customer": {"id": shopify_customer.id, "tags": ",".join(filter(None, _tags))}}
+                ).encode("utf-8"),
+            )
 
     def add_customer_address(self, etsy_buyer: EtsyBuyer, shopify_customer_id: int) -> None:
         logger.info(f"Adding new address for {shopify_customer_id}")
