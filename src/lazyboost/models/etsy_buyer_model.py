@@ -59,7 +59,10 @@ class EtsyBuyer:
         )
 
     def to_shopify_address(self) -> dict:
-        (buyer_name1, buyer_name2) = self.name.rsplit(" ", 1)
+        try:
+            (buyer_name1, buyer_name2) = self.name.rsplit(" ", 1)
+        except ValueError:
+            (buyer_name1, buyer_name2) = (self.name, "")
         return {
             "address1": self.address_first_line,
             "address2": self.address_second_line,

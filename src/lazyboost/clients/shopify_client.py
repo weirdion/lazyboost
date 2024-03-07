@@ -68,7 +68,10 @@ class ShopifyClient:
         response = shopify.Customer.search(session=self.session, query=f"tag:{etsy_buyer.etsy_tag}")
         if not response:
             logger.debug("Attempting to find customer by name")
-            (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+            try:
+                (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+            except ValueError:
+                (buyer_name1, buyer_name2) = (etsy_buyer.name, "")
             response = shopify.Customer.search(
                 session=self.session,
                 query=f"first_name:{buyer_name1} last_name:{buyer_name2} address1:{etsy_buyer.address_first_line}",
@@ -129,7 +132,10 @@ class ShopifyClient:
 
     def create_customer(self, etsy_buyer: EtsyBuyer) -> int:
         logger.info(f"Creating a new customer for {etsy_buyer}")
-        (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+        try:
+            (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
+        except ValueError:
+            (buyer_name1, buyer_name2) = (etsy_buyer.name, "")
         new_customer = shopify.Customer()
         new_customer.first_name = buyer_name1
         new_customer.last_name = buyer_name2
