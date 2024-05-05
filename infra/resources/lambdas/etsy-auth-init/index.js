@@ -1,6 +1,6 @@
 /*
  * LazyBoost: A lazy pythonian way to sync stuff between Shopify and Etsy.
- * Copyright (C) 2023  Ankit Patterson
+ * Copyright (C) 2024  Ankit Patterson
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
