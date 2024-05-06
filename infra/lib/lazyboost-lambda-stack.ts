@@ -55,7 +55,7 @@ export class LazyboostLambdaStack extends cdk.Stack {
       code: DockerImageCode.fromImageAsset(path.resolve('.'), {
         assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
       }),
-      architecture: Architecture.ARM_64,
+      architecture: Architecture.X86_64,
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,
         LOG_LEVEL: 'INFO',

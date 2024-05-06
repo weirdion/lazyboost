@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.11-arm64
+FROM public.ecr.aws/lambda/python:3.12
 
 # Install poetry
 RUN python3 -m pip install -U pip poetry
