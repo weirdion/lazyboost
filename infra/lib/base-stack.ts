@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * LazyBoost: A lazy pythonian way to sync stuff between Shopify and Etsy.
  * Copyright (C) 2024  Ankit Patterson
@@ -17,25 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as cdk from 'aws-cdk-lib';
-import 'source-map-support/register';
-import { BaseStack } from '../lib/base-stack';
-import { EtsyOauthStack } from '../lib/etsy-oauth-stack';
-import { LazyboostLambdaStack } from '../lib/lazyboost-lambda-stack';
+import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Construct } from 'constructs';
 
-const app = new cdk.App();
+export interface BaseProps extends StackProps {
+  serviceName: string
+}
 
-const serviceName = 'LazyBoost';
+export class BaseStack extends Stack {
+  public lbSecret: Secret;
+  constructor(scope: Construct, id: string, props: BaseProps) {
+    super(scope, id, props);
 
-const baseStack = new BaseStack(app, 'LazyboostBaseStack', {
-  serviceName: serviceName,
-});
-
-const etsyOauthStack = new EtsyOauthStack(app, 'LazyboostEtsyOauthStack', {
-  lbSecret: baseStack.lbSecret,
-});
-
-const lazyBoostLambdaStack = new LazyboostLambdaStack(app, 'LazyboostLambdaStack', {
-  serviceName: serviceName,
-  lbSecret: baseStack.lbSecret,
-});
+    this.lbSecret = new Secret(this, 'LAZYBOOST_CREDS', {
+      secretName: 'LAZYBOOST_CREDS',
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+  }
+}
