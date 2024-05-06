@@ -45,9 +45,12 @@ export class LazyboostLambdaStack extends cdk.Stack {
       throw new Error('LAZYBOOST_ERROR_EMAIL env variable is not set.');
     }
 
-    const emailIdentity = new EmailIdentity(this, 'LazyBoostErrorEmail', {
-      identity: Identity.email(lazyboostErrorEmail)
-    });
+    const emailIdentity = EmailIdentity.fromEmailIdentityName(this, 'LazyBoostErrorEmail', lazyboostErrorEmail);
+    if (!emailIdentity) {
+      new EmailIdentity(this, 'LazyBoostErrorEmail', {
+        identity: Identity.email(lazyboostErrorEmail)
+      });
+    }
 
     lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
     const lazyboost_lambda = new DockerImageFunction(this, 'LazyBoostFunction', {
