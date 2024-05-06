@@ -14,17 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
-      - name: Setup Python
-        uses: actions/setup-python@v4.7.0
-        with:
-          cache: poetry
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3.7.0
+        uses: actions/checkout@v4
       - name: Install poetry
-        run: |
-          python3 -m pip install -U pip poetry
-          poetry install --only main
+        run: pipx install poetry
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/Hydrogen'
+      - name: Install python dependencies
+        run: poetry install --only main
       - name: Set up CDK
         run: |
           npm install -g aws-cdk
