@@ -1,4 +1,5 @@
 name: 'PR Preview'
+run-name: Build initiated by ${{ github.actor }} for branch ${{inputs.branch}}
 on:
   pull_request:
     types:
@@ -34,10 +35,13 @@ jobs:
           npm install
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
+        env:
+          AWS_REGION: us-east-1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
+          role-session-name: GitHubActions
       - name: CDK Diff
         run: cdk diff --all
         env:
           LAZYBOOST_ERROR_EMAIL: ${{ secrets.LAZYBOOST_ERROR_EMAIL }}
+          AWS_REGION: us-east-1
