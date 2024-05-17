@@ -37,7 +37,9 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
+          role-session-name: GitHubActions
       - name: CDK Deploy
         run: cdk deploy --all --require-approval never
         env:
           LAZYBOOST_ERROR_EMAIL: ${{ secrets.LAZYBOOST_ERROR_EMAIL }}
+          AWS_REGION: us-east-1
