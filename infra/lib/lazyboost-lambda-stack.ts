@@ -59,6 +59,7 @@ export class LazyboostLambdaStack extends cdk.Stack {
         assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
       }),
       architecture: Architecture.X86_64,
+      timeout: Duration.seconds(10),
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,
         LOG_LEVEL: 'INFO',
