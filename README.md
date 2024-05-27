@@ -11,6 +11,12 @@ A lazy python-ion way to pull and sync Orders and Listings between Etsy and Shop
  * Clipboard interface to manipulate Shopify tags into your clipboard
  * Interface to pull Etsy reviews and publish to Judge.Me
 
+## Architecture
+
+| ![](./architecture.png) |
+|:--:|
+| *Diagram generated with cdk-dia* |
+
 ## Preparing for Development
 
 1. Ensure [poetry](https://python-poetry.org/docs/#installation) is installed
