@@ -33,6 +33,18 @@ class EtsyBuyer:
     @staticmethod
     def from_dict(obj: Any) -> "EtsyBuyer":
         _name = str(obj.get("name"))
+        _sanitized_name = ""
+        for char in _name:
+            if ord("a") <= ord(char) <= ord("z"):
+                _sanitized_name += char
+            elif ord("A") <= ord(char) <= ord("Z"):
+                _sanitized_name += char
+            elif char == " ":
+                _sanitized_name += char
+            else:
+                continue
+
+        _name = _sanitized_name.strip()
         _email = obj.get("buyer_email", None)
         _address_first_line = str(obj.get("first_line")).rstrip()
         _address_second_temp = str(obj.get("second_line"))
