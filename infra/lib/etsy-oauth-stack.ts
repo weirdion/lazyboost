@@ -33,7 +33,7 @@ export class EtsyOauthStack extends cdk.Stack {
 
     const initEtsyOauth = new Function(this, 'InitEtsyOauth', {
       functionName: 'InitEtsyOauth',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_22_X,
       code: new AssetCode('infra/resources/lambdas/etsy-auth-init'),
       handler: 'index.handler',
       environment: {
@@ -48,7 +48,7 @@ export class EtsyOauthStack extends cdk.Stack {
 
     const oauthRedirect = new Function(this, 'EtsyOauthRedirect', {
       functionName: 'EtsyOauthRedirect',
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_22_X,
       code: new AssetCode('infra/resources/lambdas/etsy-auth-redirect'),
       handler: 'index.handler',
       environment: {
