@@ -493,4 +493,8 @@ pyrightconfig.json
 # CDK
 cdk.out
 
+# Lambda layer artifacts
+layer.zip
+python/
+
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,python,pycharm,visualstudiocode,node

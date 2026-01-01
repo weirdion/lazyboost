@@ -19,7 +19,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { RuleTargetInput } from 'aws-cdk-lib/aws-events';
-import { Architecture, DockerImageCode, DockerImageFunction } from 'aws-cdk-lib/aws-lambda';
+import { Architecture, AssetCode, Function, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { EmailIdentity, Identity } from 'aws-cdk-lib/aws-ses';
 import { Topic } from 'aws-cdk-lib/aws-sns';
@@ -53,12 +53,23 @@ export class LazyboostLambdaStack extends cdk.Stack {
     }
 
     lazyboostSNSTopic.addSubscription(new EmailSubscription(lazyboostErrorEmail));
-    const lazyboost_lambda = new DockerImageFunction(this, 'LazyBoostFunction', {
+
+    // Lambda layer with Python dependencies
+    const dependenciesLayer = new LayerVersion(this, 'LazyBoostDependencies', {
+      layerVersionName: 'LazyBoostDependencies',
+      code: AssetCode.fromAsset(path.join(__dirname, '../../layer.zip')),
+      compatibleRuntimes: [Runtime.PYTHON_3_12],
+      compatibleArchitectures: [Architecture.ARM_64],
+      description: 'Python dependencies for LazyBoost Lambda'
+    });
+
+    const lazyboost_lambda = new Function(this, 'LazyBoostFunction', {
       functionName: 'LazyBoostFunction',
-      code: DockerImageCode.fromImageAsset(path.resolve('.'), {
-        assetName: `lazyboost_lambda_${new Date().toLocaleDateString('en-US')}`
-      }),
-      architecture: Architecture.X86_64,
+      runtime: Runtime.PYTHON_3_12,
+      handler: 'lazyboost.index.handler',
+      code: AssetCode.fromAsset(path.join(__dirname, '../../src')),
+      layers: [dependenciesLayer],
+      architecture: Architecture.ARM_64,
       timeout: Duration.seconds(10),
       environment: {
         POWERTOOLS_SERVICE_NAME: props.serviceName,

@@ -29,6 +29,10 @@ jobs:
           node-version: 'lts/Hydrogen'
       - name: Install python dependencies
         run: poetry install --only main
+      - name: Build Lambda layer
+        run: |
+          chmod +x scripts/build-layer.sh
+          ./scripts/build-layer.sh
       - name: Set up CDK
         run: |
           npm install -g aws-cdk
