@@ -13,6 +13,9 @@ rm -rf python layer.zip
 # Create layer directory structure
 mkdir -p python
 
+# Ensure poetry export plugin is installed
+poetry self add poetry-plugin-export 2>/dev/null || true
+
 # Export requirements from poetry
 poetry export -f requirements.txt --without-hashes --only main -o requirements.txt
 
