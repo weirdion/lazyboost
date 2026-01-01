@@ -312,9 +312,11 @@ class ShopifyClient:
                         "quantity": t.product_quantity,
                         "requires_shipping": True,
                         "price": t.product_price,
-                        "properties": {"message": etsy_order.message_from_buyer}
-                        if etsy_order.message_from_buyer
-                        else [],
+                        "properties": (
+                            {"message": etsy_order.message_from_buyer}
+                            if etsy_order.message_from_buyer
+                            else []
+                        ),
                     }
                     for t in etsy_order.transactions
                 ],
