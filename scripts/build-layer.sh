@@ -23,10 +23,12 @@ echo "Building layer in Docker container (Amazon Linux 2)..."
 
 # Build in Docker container matching Lambda runtime
 # Using -arm64 tag so it works on both x86_64 and ARM64 hosts
+# Run as current user to avoid permission issues
 docker run --rm \
   --entrypoint /bin/bash \
   -v "$(pwd)":/var/task \
   -w /var/task \
+  -u "$(id -u):$(id -g)" \
   public.ecr.aws/lambda/python:3.12-arm64 \
   -c "pip install -r requirements.txt -t python/lib/python3.12/site-packages/"
 
