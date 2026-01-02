@@ -34,6 +34,7 @@ class EtsyClient:
     def __init__(self):
         self.sm_client = SecretManagerClient()
         self.api_key_string = self.sm_client.secret_variables["ETSY_KEY_STRING"]
+        self.shared_secret = self.sm_client.secret_variables["ETSY_SHARED_SECRET"]
         self.access_token = self.sm_client.secret_variables["ETSY_ACCESS_TOKEN"]
         self.refresh_token = self.sm_client.secret_variables["ETSY_REFRESH_TOKEN"]
         self.shop_id = self.sm_client.secret_variables["ETSY_SHOP_ID"]
@@ -42,7 +43,7 @@ class EtsyClient:
         self.sync_interval_reviews = int(os.getenv("SYNC_INTERVAL_REVIEWS_MIN", 17))
 
         self.headers = {
-            "x-api-key": self.api_key_string,
+            "x-api-key": f"{self.api_key_string}:{self.shared_secret}",
             "Authorization": f"Bearer {self.access_token}",
         }
 
@@ -125,7 +126,7 @@ class EtsyClient:
         Update HTTP Headers.
         """
         self.headers = {
-            "x-api-key": self.api_key_string,
+            "x-api-key": f"{self.api_key_string}:{self.shared_secret}",
             "Authorization": f"Bearer {self.access_token}",
         }
 
