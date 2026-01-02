@@ -30,15 +30,10 @@ docker run --rm \
   -w /var/task \
   -u "$(id -u):$(id -g)" \
   public.ecr.aws/lambda/python:3.12-arm64 \
-  -c "pip install -r requirements.txt -t layer_tmp/"
+  -c "pip install -r requirements.txt -t python/"
 
-# Reorganize to proper Lambda layer structure
-mkdir -p python/lib/python3.12/site-packages
-mv layer_tmp/* python/lib/python3.12/site-packages/
-rm -rf layer_tmp
-
-# Create layer zip
-cd python && zip -r ../layer.zip . && cd ..
+# Create layer zip (quiet mode)
+zip -rq layer.zip python/
 
 echo "Layer built successfully: layer.zip"
 echo "Size: $(du -h layer.zip | cut -f1)"
