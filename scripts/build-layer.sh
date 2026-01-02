@@ -30,7 +30,12 @@ docker run --rm \
   -w /var/task \
   -u "$(id -u):$(id -g)" \
   public.ecr.aws/lambda/python:3.12-arm64 \
-  -c "pip install -r requirements.txt -t python/lib/python3.12/site-packages/"
+  -c "pip install -r requirements.txt -t layer_tmp/"
+
+# Reorganize to proper Lambda layer structure
+mkdir -p python/lib/python3.12/site-packages
+mv layer_tmp/* python/lib/python3.12/site-packages/
+rm -rf layer_tmp
 
 # Create layer zip
 cd python && zip -r ../layer.zip . && cd ..
