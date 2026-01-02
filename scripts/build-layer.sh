@@ -22,12 +22,12 @@ poetry export -f requirements.txt --without-hashes --only main -o requirements.t
 echo "Building layer in Docker container (Amazon Linux 2)..."
 
 # Build in Docker container matching Lambda runtime
+# Using -arm64 tag so it works on both x86_64 and ARM64 hosts
 docker run --rm \
-  --platform linux/arm64 \
   --entrypoint /bin/bash \
   -v "$(pwd)":/var/task \
   -w /var/task \
-  public.ecr.aws/lambda/python:3.12 \
+  public.ecr.aws/lambda/python:3.12-arm64 \
   -c "pip install -r requirements.txt -t python/lib/python3.12/site-packages/"
 
 # Create layer zip
