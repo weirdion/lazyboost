@@ -64,7 +64,6 @@ export class LazyboostLambdaStack extends cdk.Stack {
     });
 
     const lazyboost_lambda = new Function(this, 'LazyBoostFunction', {
-      functionName: 'LazyBoostFunction',
       runtime: Runtime.PYTHON_3_12,
       handler: 'lazyboost.index.handler',
       code: AssetCode.fromAsset(path.join(__dirname, '../../src')),
