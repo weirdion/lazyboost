@@ -26,9 +26,17 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/Hydrogen'
+          node-version: 'lts/Krypton'
       - name: Install python dependencies
         run: poetry install --only main
+      - name: Set up QEMU for ARM64 emulation
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Build Lambda layer
+        run: |
+          chmod +x scripts/build-layer.sh
+          ./scripts/build-layer.sh
       - name: Set up CDK
         run: |
           npm install -g aws-cdk
