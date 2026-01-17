@@ -82,7 +82,6 @@ class EtsyBuyer:
             "first_name": buyer_name1,
             "last_name": buyer_name2,
             "zip": self.address_zip,
-            "name": self.name,
             "province_code": self.address_state,
             "country_code": self.address_country_code,
         }

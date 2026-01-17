@@ -47,8 +47,7 @@ class SecretManagerClient:
                  it is contained in the `SecretBinary` field.
         """
         try:
-            kwargs = {"SecretId": self.secret_name}
-            response = self.client.get_secret_value(**kwargs)
+            response = self.client.get_secret_value(SecretId=self.secret_name)
             self.logger.debug(f"Retrieved value for secret {self.secret_name}.")
         except ClientError:
             self.logger.exception(f"Couldn't get value for secret {self.secret_name}.")
