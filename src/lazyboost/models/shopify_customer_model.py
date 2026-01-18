@@ -43,8 +43,10 @@ class Address:
     default: bool
 
     def is_billing_address_same(self, etsy_buyer: EtsyBuyer) -> bool:
+        (buyer_name1, buyer_name2) = etsy_buyer.name.rsplit(" ", 1)
         if (
-            is_string_different(etsy_buyer.name, self.name)
+            is_string_different(buyer_name1, self.first_name)
+            or is_string_different(buyer_name2, self.last_name)
             or is_string_different(etsy_buyer.address_first_line, self.address1)
             or is_string_different(etsy_buyer.address_second_line, self.address2)
             or is_string_different(etsy_buyer.address_city, self.city)
