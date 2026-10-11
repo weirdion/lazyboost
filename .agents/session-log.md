@@ -2,6 +2,21 @@
 
 Newest first. The top entry is the current handoff.
 
+## 2026-10-11 (direction) — lazyboost goes KTLO; lazyboost-app becomes the platform
+
+**Done**
+- Reviewed the agent-manager initiative and the sibling `lazyboost-app` repo, and checked Etsy's
+  OpenAPI v3 spec. The operator decided: lazyboost stays KTLO, all new capability goes to
+  lazyboost-app, and Python stays (decisions.md). This diverges from the manager initiative, which
+  had placed its Phase 1 and 2 here.
+- Wrote lazyboost-app's plan of record, `.agents/initiatives/2026-10-11-platform-rework.md`
+  (committed locally in that repo as `54020e9`, not pushed).
+
+**Next**
+- Here: KTLO only. Brief step 4 (issue migration) remains open; most open issues now belong in
+  lazyboost-app's backlog rather than this one. Brief step 5 (GitLab mirror) remains open.
+- In lazyboost-app: start a session on its initiative doc, beginning with Step 0.
+
 ## 2026-10-11 (later) — Deploy verified, cleanup finished
 
 **Done**

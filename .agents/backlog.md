@@ -10,13 +10,12 @@ payloads, and customer name and address matching, which is where every past hotf
 *Deferred:* maintenance mode; the smoke checks cover dependency updates.
 *Pull forward:* any change to matching or order-mapping logic.
 
-## Etsy OAuth / larger rework
-The operator plans a bigger rework, starting with a discovery spike. Earlier attempts remain on
-`develop` (2 unmerged commits) and `feat/rework-cleanup` (1 unmerged commit), local and on GitHub.
-Earlier stashed attempts and a FastAPI stub (`app/`) were deleted on 2026-10-11 at the operator's request.
-*Deferred:* the current handshake works (token refresh confirmed in production on 2026-10-11).
-*Pull forward:* the discovery spike starts. **When it's done, delete `develop` and
-`feat/rework-cleanup`, locally and on GitHub.**
+## Branch cleanup after the lazyboost-app discovery spike
+`develop` (2 unmerged commits) and `feat/rework-cleanup` (1 unmerged commit) hold an earlier OAuth
+rework attempt, locally and on GitHub. The rework now happens in `lazyboost-app` (decisions.md,
+2026-10-11).
+*Deferred:* the operator wants them as reference during the discovery spike.
+*Pull forward:* the spike is done. **Then delete both, locally and on GitHub.**
 
 ## README is stale
 It describes a Docker Lambda and Facebook shop sync, and has no deploy or verify instructions.

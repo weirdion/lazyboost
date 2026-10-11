@@ -13,7 +13,8 @@
 
 ## Local rules
 
-LOCAL: This is a live production service in maintenance mode. **Every push to `main` deploys**
+LOCAL: This is a live production service in KTLO mode: fixes and patches only, and new features go to
+`lazyboost-app` (decisions.md). **Every push to `main` deploys**
 (`.github/workflows/deploy.yml` runs `cdk deploy --all`). Work on a branch and open a PR; the PR
 preview job runs `cdk diff`. Merging is the deploy decision and belongs to the operator.
 — A merge is not a code-review formality here; it changes what runs against real orders.
