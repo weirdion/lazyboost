@@ -18,6 +18,7 @@
 """
 ReviewHandler module handles operations related to pulling reviews from Etsy.
 """
+
 import csv
 from datetime import datetime, timedelta
 from typing import List

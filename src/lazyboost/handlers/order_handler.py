@@ -18,6 +18,7 @@
 """
 OrderHandler module handles operations related to order sync
 """
+
 import sys
 from enum import auto
 from typing import List

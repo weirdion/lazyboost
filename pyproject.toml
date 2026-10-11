@@ -14,19 +14,19 @@ exclude = [
 ]
 
 [tool.poetry.dependencies]
-python = ">3.9,<4.0.0"
+python = ">=3.12,<4.0.0"
 requests = "^2.32.0"
 pyperclip = "^1.8.2"
 shopifyapi = "^12.2.0"
 boto3 = "^1.26.84"
-packaging = "^25.0"
+packaging = "^26.3"
 aws-lambda-powertools = {extras = ["all"], version = "^3.20.0"}
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.4.2"
-black = "^25.9.0"
+pytest = "^9.1.1"
+black = "^26.10.1"
 safety = "^3.6.1"
-isort = "^6.0.1"
+isort = "^9.0.2"
 pre-commit = "^4.3.0"
 
 [tool.poetry.scripts]
@@ -37,7 +37,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-target-version = ['py39']
+target-version = ['py312']
 line-length = 100
 
 [tool.isort]
