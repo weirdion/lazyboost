@@ -7,7 +7,8 @@ Shopify inventory and customer records. It runs unattended as an AWS Lambda on a
 also holds a CLI (`lazyboost`) for local runs, a clipboard helper, and a review-sync path (Etsy →
 Judge.me) that is currently disabled.
 
-It is maintenance-only: the goal is that it keeps working and stays patched, not that it grows.
+It is in KTLO mode: it keeps working and stays patched, and nothing new is built here. New capability
+goes to the sibling `lazyboost-app` repo, which will eventually replace it (see decisions.md).
 
 ## Architecture
 

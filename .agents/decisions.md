@@ -3,6 +3,19 @@
 Append-only, newest first. Entries before 2026-10 were reconstructed from git history; only
 decisions whose reason is visible there are recorded.
 
+## 2026-10-11 — lazyboost is KTLO; new capability goes to lazyboost-app
+lazyboost only gets security patches and breakage fixes. Everything new goes into the sibling
+`lazyboost-app` repo, whose plan of record is `lazyboost-app/.agents/initiatives/2026-10-11-platform-rework.md`:
+Shopify → Etsy stock, fulfilment → Etsy tracking, reviews, Etsy draft listings, the embedded Shopify
+app UI, and social promotion. Capabilities move there one at a time, risk-ordered. The Etsy → Shopify
+order sync moves last; then lazyboost is retired.
+*Why:* the order sync works and costs almost nothing. lazyboost-app already has the operator's
+current practices (typed Python, Pydantic, tests, Terraform), and every merge here deploys to
+production.
+*Divergence:* the agent-manager initiative `lazyboost_2026_10_11_15_57.md` put Phase 1 (Shopify
+sale → Etsy stock) and Phase 2 (draft listings) in lazyboost. Both now belong to lazyboost-app.
+Python stays; a Go rewrite was considered and rejected.
+
 ## 2026-10-11 — Python floor is 3.12
 `pyproject.toml` requires `>=3.12`. The Lambda and CI both run 3.12, 3.9 is end-of-life, and
 current dev tooling (pytest 9, isort 9) dropped 3.9. Raise it together with the Lambda runtime.
