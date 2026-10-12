@@ -25,7 +25,9 @@ client, widened Etsy sync windows). — Both have existed as uncommitted edits; 
 would break the Lambda, which has no such profile.
 
 LOCAL: GitHub is the source of truth. GitLab is a read-only mirror, synced by the operator's mirror
-tooling after `main` changes. Fetch from and push to GitHub; never push work only to GitLab.
+tooling. `origin` fetches from GitHub and pushes to both. GitHub merges don't reach GitLab on their own:
+after a PR merges, run `git pull && git push origin main`. Push feature branches to the GitHub URL
+directly so they don't land on the mirror.
 
 LOCAL: The repo is public. Committed files carry no vulnerability/alert specifics, account
 identifiers, email addresses, AWS profile names, or secret values. — Alert details belong in the

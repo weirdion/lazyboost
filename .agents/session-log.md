@@ -19,9 +19,9 @@ Newest first. The top entry is the current handoff.
   Fix: in `get_push_urls`, read `git config --get-all remote.<r>.pushurl` instead of
   `git remote get-url --push --all`.
 
-**Blocked: GitLab `main` is 42 commits behind.** GitLab protects `main` with push set to "No one",
-so `git push origin main` is rejected there. It fast-forwards cleanly (checked); this needs an
-operator decision on the protection setting.
+**GitLab mirror synced.** GitLab protected `main` with push set to "No one". The operator changed
+it to Maintainers (force-push still off), and `main` fast-forwarded 42 commits to match GitHub
+(`1523576`).
 
 **Note:** `origin` pushes to both hosts now. Push feature branches to GitHub by URL
 (`git push git@github.com:weirdion/lazyboost.git <branch>`), or they'll appear on the mirror too.
