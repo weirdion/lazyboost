@@ -2,6 +2,30 @@
 
 Newest first. The top entry is the current handoff.
 
+## 2026-10-11 (close-out) — Issues closed, branches deleted, mirror partly synced
+
+**Done**
+- Closed all 14 open issues, each with a comment. Feature requests (#4, #5, #10, #14, #124) point to
+  the successor project; obsolete ones (#6, #13, #120) are closed as such. Docs and workflow items
+  (#71, #72, #118, #121, #122, #123) are folded into backlog.md.
+- Deleted `develop` and `feat/rework-cleanup` on GitHub, GitLab, and locally, at the operator's
+  request (the rework moves to lazyboost-app). Their tips, recoverable until garbage collection:
+  GitHub `develop` 3d46dbb39a95, GitLab `develop` 49e240689434, `feat/rework-cleanup` c40579657c1e.
+  Also deleted the merged `docs/session-log-2026-10-11`.
+- Ran `repoUpsert --path . -f github`. `origin` now fetches from GitHub and pushes to GitHub and
+  GitLab. **The script has a bug:** when a remote has no explicit pushurl, it treats the implicit
+  fetch URL as "GitHub push already set", so it added only the GitLab pushurl, leaving pushes going
+  to GitLab only. The GitHub pushurl was restored by hand.
+  Fix: in `get_push_urls`, read `git config --get-all remote.<r>.pushurl` instead of
+  `git remote get-url --push --all`.
+
+**Blocked: GitLab `main` is 42 commits behind.** GitLab protects `main` with push set to "No one",
+so `git push origin main` is rejected there. It fast-forwards cleanly (checked); this needs an
+operator decision on the protection setting.
+
+**Note:** `origin` pushes to both hosts now. Push feature branches to GitHub by URL
+(`git push git@github.com:weirdion/lazyboost.git <branch>`), or they'll appear on the mirror too.
+
 ## 2026-10-11 (direction) — lazyboost goes KTLO; lazyboost-app becomes the platform
 
 **Done**

@@ -10,21 +10,21 @@ payloads, and customer name and address matching, which is where every past hotf
 *Deferred:* maintenance mode; the smoke checks cover dependency updates.
 *Pull forward:* any change to matching or order-mapping logic.
 
-## Branch cleanup after the lazyboost-app discovery spike
-`develop` (2 unmerged commits) and `feat/rework-cleanup` (1 unmerged commit) hold an earlier OAuth
-rework attempt, locally and on GitHub. The rework now happens in `lazyboost-app` (decisions.md,
-2026-10-11).
-*Deferred:* the operator wants them as reference during the discovery spike.
-*Pull forward:* the spike is done. **Then delete both, locally and on GitHub.**
-
-## README is stale
-It describes a Docker Lambda and Facebook shop sync, and has no deploy or verify instructions.
-*Deferred:* agent-facing docs live in `.agents/`; human docs are lower priority.
-*Pull forward:* when issues are migrated (several are documentation requests).
+## Human-facing setup docs
+The README is stale: it describes a Docker Lambda and Facebook shop sync. Missing for a human
+operator (from closed issues #118, #121, #122):
+- the Etsy OAuth handshake (the two Node Lambdas, API Gateway `/api/redirect`, where tokens land in
+  Secrets Manager);
+- Shopify credentials and required permissions;
+- deploy order and variables. Variables are partly covered by `.env.sample` and context.md.
+*Deferred:* KTLO, the successor replaces this, and agent-facing docs live in `.agents/`.
+*Pull forward:* someone other than the operator has to deploy or recover it.
 
 ## Workflow upkeep
 `update.yml` pins Node `lts/Hydrogen` (EOL) while the other workflows use `lts/Krypton`. Actions
 are on older major versions. CI installs the CDK CLI globally and unpinned instead of using the
 repo's devDependency.
+Also (closed issues #71, #72): replace the third-party create-pull-request action with
+`actions/github-script`, and tag merge deploys so a deploy can be repeated.
 *Deferred:* everything still runs.
 *Pull forward:* a workflow breaks, or GitHub deprecates a pinned action version.
