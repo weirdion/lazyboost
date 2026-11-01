@@ -2,6 +2,45 @@
 
 Newest first. The top entry is the current handoff.
 
+## 2026-10-11 (close-out) — Issues closed, branches deleted, mirror partly synced
+
+**Done**
+- Closed all 14 open issues, each with a comment. Feature requests (#4, #5, #10, #14, #124) point to
+  the successor project; obsolete ones (#6, #13, #120) are closed as such. Docs and workflow items
+  (#71, #72, #118, #121, #122, #123) are folded into backlog.md.
+- Deleted `develop` and `feat/rework-cleanup` on GitHub, GitLab, and locally, at the operator's
+  request (the rework moves to lazyboost-app). Their tips, recoverable until garbage collection:
+  GitHub `develop` 3d46dbb39a95, GitLab `develop` 49e240689434, `feat/rework-cleanup` c40579657c1e.
+  Also deleted the merged `docs/session-log-2026-10-11`.
+- Ran `repoUpsert --path . -f github`. `origin` now fetches from GitHub and pushes to GitHub and
+  GitLab. **The script has a bug:** when a remote has no explicit pushurl, it treats the implicit
+  fetch URL as "GitHub push already set", so it added only the GitLab pushurl, leaving pushes going
+  to GitLab only. The GitHub pushurl was restored by hand.
+  Fix: in `get_push_urls`, read `git config --get-all remote.<r>.pushurl` instead of
+  `git remote get-url --push --all`.
+
+**GitLab mirror synced.** GitLab protected `main` with push set to "No one". The operator changed
+it to Maintainers (force-push still off), and `main` fast-forwarded 42 commits to match GitHub
+(`1523576`).
+
+**Note:** `origin` pushes to both hosts now. Push feature branches to GitHub by URL
+(`git push git@github.com:weirdion/lazyboost.git <branch>`), or they'll appear on the mirror too.
+
+## 2026-10-11 (direction) — lazyboost goes KTLO; lazyboost-app becomes the platform
+
+**Done**
+- Reviewed the agent-manager initiative and the sibling `lazyboost-app` repo, and checked Etsy's
+  OpenAPI v3 spec. The operator decided: lazyboost stays KTLO, all new capability goes to
+  lazyboost-app, and Python stays (decisions.md). This diverges from the manager initiative, which
+  had placed its Phase 1 and 2 here.
+- Wrote lazyboost-app's plan of record, `.agents/initiatives/2026-10-11-platform-rework.md`
+  (committed locally in that repo as `54020e9`, not pushed).
+
+**Next**
+- Here: KTLO only. Brief step 4 (issue migration) remains open; most open issues now belong in
+  lazyboost-app's backlog rather than this one. Brief step 5 (GitLab mirror) remains open.
+- In lazyboost-app: start a session on its initiative doc, beginning with Step 0.
+
 ## 2026-10-11 (later) — Deploy verified, cleanup finished
 
 **Done**
